@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('jhipsterApp').controller('BankAccountDialogController',
+angular.module('sampleelasticsearchApp').controller('BankAccountDialogController',
     ['$scope', '$stateParams', '$modalInstance', 'entity', 'BankAccount', 'User', 'Operation',
         function($scope, $stateParams, $modalInstance, entity, BankAccount, User, Operation) {
 
@@ -14,7 +14,7 @@ angular.module('jhipsterApp').controller('BankAccountDialogController',
         };
 
         var onSaveFinished = function (result) {
-            $scope.$emit('jhipsterApp:bankAccountUpdate', result);
+            $scope.$emit('sampleelasticsearchApp:bankAccountUpdate', result);
             $modalInstance.close(result);
         };
 

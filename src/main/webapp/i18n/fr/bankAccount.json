@@ -1,5 +1,5 @@
 {
-    "jhipsterApp": {
+    "sampleelasticsearchApp": {
         "bankAccount" : {
             "home": {
                 "title": "BankAccounts",

@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('jhipsterApp')
+angular.module('sampleelasticsearchApp')
     .controller('LabelController', function ($scope, Label, LabelSearch) {
         $scope.labels = [];
         $scope.loadAll = function() {

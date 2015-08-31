@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('jhipsterApp')
+angular.module('sampleelasticsearchApp')
     .config(function ($stateProvider) {
         $stateProvider
             .state('admin', {

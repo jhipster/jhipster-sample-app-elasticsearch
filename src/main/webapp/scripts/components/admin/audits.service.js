@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('jhipsterApp')
+angular.module('sampleelasticsearchApp')
     .factory('AuditsService', function ($http) {
         return {
             findAll: function () {

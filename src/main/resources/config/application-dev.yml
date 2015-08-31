@@ -53,7 +53,7 @@ metrics:
         enabled: false
         host: localhost
         port: 2003
-        prefix: jhipster
+        prefix: sampleElasticSearch
 
 cache:
     timeToLiveSeconds: 3600

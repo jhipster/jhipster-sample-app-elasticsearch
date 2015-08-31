@@ -10,21 +10,21 @@ public class HeaderUtil {
  
     public static HttpHeaders createAlert(String message, String param) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("X-jhipsterApp-alert", message);
-        headers.add("X-jhipsterApp-params", param);
+        headers.add("X-sampleelasticsearchApp-alert", message);
+        headers.add("X-sampleelasticsearchApp-params", param);
         return headers;
     }
     
     public static HttpHeaders createEntityCreationAlert(String entityName, String param) {
-        return createAlert("jhipsterApp." + entityName + ".created", param);
+        return createAlert("sampleelasticsearchApp." + entityName + ".created", param);
     }
 
     public static HttpHeaders createEntityUpdateAlert(String entityName, String param) {
-        return createAlert("jhipsterApp." + entityName + ".updated", param);
+        return createAlert("sampleelasticsearchApp." + entityName + ".updated", param);
     }
 
     public static HttpHeaders createEntityDeletionAlert(String entityName, String param) {
-        return createAlert("jhipsterApp." + entityName + ".deleted", param);
+        return createAlert("sampleelasticsearchApp." + entityName + ".deleted", param);
     }
 
 }

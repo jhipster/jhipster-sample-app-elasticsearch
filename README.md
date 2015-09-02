@@ -1,4 +1,4 @@
-# Developping sampleElasticSearch
+# Developing sampleElasticSearch
 
 sampleElasticSearch was generated using JHipster, you can find documentation and help at [JHipster][].
 

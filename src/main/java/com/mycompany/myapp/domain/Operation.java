@@ -18,7 +18,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.Objects;
 
-
 /**
  * A Operation.
  */
@@ -31,7 +30,6 @@ public class Operation implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    
 
     @NotNull        
     @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentDateTime")

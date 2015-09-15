@@ -36,7 +36,7 @@ spring:
             properties:
                 path:
                   logs: target/elasticsearch/log
-                  data: target/elasticsearch/data 
+                  data: target/elasticsearch/data
     messages:
         cache-seconds: 1
     thymeleaf:

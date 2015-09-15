@@ -24,6 +24,11 @@ mail:
     from: sampleElasticSearch@localhost
 
 
+spring:
+    mvc:
+        favicon:
+            enabled: false
+
 swagger:
     title: sampleElasticSearch API
     description: sampleElasticSearch applications and beyond!

@@ -13,7 +13,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.Objects;
 
-
 /**
  * A BankAccount.
  */
@@ -26,7 +25,6 @@ public class BankAccount implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    
 
     @NotNull        
     @Column(name = "name", nullable = false)

@@ -7,7 +7,7 @@ angular.module('sampleelasticsearchApp')
                 parent: 'site',
                 url: '/',
                 data: {
-                    roles: []
+                    authorities: []
                 },
                 views: {
                     'content@': {

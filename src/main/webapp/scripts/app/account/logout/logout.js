@@ -7,7 +7,7 @@ angular.module('sampleelasticsearchApp')
                 parent: 'account',
                 url: '/logout',
                 data: {
-                    roles: []
+                    authorities: []
                 },
                 views: {
                     'content@': {

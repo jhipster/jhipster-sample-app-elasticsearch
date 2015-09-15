@@ -7,7 +7,7 @@ angular.module('sampleelasticsearchApp')
                 parent: 'account',
                 url: '/register',
                 data: {
-                    roles: [],
+                    authorities: [],
                     pageTitle: 'register.title'
                 },
                 views: {

@@ -12,7 +12,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.Objects;
 
-
 /**
  * A Label.
  */
@@ -25,7 +24,6 @@ public class Label implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    
 
     @NotNull
     @Size(min = 3)        

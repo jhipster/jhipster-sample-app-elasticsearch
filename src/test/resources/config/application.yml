@@ -44,7 +44,7 @@ spring:
             properties:
                 path:
                   logs: target/elasticsearch/log
-                  data: target/elasticsearch/data 
+                  data: target/elasticsearch/data
 
 mail:
     host: localhost

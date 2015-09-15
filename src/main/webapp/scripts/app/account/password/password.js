@@ -7,7 +7,7 @@ angular.module('sampleelasticsearchApp')
                 parent: 'account',
                 url: '/password',
                 data: {
-                    roles: ['ROLE_USER'],
+                    authorities: ['ROLE_USER'],
                     pageTitle: 'global.menu.account.password'
                 },
                 views: {

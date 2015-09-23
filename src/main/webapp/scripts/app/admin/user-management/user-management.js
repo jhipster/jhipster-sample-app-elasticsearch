@@ -18,7 +18,7 @@ angular.module('sampleelasticsearchApp')
                 },
                 resolve: {
                     translatePartialLoader: ['$translate', '$translatePartialLoader', function ($translate, $translatePartialLoader) {
-                        $translatePartialLoader.addPart('user-management');
+                        $translatePartialLoader.addPart('user.management');
                         return $translate.refresh();
                     }]
                 }
@@ -38,7 +38,7 @@ angular.module('sampleelasticsearchApp')
                 },
                 resolve: {
                     translatePartialLoader: ['$translate', '$translatePartialLoader', function ($translate, $translatePartialLoader) {
-                        $translatePartialLoader.addPart('user-management');
+                        $translatePartialLoader.addPart('user.management');
                         return $translate.refresh();
                     }]
                 }

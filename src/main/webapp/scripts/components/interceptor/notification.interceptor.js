@@ -9,6 +9,6 @@ angular.module('sampleelasticsearchApp')
                     AlertService.success(alertKey, { param : response.headers('X-sampleelasticsearchApp-params')});
                 }
                 return response;
-            },
+            }
         };
     });

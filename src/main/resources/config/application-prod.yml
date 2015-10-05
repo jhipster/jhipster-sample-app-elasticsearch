@@ -16,7 +16,7 @@ spring:
     datasource:
         driver-class-name: com.mysql.jdbc.jdbc2.optional.MysqlDataSource
         url: jdbc:mysql://localhost:3306/sampleElasticSearch?useUnicode=true&characterEncoding=utf8
-        databaseName: 
+        name: 
         username: root
         password:
     jpa:
@@ -31,7 +31,7 @@ spring:
     data:
         elasticsearch:
             cluster-name:
-            cluster-nodes: localhost:9200
+            cluster-nodes: localhost:9300
     thymeleaf:
         cache: true
 

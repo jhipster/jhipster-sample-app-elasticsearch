@@ -16,7 +16,7 @@ import java.util.Objects;
  * A Label.
  */
 @Entity
-@Table(name = "LABEL")
+@Table(name = "label")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @Document(indexName="label")
 public class Label implements Serializable {

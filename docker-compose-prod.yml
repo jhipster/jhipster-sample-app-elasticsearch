@@ -1,6 +1,14 @@
+jhipster-prod-elasticsearch:
+  container_name: sampleElasticSearch-prod-elasticsearch
+  image: elasticsearch
+  # volumes:
+  # - ~/volumes/jhipster/sampleElasticSearch/prod-elasticsearch/:/usr/share/elasticsearch/data/
+  ports:
+  - "9200:9200"
+  - "9300:9300"
 jhipster-prod-mysql:
   container_name: sampleElasticSearch-prod-mysql
-  image : mysql
+  image: mysql
   # volumes:
   # - ~/volumes/jhipster/sampleElasticSearch/prod-mysql/:/var/lib/mysql/
   environment:

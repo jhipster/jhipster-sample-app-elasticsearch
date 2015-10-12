@@ -13,6 +13,11 @@
 spring:
     profiles:
         active: dev
+    devtools:
+        restart:
+            enabled: true
+        livereload:
+            enabled: false # we use Grunt + BrowserSync for livereload
     datasource:
         driver-class-name: org.h2.jdbcx.JdbcDataSource
         url: jdbc:h2:mem:jhipster;DB_CLOSE_DELAY=-1
@@ -36,6 +41,8 @@ spring:
                 path:
                   logs: target/elasticsearch/log
                   data: target/elasticsearch/data
+    mail:
+        host: localhost
     messages:
         cache-seconds: 1
     thymeleaf:
@@ -58,6 +65,8 @@ jhipster:
         timeToLiveSeconds: 3600
         ehcache:
             maxBytesLocalHeap: 16M
+    mail: # specific JHipster mail property, for standard properties see MailProperties
+        from: sampleElasticSearch@localhost
     metrics: # DropWizard Metrics configuration, used by MetricsConfiguration
         jmx.enabled: true
         spark:

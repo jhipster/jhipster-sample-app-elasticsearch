@@ -23,7 +23,7 @@ import org.joda.time.DateTime;
 @Entity
 @Table(name = "jhi_user")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-@Document(indexName="user")
+@Document(indexName = "user")
 public class User extends AbstractAuditingEntity implements Serializable {
 
     @Id
@@ -78,9 +78,9 @@ public class User extends AbstractAuditingEntity implements Serializable {
     @JsonIgnore
     @ManyToMany
     @JoinTable(
-            name = "jhi_user_authority",
-            joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
-            inverseJoinColumns = {@JoinColumn(name = "authority_name", referencedColumnName = "name")})
+        name = "jhi_user_authority",
+        joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
+        inverseJoinColumns = {@JoinColumn(name = "authority_name", referencedColumnName = "name")})
     @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     private Set<Authority> authorities = new HashSet<>();
 
@@ -162,11 +162,11 @@ public class User extends AbstractAuditingEntity implements Serializable {
     }
 
     public DateTime getResetDate() {
-       return resetDate;
+        return resetDate;
     }
 
     public void setResetDate(DateTime resetDate) {
-       this.resetDate = resetDate;
+        this.resetDate = resetDate;
     }
 
     public String getLangKey() {
@@ -219,13 +219,13 @@ public class User extends AbstractAuditingEntity implements Serializable {
     @Override
     public String toString() {
         return "User{" +
-                "login='" + login + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", email='" + email + '\'' +
-                ", activated='" + activated + '\'' +
-                ", langKey='" + langKey + '\'' +
-                ", activationKey='" + activationKey + '\'' +
-                "}";
+            "login='" + login + '\'' +
+            ", firstName='" + firstName + '\'' +
+            ", lastName='" + lastName + '\'' +
+            ", email='" + email + '\'' +
+            ", activated='" + activated + '\'' +
+            ", langKey='" + langKey + '\'' +
+            ", activationKey='" + activationKey + '\'' +
+            "}";
     }
 }

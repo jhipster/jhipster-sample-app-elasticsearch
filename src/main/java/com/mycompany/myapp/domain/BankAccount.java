@@ -19,7 +19,7 @@ import java.util.Objects;
 @Entity
 @Table(name = "bank_account")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-@Document(indexName="bankaccount")
+@Document(indexName = "bankaccount")
 public class BankAccount implements Serializable {
 
     @Id
@@ -107,9 +107,9 @@ public class BankAccount implements Serializable {
     @Override
     public String toString() {
         return "BankAccount{" +
-                "id=" + id +
-                ", name='" + name + "'" +
-                ", balance='" + balance + "'" +
-                '}';
+            "id=" + id +
+            ", name='" + name + "'" +
+            ", balance='" + balance + "'" +
+            '}';
     }
 }

@@ -44,6 +44,8 @@ spring:
                 path:
                   logs: target/elasticsearch/log
                   data: target/elasticsearch/data
+    mail:
+        host: localhost
     mvc:
         favicon:
             enabled: false
@@ -70,15 +72,6 @@ jhipster:
         corePoolSize: 2
         maxPoolSize: 50
         queueCapacity: 10000
-    mail:
-        host: localhost
-        port: 25
-        username:
-        password:
-        protocol: smtp
-        tls: false
-        auth: false
-        from: sampleElasticSearch@localhost
     security:
         rememberme:
             # security key (this key should be unique for your application, and kept secret)

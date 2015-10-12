@@ -24,7 +24,7 @@ import java.util.Objects;
 @Entity
 @Table(name = "operation")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-@Document(indexName="operation")
+@Document(indexName = "operation")
 public class Operation implements Serializable {
 
     @Id
@@ -128,10 +128,10 @@ public class Operation implements Serializable {
     @Override
     public String toString() {
         return "Operation{" +
-                "id=" + id +
-                ", date='" + date + "'" +
-                ", description='" + description + "'" +
-                ", amount='" + amount + "'" +
-                '}';
+            "id=" + id +
+            ", date='" + date + "'" +
+            ", description='" + description + "'" +
+            ", amount='" + amount + "'" +
+            '}';
     }
 }

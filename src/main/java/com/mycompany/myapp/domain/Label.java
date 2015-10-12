@@ -18,7 +18,7 @@ import java.util.Objects;
 @Entity
 @Table(name = "label")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-@Document(indexName="label")
+@Document(indexName = "label")
 public class Label implements Serializable {
 
     @Id
@@ -84,8 +84,8 @@ public class Label implements Serializable {
     @Override
     public String toString() {
         return "Label{" +
-                "id=" + id +
-                ", label='" + label + "'" +
-                '}';
+            "id=" + id +
+            ", label='" + label + "'" +
+            '}';
     }
 }

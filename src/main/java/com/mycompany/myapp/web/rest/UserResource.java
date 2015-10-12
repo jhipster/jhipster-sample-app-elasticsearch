@@ -79,8 +79,8 @@ public class UserResource {
      * POST  /users -> Create a new user.
      */
     @RequestMapping(value = "/users",
-            method = RequestMethod.POST,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+        method = RequestMethod.POST,
+        produces = MediaType.APPLICATION_JSON_VALUE)
     @Timed
     @Secured(AuthoritiesConstants.ADMIN)
     public ResponseEntity<User> createUser(@RequestBody User user) throws URISyntaxException {
@@ -149,8 +149,8 @@ public class UserResource {
      * GET  /users/:login -> get the "login" user.
      */
     @RequestMapping(value = "/users/{login}",
-            method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+        method = RequestMethod.GET,
+        produces = MediaType.APPLICATION_JSON_VALUE)
     @Timed
     public ResponseEntity<ManagedUserDTO> getUser(@PathVariable String login) {
         log.debug("REST request to get User : {}", login);
@@ -170,7 +170,7 @@ public class UserResource {
     @Timed
     public List<User> search(@PathVariable String query) {
         return StreamSupport
-            .stream(userSearchRepository.search(queryString(query)).spliterator(), false)
+            .stream(userSearchRepository.search(queryStringQuery(query)).spliterator(), false)
             .collect(Collectors.toList());
     }
 }

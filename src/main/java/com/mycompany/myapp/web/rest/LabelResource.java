@@ -43,8 +43,8 @@ public class LabelResource {
      * POST  /labels -> Create a new label.
      */
     @RequestMapping(value = "/labels",
-            method = RequestMethod.POST,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+        method = RequestMethod.POST,
+        produces = MediaType.APPLICATION_JSON_VALUE)
     @Timed
     public ResponseEntity<Label> createLabel(@Valid @RequestBody Label label) throws URISyntaxException {
         log.debug("REST request to save Label : {}", label);
@@ -54,8 +54,8 @@ public class LabelResource {
         Label result = labelRepository.save(label);
         labelSearchRepository.save(result);
         return ResponseEntity.created(new URI("/api/labels/" + result.getId()))
-                .headers(HeaderUtil.createEntityCreationAlert("label", result.getId().toString()))
-                .body(result);
+            .headers(HeaderUtil.createEntityCreationAlert("label", result.getId().toString()))
+            .body(result);
     }
 
     /**
@@ -73,16 +73,16 @@ public class LabelResource {
         Label result = labelRepository.save(label);
         labelSearchRepository.save(label);
         return ResponseEntity.ok()
-                .headers(HeaderUtil.createEntityUpdateAlert("label", label.getId().toString()))
-                .body(result);
+            .headers(HeaderUtil.createEntityUpdateAlert("label", label.getId().toString()))
+            .body(result);
     }
 
     /**
      * GET  /labels -> get all the labels.
      */
     @RequestMapping(value = "/labels",
-            method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+        method = RequestMethod.GET,
+        produces = MediaType.APPLICATION_JSON_VALUE)
     @Timed
     public List<Label> getAllLabels() {
         log.debug("REST request to get all Labels");
@@ -93,8 +93,8 @@ public class LabelResource {
      * GET  /labels/:id -> get the "id" label.
      */
     @RequestMapping(value = "/labels/{id}",
-            method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+        method = RequestMethod.GET,
+        produces = MediaType.APPLICATION_JSON_VALUE)
     @Timed
     public ResponseEntity<Label> getLabel(@PathVariable Long id) {
         log.debug("REST request to get Label : {}", id);
@@ -109,8 +109,8 @@ public class LabelResource {
      * DELETE  /labels/:id -> delete the "id" label.
      */
     @RequestMapping(value = "/labels/{id}",
-            method = RequestMethod.DELETE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+        method = RequestMethod.DELETE,
+        produces = MediaType.APPLICATION_JSON_VALUE)
     @Timed
     public ResponseEntity<Void> deleteLabel(@PathVariable Long id) {
         log.debug("REST request to delete Label : {}", id);
@@ -129,7 +129,7 @@ public class LabelResource {
     @Timed
     public List<Label> searchLabels(@PathVariable String query) {
         return StreamSupport
-            .stream(labelSearchRepository.search(queryString(query)).spliterator(), false)
+            .stream(labelSearchRepository.search(queryStringQuery(query)).spliterator(), false)
             .collect(Collectors.toList());
     }
 }

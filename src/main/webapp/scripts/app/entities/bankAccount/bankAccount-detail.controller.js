@@ -8,7 +8,9 @@ angular.module('sampleelasticsearchApp')
                 $scope.bankAccount = result;
             });
         };
-        $rootScope.$on('sampleelasticsearchApp:bankAccountUpdate', function(event, result) {
+        var unsubscribe = $rootScope.$on('sampleelasticsearchApp:bankAccountUpdate', function(event, result) {
             $scope.bankAccount = result;
         });
+        $scope.$on('$destroy', unsubscribe);
+
     });

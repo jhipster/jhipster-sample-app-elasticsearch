@@ -8,7 +8,9 @@ angular.module('sampleelasticsearchApp')
                 $scope.operation = result;
             });
         };
-        $rootScope.$on('sampleelasticsearchApp:operationUpdate', function(event, result) {
+        var unsubscribe = $rootScope.$on('sampleelasticsearchApp:operationUpdate', function(event, result) {
             $scope.operation = result;
         });
+        $scope.$on('$destroy', unsubscribe);
+
     });

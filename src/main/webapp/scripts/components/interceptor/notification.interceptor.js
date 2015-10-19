@@ -1,12 +1,12 @@
  'use strict';
 
-angular.module('sampleelasticsearchApp')
+angular.module('sampleElasticSearchApp')
     .factory('notificationInterceptor', function ($q, AlertService) {
         return {
             response: function(response) {
-                var alertKey = response.headers('X-sampleelasticsearchApp-alert');
+                var alertKey = response.headers('X-sampleElasticSearchApp-alert');
                 if (angular.isString(alertKey)) {
-                    AlertService.success(alertKey, { param : response.headers('X-sampleelasticsearchApp-params')});
+                    AlertService.success(alertKey, { param : response.headers('X-sampleElasticSearchApp-params')});
                 }
                 return response;
             }

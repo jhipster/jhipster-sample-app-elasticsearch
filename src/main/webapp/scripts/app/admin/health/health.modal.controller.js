@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('sampleelasticsearchApp')
+angular.module('sampleElasticSearchApp')
     .controller('HealthModalController', function($scope, $modalInstance, currentHealth, baseName, subSystemName) {
 
         $scope.currentHealth = currentHealth;

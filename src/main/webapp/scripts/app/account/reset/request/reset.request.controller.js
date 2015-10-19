@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('sampleelasticsearchApp')
+angular.module('sampleElasticSearchApp')
     .controller('RequestResetController', function ($rootScope, $scope, $state, $timeout, Auth) {
 
         $scope.success = null;

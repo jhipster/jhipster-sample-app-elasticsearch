@@ -1,5 +1,5 @@
 {
-    "sampleelasticsearchApp": {
+    "sampleElasticSearchApp": {
         "operation" : {
             "home": {
                 "title": "Operations",

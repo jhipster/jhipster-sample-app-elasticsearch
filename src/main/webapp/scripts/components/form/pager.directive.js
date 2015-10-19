@@ -1,8 +1,8 @@
 /* globals $ */
 'use strict';
 
-angular.module('sampleelasticsearchApp')
-    .directive('sampleelasticsearchAppPager', function() {
+angular.module('sampleElasticSearchApp')
+    .directive('sampleElasticSearchAppPager', function() {
         return {
             templateUrl: 'scripts/components/form/pager.html'
         };

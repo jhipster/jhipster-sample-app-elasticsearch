@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('sampleelasticsearchApp')
+angular.module('sampleElasticSearchApp')
     .controller('OperationController', function ($scope, Operation, OperationSearch, ParseLinks) {
         $scope.operations = [];
         $scope.page = 0;

@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('sampleelasticsearchApp')
+angular.module('sampleElasticSearchApp')
     .controller('LabelController', function ($scope, Label, LabelSearch) {
         $scope.labels = [];
         $scope.loadAll = function() {

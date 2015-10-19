@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('sampleelasticsearchApp')
+angular.module('sampleElasticSearchApp')
     .factory('Register', function ($resource) {
         return $resource('api/register', {}, {
         });

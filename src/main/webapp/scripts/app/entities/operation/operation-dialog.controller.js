@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('sampleelasticsearchApp').controller('OperationDialogController',
+angular.module('sampleElasticSearchApp').controller('OperationDialogController',
     ['$scope', '$stateParams', '$modalInstance', 'entity', 'Operation', 'BankAccount', 'Label',
         function($scope, $stateParams, $modalInstance, entity, Operation, BankAccount, Label) {
 
@@ -14,7 +14,7 @@ angular.module('sampleelasticsearchApp').controller('OperationDialogController',
         };
 
         var onSaveFinished = function (result) {
-            $scope.$emit('sampleelasticsearchApp:operationUpdate', result);
+            $scope.$emit('sampleElasticSearchApp:operationUpdate', result);
             $modalInstance.close(result);
         };
 

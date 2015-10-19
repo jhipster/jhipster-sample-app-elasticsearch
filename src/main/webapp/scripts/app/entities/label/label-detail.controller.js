@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('sampleelasticsearchApp')
+angular.module('sampleElasticSearchApp')
     .controller('LabelDetailController', function ($scope, $rootScope, $stateParams, entity, Label, Operation) {
         $scope.label = entity;
         $scope.load = function (id) {
@@ -8,7 +8,7 @@ angular.module('sampleelasticsearchApp')
                 $scope.label = result;
             });
         };
-        var unsubscribe = $rootScope.$on('sampleelasticsearchApp:labelUpdate', function(event, result) {
+        var unsubscribe = $rootScope.$on('sampleElasticSearchApp:labelUpdate', function(event, result) {
             $scope.label = result;
         });
         $scope.$on('$destroy', unsubscribe);

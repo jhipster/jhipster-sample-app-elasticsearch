@@ -1,5 +1,5 @@
 {
-    "sampleelasticsearchApp": {
+    "sampleElasticSearchApp": {
         "bankAccount" : {
             "home": {
                 "title": "BankAccounts",

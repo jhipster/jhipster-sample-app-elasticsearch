@@ -2,6 +2,7 @@
 
 angular.module('sampleElasticSearchApp')
     .controller('LabelController', function ($scope, $state, $modal, Label, LabelSearch) {
+      
         $scope.labels = [];
         $scope.loadAll = function() {
             Label.query(function(result) {

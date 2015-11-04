@@ -2,6 +2,7 @@
 
 angular.module('sampleElasticSearchApp')
     .controller('OperationController', function ($scope, $state, $modal, Operation, OperationSearch, ParseLinks) {
+      
         $scope.operations = [];
         $scope.page = 0;
         $scope.loadAll = function() {

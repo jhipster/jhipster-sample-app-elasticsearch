@@ -2,6 +2,7 @@
 
 angular.module('sampleElasticSearchApp')
     .controller('BankAccountController', function ($scope, $state, $modal, BankAccount, BankAccountSearch) {
+      
         $scope.bankAccounts = [];
         $scope.loadAll = function() {
             BankAccount.query(function(result) {

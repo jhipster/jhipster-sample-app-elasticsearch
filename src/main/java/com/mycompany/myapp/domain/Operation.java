@@ -38,9 +38,11 @@ public class Operation implements Serializable {
     private BigDecimal amount;
 
     @ManyToOne
+    @JoinColumn(name = "bank_account_id")
     private BankAccount bankAccount;
 
-    @ManyToMany    @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+    @ManyToMany
+    @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     @JoinTable(name = "operation_label",
                joinColumns = @JoinColumn(name="operations_id", referencedColumnName="ID"),
                inverseJoinColumns = @JoinColumn(name="labels_id", referencedColumnName="ID"))
@@ -102,12 +104,8 @@ public class Operation implements Serializable {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-
         Operation operation = (Operation) o;
-
-        if ( ! Objects.equals(id, operation.id)) return false;
-
-        return true;
+        return Objects.equals(id, operation.id);
     }
 
     @Override

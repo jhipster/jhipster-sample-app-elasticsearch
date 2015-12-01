@@ -65,8 +65,8 @@ public class LabelResourceIntTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
         LabelResource labelResource = new LabelResource();
-        ReflectionTestUtils.setField(labelResource, "labelRepository", labelRepository);
         ReflectionTestUtils.setField(labelResource, "labelSearchRepository", labelSearchRepository);
+        ReflectionTestUtils.setField(labelResource, "labelRepository", labelRepository);
         this.restLabelMockMvc = MockMvcBuilders.standaloneSetup(labelResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setMessageConverters(jacksonMessageConverter).build();
@@ -122,7 +122,7 @@ public class LabelResourceIntTest {
         labelRepository.saveAndFlush(label);
 
         // Get all the labels
-        restLabelMockMvc.perform(get("/api/labels"))
+        restLabelMockMvc.perform(get("/api/labels?sort=id,desc"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.[*].id").value(hasItem(label.getId().intValue())))

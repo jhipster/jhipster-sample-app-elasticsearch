@@ -69,8 +69,8 @@ public class BankAccountResourceIntTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
         BankAccountResource bankAccountResource = new BankAccountResource();
-        ReflectionTestUtils.setField(bankAccountResource, "bankAccountRepository", bankAccountRepository);
         ReflectionTestUtils.setField(bankAccountResource, "bankAccountSearchRepository", bankAccountSearchRepository);
+        ReflectionTestUtils.setField(bankAccountResource, "bankAccountRepository", bankAccountRepository);
         this.restBankAccountMockMvc = MockMvcBuilders.standaloneSetup(bankAccountResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setMessageConverters(jacksonMessageConverter).build();
@@ -146,7 +146,7 @@ public class BankAccountResourceIntTest {
         bankAccountRepository.saveAndFlush(bankAccount);
 
         // Get all the bankAccounts
-        restBankAccountMockMvc.perform(get("/api/bankAccounts"))
+        restBankAccountMockMvc.perform(get("/api/bankAccounts?sort=id,desc"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.[*].id").value(hasItem(bankAccount.getId().intValue())))

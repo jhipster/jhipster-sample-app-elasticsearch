@@ -79,8 +79,8 @@ public class OperationResourceIntTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
         OperationResource operationResource = new OperationResource();
-        ReflectionTestUtils.setField(operationResource, "operationRepository", operationRepository);
         ReflectionTestUtils.setField(operationResource, "operationSearchRepository", operationSearchRepository);
+        ReflectionTestUtils.setField(operationResource, "operationRepository", operationRepository);
         this.restOperationMockMvc = MockMvcBuilders.standaloneSetup(operationResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setMessageConverters(jacksonMessageConverter).build();
@@ -158,7 +158,7 @@ public class OperationResourceIntTest {
         operationRepository.saveAndFlush(operation);
 
         // Get all the operations
-        restOperationMockMvc.perform(get("/api/operations"))
+        restOperationMockMvc.perform(get("/api/operations?sort=id,desc"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.[*].id").value(hasItem(operation.getId().intValue())))

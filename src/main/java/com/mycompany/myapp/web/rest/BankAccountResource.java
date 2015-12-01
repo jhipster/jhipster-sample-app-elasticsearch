@@ -32,13 +32,13 @@ import static org.elasticsearch.index.query.QueryBuilders.*;
 public class BankAccountResource {
 
     private final Logger log = LoggerFactory.getLogger(BankAccountResource.class);
-
+        
     @Inject
     private BankAccountRepository bankAccountRepository;
-
+    
     @Inject
     private BankAccountSearchRepository bankAccountSearchRepository;
-
+    
     /**
      * POST  /bankAccounts -> Create a new bankAccount.
      */
@@ -71,7 +71,7 @@ public class BankAccountResource {
             return createBankAccount(bankAccount);
         }
         BankAccount result = bankAccountRepository.save(bankAccount);
-        bankAccountSearchRepository.save(bankAccount);
+        bankAccountSearchRepository.save(result);
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert("bankAccount", bankAccount.getId().toString()))
             .body(result);
@@ -87,8 +87,8 @@ public class BankAccountResource {
     public List<BankAccount> getAllBankAccounts() {
         log.debug("REST request to get all BankAccounts");
         return bankAccountRepository.findAll();
-    }
-
+            }
+    
     /**
      * GET  /bankAccounts/:id -> get the "id" bankAccount.
      */
@@ -98,9 +98,10 @@ public class BankAccountResource {
     @Timed
     public ResponseEntity<BankAccount> getBankAccount(@PathVariable Long id) {
         log.debug("REST request to get BankAccount : {}", id);
-        return Optional.ofNullable(bankAccountRepository.findOne(id))
-            .map(bankAccount -> new ResponseEntity<>(
-                bankAccount,
+        BankAccount bankAccount = bankAccountRepository.findOne(id);
+        return Optional.ofNullable(bankAccount)
+            .map(result -> new ResponseEntity<>(
+                result,
                 HttpStatus.OK))
             .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
@@ -128,6 +129,7 @@ public class BankAccountResource {
         produces = MediaType.APPLICATION_JSON_VALUE)
     @Timed
     public List<BankAccount> searchBankAccounts(@PathVariable String query) {
+        log.debug("REST request to search BankAccounts for query {}", query);
         return StreamSupport
             .stream(bankAccountSearchRepository.search(queryStringQuery(query)).spliterator(), false)
             .collect(Collectors.toList());

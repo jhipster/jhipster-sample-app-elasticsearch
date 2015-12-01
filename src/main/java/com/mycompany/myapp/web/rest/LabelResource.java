@@ -32,13 +32,13 @@ import static org.elasticsearch.index.query.QueryBuilders.*;
 public class LabelResource {
 
     private final Logger log = LoggerFactory.getLogger(LabelResource.class);
-
+        
     @Inject
     private LabelRepository labelRepository;
-
+    
     @Inject
     private LabelSearchRepository labelSearchRepository;
-
+    
     /**
      * POST  /labels -> Create a new label.
      */
@@ -71,7 +71,7 @@ public class LabelResource {
             return createLabel(label);
         }
         Label result = labelRepository.save(label);
-        labelSearchRepository.save(label);
+        labelSearchRepository.save(result);
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert("label", label.getId().toString()))
             .body(result);
@@ -87,8 +87,8 @@ public class LabelResource {
     public List<Label> getAllLabels() {
         log.debug("REST request to get all Labels");
         return labelRepository.findAll();
-    }
-
+            }
+    
     /**
      * GET  /labels/:id -> get the "id" label.
      */
@@ -98,9 +98,10 @@ public class LabelResource {
     @Timed
     public ResponseEntity<Label> getLabel(@PathVariable Long id) {
         log.debug("REST request to get Label : {}", id);
-        return Optional.ofNullable(labelRepository.findOne(id))
-            .map(label -> new ResponseEntity<>(
-                label,
+        Label label = labelRepository.findOne(id);
+        return Optional.ofNullable(label)
+            .map(result -> new ResponseEntity<>(
+                result,
                 HttpStatus.OK))
             .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
@@ -128,6 +129,7 @@ public class LabelResource {
         produces = MediaType.APPLICATION_JSON_VALUE)
     @Timed
     public List<Label> searchLabels(@PathVariable String query) {
+        log.debug("REST request to search Labels for query {}", query);
         return StreamSupport
             .stream(labelSearchRepository.search(queryStringQuery(query)).spliterator(), false)
             .collect(Collectors.toList());

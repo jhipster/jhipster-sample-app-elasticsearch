@@ -35,13 +35,13 @@ import static org.elasticsearch.index.query.QueryBuilders.*;
 public class OperationResource {
 
     private final Logger log = LoggerFactory.getLogger(OperationResource.class);
-
+        
     @Inject
     private OperationRepository operationRepository;
-
+    
     @Inject
     private OperationSearchRepository operationSearchRepository;
-
+    
     /**
      * POST  /operations -> Create a new operation.
      */
@@ -74,7 +74,7 @@ public class OperationResource {
             return createOperation(operation);
         }
         Operation result = operationRepository.save(operation);
-        operationSearchRepository.save(operation);
+        operationSearchRepository.save(result);
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert("operation", operation.getId().toString()))
             .body(result);
@@ -89,11 +89,12 @@ public class OperationResource {
     @Timed
     public ResponseEntity<List<Operation>> getAllOperations(Pageable pageable)
         throws URISyntaxException {
-        Page<Operation> page = operationRepository.findAll(pageable);
+        log.debug("REST request to get a page of Operations");
+        Page<Operation> page = operationRepository.findAll(pageable); 
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/operations");
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
-
+    
     /**
      * GET  /operations/:id -> get the "id" operation.
      */
@@ -103,9 +104,10 @@ public class OperationResource {
     @Timed
     public ResponseEntity<Operation> getOperation(@PathVariable Long id) {
         log.debug("REST request to get Operation : {}", id);
-        return Optional.ofNullable(operationRepository.findOneWithEagerRelationships(id))
-            .map(operation -> new ResponseEntity<>(
-                operation,
+        Operation operation = operationRepository.findOneWithEagerRelationships(id);
+        return Optional.ofNullable(operation)
+            .map(result -> new ResponseEntity<>(
+                result,
                 HttpStatus.OK))
             .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
@@ -133,6 +135,7 @@ public class OperationResource {
         produces = MediaType.APPLICATION_JSON_VALUE)
     @Timed
     public List<Operation> searchOperations(@PathVariable String query) {
+        log.debug("REST request to search Operations for query {}", query);
         return StreamSupport
             .stream(operationSearchRepository.search(queryStringQuery(query)).spliterator(), false)
             .collect(Collectors.toList());

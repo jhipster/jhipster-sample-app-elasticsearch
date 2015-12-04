@@ -52,7 +52,7 @@ public class OperationResource {
     public ResponseEntity<Operation> createOperation(@Valid @RequestBody Operation operation) throws URISyntaxException {
         log.debug("REST request to save Operation : {}", operation);
         if (operation.getId() != null) {
-            return ResponseEntity.badRequest().header("Failure", "A new operation cannot already have an ID").body(null);
+            return ResponseEntity.badRequest().headers(HeaderUtil.createFailureAlert("operation", "idexists", "A new operation cannot already have an ID")).body(null);
         }
         Operation result = operationRepository.save(operation);
         operationSearchRepository.save(result);
@@ -94,7 +94,7 @@ public class OperationResource {
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/operations");
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
-    
+
     /**
      * GET  /operations/:id -> get the "id" operation.
      */

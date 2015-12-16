@@ -80,6 +80,7 @@ public class DatabaseConfiguration {
         }
         return new HikariDataSource(config);
     }
+
     /**
      * Open the TCP port for the H2 database, so it is available remotely.
      */

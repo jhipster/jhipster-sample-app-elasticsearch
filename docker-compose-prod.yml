@@ -1,21 +1,20 @@
-jhipster-prod-elasticsearch:
-  container_name: sampleElasticSearch-prod-elasticsearch
+sampleelasticsearch-elasticsearch:
+  container_name: sampleelasticsearch-elasticsearch
   image: elasticsearch:1.7.3
   # volumes:
-  # - ~/volumes/jhipster/sampleElasticSearch/prod-elasticsearch/:/usr/share/elasticsearch/data/
+  #   - ~/volumes/jhipster/sampleElasticSearch/elasticsearch/:/usr/share/elasticsearch/data/
   ports:
-  - "9200:9200"
-  - "9300:9300"
-jhipster-prod-mysql:
-  container_name: sampleElasticSearch-prod-mysql
+    - "9200:9200"
+    - "9300:9300"
+sampleelasticsearch-mysql:
+  container_name: sampleelasticsearch-mysql
   image: mysql:5.7.9
   # volumes:
-  # - ~/volumes/jhipster/sampleElasticSearch/prod-mysql/:/var/lib/mysql/
+  #   - ~/volumes/jhipster/sampleElasticSearch/mysql/:/var/lib/mysql/
   environment:
-  - MYSQL_USER=root
-  - MYSQL_ALLOW_EMPTY_PASSWORD=yes
-  - MYSQL_DATABASE=sampleelasticsearch
+    - MYSQL_USER=root
+    - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+    - MYSQL_DATABASE=sampleelasticsearch
   ports:
-  - "3306:3306"
+    - "3306:3306"
   command: mysqld --lower_case_table_names=1
-

@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('sampleElasticSearchApp')
+angular.module('sampleelasticsearchApp')
     .directive('jhSort', function () {
         return {
             restrict: 'A',

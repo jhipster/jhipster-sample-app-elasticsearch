@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('sampleElasticSearchApp')
+angular.module('sampleelasticsearchApp')
     .filter('capitalize', function () {
         return function (input, scope) {
             if (input != null)

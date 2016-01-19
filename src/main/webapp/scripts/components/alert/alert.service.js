@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('sampleElasticSearchApp')
+angular.module('sampleelasticsearchApp')
     .provider('AlertService', function () {
         this.toast = false;
 

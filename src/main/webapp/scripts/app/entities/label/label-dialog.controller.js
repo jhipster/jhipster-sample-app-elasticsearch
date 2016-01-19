@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('sampleElasticSearchApp').controller('LabelDialogController',
+angular.module('sampleelasticsearchApp').controller('LabelDialogController',
     ['$scope', '$stateParams', '$uibModalInstance', 'entity', 'Label', 'Operation',
         function($scope, $stateParams, $uibModalInstance, entity, Label, Operation) {
 
@@ -13,7 +13,7 @@ angular.module('sampleElasticSearchApp').controller('LabelDialogController',
         };
 
         var onSaveSuccess = function (result) {
-            $scope.$emit('sampleElasticSearchApp:labelUpdate', result);
+            $scope.$emit('sampleelasticsearchApp:labelUpdate', result);
             $uibModalInstance.close(result);
             $scope.isSaving = false;
         };

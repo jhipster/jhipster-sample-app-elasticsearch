@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('sampleElasticSearchApp')
+angular.module('sampleelasticsearchApp')
     .controller('LogsController', function ($scope, LogsService) {
         $scope.loggers = LogsService.findAll();
 

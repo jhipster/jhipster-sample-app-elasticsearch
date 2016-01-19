@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('sampleElasticSearchApp')
+angular.module('sampleelasticsearchApp')
     .factory('AuditsService', function ($http) {
         return {
             findAll: function () {

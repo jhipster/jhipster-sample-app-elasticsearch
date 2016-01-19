@@ -124,7 +124,7 @@ public class BankAccountResource {
      * SEARCH  /_search/bankAccounts/:query -> search for the bankAccount corresponding
      * to the query.
      */
-    @RequestMapping(value = "/_search/bankAccounts/{query}",
+    @RequestMapping(value = "/_search/bankAccounts/{query:.+}",
         method = RequestMethod.GET,
         produces = MediaType.APPLICATION_JSON_VALUE)
     @Timed

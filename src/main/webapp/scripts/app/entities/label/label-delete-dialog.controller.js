@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('sampleElasticSearchApp')
+angular.module('sampleelasticsearchApp')
 	.controller('LabelDeleteController', function($scope, $uibModalInstance, entity, Label) {
 
         $scope.label = entity;

@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('sampleElasticSearchApp')
+angular.module('sampleelasticsearchApp')
     .controller('LabelController', function ($scope, $state, Label, LabelSearch) {
 
         $scope.labels = [];

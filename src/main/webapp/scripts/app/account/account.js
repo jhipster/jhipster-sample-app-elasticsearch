@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('sampleElasticSearchApp')
+angular.module('sampleelasticsearchApp')
     .config(function ($stateProvider) {
         $stateProvider
             .state('account', {

@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('sampleElasticSearchApp')
+angular.module('sampleelasticsearchApp')
     .controller('BankAccountController', function ($scope, $state, BankAccount, BankAccountSearch) {
 
         $scope.bankAccounts = [];

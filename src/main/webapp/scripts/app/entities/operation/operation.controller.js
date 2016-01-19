@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('sampleElasticSearchApp')
+angular.module('sampleelasticsearchApp')
     .controller('OperationController', function ($scope, $state, Operation, OperationSearch, ParseLinks) {
 
         $scope.operations = [];

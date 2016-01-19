@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('sampleElasticSearchApp')
+angular.module('sampleelasticsearchApp')
     .factory('MonitoringService', function ($rootScope, $http) {
         return {
             getMetrics: function () {

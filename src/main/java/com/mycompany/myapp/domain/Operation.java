@@ -29,14 +29,14 @@ public class Operation implements Serializable {
     @NotNull
     @Column(name = "date", nullable = false)
     private ZonedDateTime date;
-
+    
     @Column(name = "description")
     private String description;
-
+    
     @NotNull
     @Column(name = "amount", precision=10, scale=2, nullable = false)
     private BigDecimal amount;
-
+    
     @ManyToOne
     @JoinColumn(name = "bank_account_id")
     private BankAccount bankAccount;
@@ -59,7 +59,7 @@ public class Operation implements Serializable {
     public ZonedDateTime getDate() {
         return date;
     }
-
+    
     public void setDate(ZonedDateTime date) {
         this.date = date;
     }
@@ -67,7 +67,7 @@ public class Operation implements Serializable {
     public String getDescription() {
         return description;
     }
-
+    
     public void setDescription(String description) {
         this.description = description;
     }
@@ -75,7 +75,7 @@ public class Operation implements Serializable {
     public BigDecimal getAmount() {
         return amount;
     }
-
+    
     public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
@@ -105,6 +105,9 @@ public class Operation implements Serializable {
             return false;
         }
         Operation operation = (Operation) o;
+        if(operation.id == null || id == null) {
+            return false;
+        }
         return Objects.equals(id, operation.id);
     }
 

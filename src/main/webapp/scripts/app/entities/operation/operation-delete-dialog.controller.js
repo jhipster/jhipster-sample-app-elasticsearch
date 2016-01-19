@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('sampleElasticSearchApp')
+angular.module('sampleelasticsearchApp')
 	.controller('OperationDeleteController', function($scope, $uibModalInstance, entity, Operation) {
 
         $scope.operation = entity;

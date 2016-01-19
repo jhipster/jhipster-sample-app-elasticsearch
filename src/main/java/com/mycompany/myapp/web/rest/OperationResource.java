@@ -130,7 +130,7 @@ public class OperationResource {
      * SEARCH  /_search/operations/:query -> search for the operation corresponding
      * to the query.
      */
-    @RequestMapping(value = "/_search/operations/{query}",
+    @RequestMapping(value = "/_search/operations/{query:.+}",
         method = RequestMethod.GET,
         produces = MediaType.APPLICATION_JSON_VALUE)
     @Timed

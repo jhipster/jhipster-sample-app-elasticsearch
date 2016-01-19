@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('sampleElasticSearchApp')
+angular.module('sampleelasticsearchApp')
     .controller('OperationDetailController', function ($scope, $rootScope, $stateParams, entity, Operation, BankAccount, Label) {
         $scope.operation = entity;
         $scope.load = function (id) {
@@ -8,7 +8,7 @@ angular.module('sampleElasticSearchApp')
                 $scope.operation = result;
             });
         };
-        var unsubscribe = $rootScope.$on('sampleElasticSearchApp:operationUpdate', function(event, result) {
+        var unsubscribe = $rootScope.$on('sampleelasticsearchApp:operationUpdate', function(event, result) {
             $scope.operation = result;
         });
         $scope.$on('$destroy', unsubscribe);

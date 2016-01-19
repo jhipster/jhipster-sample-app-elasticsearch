@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('sampleElasticSearchApp')
+angular.module('sampleelasticsearchApp')
     .config(function ($stateProvider) {
         $stateProvider
             .state('bankAccount', {
@@ -8,7 +8,7 @@ angular.module('sampleElasticSearchApp')
                 url: '/bankAccounts',
                 data: {
                     authorities: ['ROLE_USER'],
-                    pageTitle: 'sampleElasticSearchApp.bankAccount.home.title'
+                    pageTitle: 'sampleelasticsearchApp.bankAccount.home.title'
                 },
                 views: {
                     'content@': {
@@ -29,7 +29,7 @@ angular.module('sampleElasticSearchApp')
                 url: '/bankAccount/{id}',
                 data: {
                     authorities: ['ROLE_USER'],
-                    pageTitle: 'sampleElasticSearchApp.bankAccount.detail.title'
+                    pageTitle: 'sampleelasticsearchApp.bankAccount.detail.title'
                 },
                 views: {
                     'content@': {

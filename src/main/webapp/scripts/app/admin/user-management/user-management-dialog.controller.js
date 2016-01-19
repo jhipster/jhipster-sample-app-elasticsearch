@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('sampleElasticSearchApp').controller('UserManagementDialogController',
+angular.module('sampleelasticsearchApp').controller('UserManagementDialogController',
     ['$scope', '$stateParams', '$uibModalInstance', 'entity', 'User', 'Language',
         function($scope, $stateParams, $uibModalInstance, entity, User, Language) {
 

@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('sampleElasticSearchApp')
+angular.module('sampleelasticsearchApp')
     .factory('Principal', function Principal($q, Account) {
         var _identity,
             _authenticated = false;

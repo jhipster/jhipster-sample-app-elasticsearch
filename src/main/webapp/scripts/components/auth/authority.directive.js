@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('sampleElasticSearchApp')
+angular.module('sampleelasticsearchApp')
     .directive('hasAnyAuthority', ['Principal', function (Principal) {
         return {
             restrict: 'A',
@@ -28,6 +28,12 @@ angular.module('sampleElasticSearchApp')
 
                 if (authorities.length > 0) {
                     defineVisibility(true);
+                    
+                    scope.$watch(function(scope) {
+                        return Principal.isAuthenticated();
+                    }, function(newValue) {
+                        defineVisibility(true);
+                    });
                 }
             }
         };
@@ -61,6 +67,12 @@ angular.module('sampleElasticSearchApp')
 
                 if (authority.length > 0) {
                     defineVisibility(true);
+
+                    scope.$watch(function(scope) {
+                        return Principal.isAuthenticated();
+                    }, function(newValue) {
+                        defineVisibility(true);
+                    });
                 }
             }
         };

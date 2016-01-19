@@ -124,7 +124,7 @@ public class LabelResource {
      * SEARCH  /_search/labels/:query -> search for the label corresponding
      * to the query.
      */
-    @RequestMapping(value = "/_search/labels/{query}",
+    @RequestMapping(value = "/_search/labels/{query:.+}",
         method = RequestMethod.GET,
         produces = MediaType.APPLICATION_JSON_VALUE)
     @Timed

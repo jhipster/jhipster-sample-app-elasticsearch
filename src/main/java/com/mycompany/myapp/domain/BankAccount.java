@@ -22,6 +22,8 @@ import java.util.Objects;
 @Document(indexName = "bankaccount")
 public class BankAccount implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -29,13 +31,12 @@ public class BankAccount implements Serializable {
     @NotNull
     @Column(name = "name", nullable = false)
     private String name;
-    
+
     @NotNull
     @Column(name = "balance", precision=10, scale=2, nullable = false)
     private BigDecimal balance;
-    
+
     @ManyToOne
-    @JoinColumn(name = "user_id")
     private User user;
 
     @OneToMany(mappedBy = "bankAccount")
@@ -54,7 +55,7 @@ public class BankAccount implements Serializable {
     public String getName() {
         return name;
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }
@@ -62,7 +63,7 @@ public class BankAccount implements Serializable {
     public BigDecimal getBalance() {
         return balance;
     }
-    
+
     public void setBalance(BigDecimal balance) {
         this.balance = balance;
     }

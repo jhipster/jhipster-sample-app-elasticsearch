@@ -1,6 +1,8 @@
-sampleelasticsearch-sonar:
-  container_name: sampleelasticsearch-sonar
-  image: sonarqube:4.5.6
-  ports:
-    - "9000:9000"
-    - "9092:9092"
+version: '2'
+services:
+    sampleelasticsearch-sonar:
+        container_name: sampleelasticsearch-sonar
+        image: sonarqube:5.3
+        ports:
+            - 9000:9000
+            - 9092:9092

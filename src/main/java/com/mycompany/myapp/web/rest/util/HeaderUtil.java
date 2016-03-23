@@ -3,34 +3,34 @@ package com.mycompany.myapp.web.rest.util;
 import org.springframework.http.HttpHeaders;
 
 /**
- * Utility class for http header creation.
+ * Utility class for HTTP headers creation.
  *
  */
 public class HeaderUtil {
 
     public static HttpHeaders createAlert(String message, String param) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("X-sampleelasticsearchApp-alert", message);
-        headers.add("X-sampleelasticsearchApp-params", param);
+        headers.add("X-sampleElasticSearchApp-alert", message);
+        headers.add("X-sampleElasticSearchApp-params", param);
         return headers;
     }
 
     public static HttpHeaders createEntityCreationAlert(String entityName, String param) {
-        return createAlert("sampleelasticsearchApp." + entityName + ".created", param);
+        return createAlert("sampleElasticSearchApp." + entityName + ".created", param);
     }
 
     public static HttpHeaders createEntityUpdateAlert(String entityName, String param) {
-        return createAlert("sampleelasticsearchApp." + entityName + ".updated", param);
+        return createAlert("sampleElasticSearchApp." + entityName + ".updated", param);
     }
 
     public static HttpHeaders createEntityDeletionAlert(String entityName, String param) {
-        return createAlert("sampleelasticsearchApp." + entityName + ".deleted", param);
+        return createAlert("sampleElasticSearchApp." + entityName + ".deleted", param);
     }
 
     public static HttpHeaders createFailureAlert(String entityName, String errorKey, String defaultMessage) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("X-sampleelasticsearchApp-error", "error." + errorKey);
-        headers.add("X-sampleelasticsearchApp-params", entityName);
+        headers.add("X-sampleElasticSearchApp-error", "error." + errorKey);
+        headers.add("X-sampleElasticSearchApp-params", entityName);
         return headers;
     }
 }

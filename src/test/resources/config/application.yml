@@ -12,7 +12,6 @@
 
 spring:
     datasource:
-        driver-class-name: org.h2.jdbcx.JdbcDataSource
         url: jdbc:h2:mem:sampleElasticSearch;DB_CLOSE_DELAY=-1
         name:
         username:
@@ -67,9 +66,9 @@ jhipster:
         maxPoolSize: 50
         queueCapacity: 10000
     security:
-        rememberme:
+        rememberMe:
             # security key (this key should be unique for your application, and kept secret)
-            key: 6797bef991a7532ae41bf665c7f3d20d8936efa8
+            key: d7c92d4b5984a72a6430698b49bdea98b7dc567f
     metrics: # DropWizard Metrics configuration, used by MetricsConfiguration
         jmx.enabled: true
     swagger:
@@ -77,6 +76,8 @@ jhipster:
         description: sampleElasticSearch API documentation
         version: 0.0.1
         termsOfServiceUrl:
-        contact:
+        contactName:
+        contactUrl:
+        contactEmail:
         license:
         licenseUrl:

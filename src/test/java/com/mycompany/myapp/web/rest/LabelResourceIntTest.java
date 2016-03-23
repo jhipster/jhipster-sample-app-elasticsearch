@@ -1,6 +1,6 @@
 package com.mycompany.myapp.web.rest;
 
-import com.mycompany.myapp.Application;
+import com.mycompany.myapp.SampleElasticSearchApp;
 import com.mycompany.myapp.domain.Label;
 import com.mycompany.myapp.repository.LabelRepository;
 import com.mycompany.myapp.repository.search.LabelSearchRepository;
@@ -37,7 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @see LabelResource
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = Application.class)
+@SpringApplicationConfiguration(classes = SampleElasticSearchApp.class)
 @WebAppConfiguration
 @IntegrationTest
 public class LabelResourceIntTest {
@@ -74,6 +74,7 @@ public class LabelResourceIntTest {
 
     @Before
     public void initTest() {
+        labelSearchRepository.deleteAll();
         label = new Label();
         label.setLabel(DEFAULT_LABEL);
     }
@@ -95,6 +96,10 @@ public class LabelResourceIntTest {
         assertThat(labels).hasSize(databaseSizeBeforeCreate + 1);
         Label testLabel = labels.get(labels.size() - 1);
         assertThat(testLabel.getLabel()).isEqualTo(DEFAULT_LABEL);
+
+        // Validate the Label in ElasticSearch
+        Label labelEs = labelSearchRepository.findOne(testLabel.getId());
+        assertThat(labelEs).isEqualToComparingFieldByField(testLabel);
     }
 
     @Test
@@ -156,15 +161,17 @@ public class LabelResourceIntTest {
     public void updateLabel() throws Exception {
         // Initialize the database
         labelRepository.saveAndFlush(label);
-
-		int databaseSizeBeforeUpdate = labelRepository.findAll().size();
+        labelSearchRepository.save(label);
+        int databaseSizeBeforeUpdate = labelRepository.findAll().size();
 
         // Update the label
-        label.setLabel(UPDATED_LABEL);
+        Label updatedLabel = new Label();
+        updatedLabel.setId(label.getId());
+        updatedLabel.setLabel(UPDATED_LABEL);
 
         restLabelMockMvc.perform(put("/api/labels")
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
-                .content(TestUtil.convertObjectToJsonBytes(label)))
+                .content(TestUtil.convertObjectToJsonBytes(updatedLabel)))
                 .andExpect(status().isOk());
 
         // Validate the Label in the database
@@ -172,6 +179,10 @@ public class LabelResourceIntTest {
         assertThat(labels).hasSize(databaseSizeBeforeUpdate);
         Label testLabel = labels.get(labels.size() - 1);
         assertThat(testLabel.getLabel()).isEqualTo(UPDATED_LABEL);
+
+        // Validate the Label in ElasticSearch
+        Label labelEs = labelSearchRepository.findOne(testLabel.getId());
+        assertThat(labelEs).isEqualToComparingFieldByField(testLabel);
     }
 
     @Test
@@ -179,16 +190,35 @@ public class LabelResourceIntTest {
     public void deleteLabel() throws Exception {
         // Initialize the database
         labelRepository.saveAndFlush(label);
-
-		int databaseSizeBeforeDelete = labelRepository.findAll().size();
+        labelSearchRepository.save(label);
+        int databaseSizeBeforeDelete = labelRepository.findAll().size();
 
         // Get the label
         restLabelMockMvc.perform(delete("/api/labels/{id}", label.getId())
                 .accept(TestUtil.APPLICATION_JSON_UTF8))
                 .andExpect(status().isOk());
 
+        // Validate ElasticSearch is empty
+        boolean labelExistsInEs = labelSearchRepository.exists(label.getId());
+        assertThat(labelExistsInEs).isFalse();
+
         // Validate the database is empty
         List<Label> labels = labelRepository.findAll();
         assertThat(labels).hasSize(databaseSizeBeforeDelete - 1);
+    }
+
+    @Test
+    @Transactional
+    public void searchLabel() throws Exception {
+        // Initialize the database
+        labelRepository.saveAndFlush(label);
+        labelSearchRepository.save(label);
+
+        // Search the label
+        restLabelMockMvc.perform(get("/api/_search/labels?query=id:" + label.getId()))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(label.getId().intValue())))
+            .andExpect(jsonPath("$.[*].label").value(hasItem(DEFAULT_LABEL.toString())));
     }
 }

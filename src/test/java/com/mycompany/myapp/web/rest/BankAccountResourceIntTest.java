@@ -1,6 +1,6 @@
 package com.mycompany.myapp.web.rest;
 
-import com.mycompany.myapp.Application;
+import com.mycompany.myapp.SampleElasticSearchApp;
 import com.mycompany.myapp.domain.BankAccount;
 import com.mycompany.myapp.repository.BankAccountRepository;
 import com.mycompany.myapp.repository.search.BankAccountSearchRepository;
@@ -38,7 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @see BankAccountResource
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = Application.class)
+@SpringApplicationConfiguration(classes = SampleElasticSearchApp.class)
 @WebAppConfiguration
 @IntegrationTest
 public class BankAccountResourceIntTest {
@@ -78,6 +78,7 @@ public class BankAccountResourceIntTest {
 
     @Before
     public void initTest() {
+        bankAccountSearchRepository.deleteAll();
         bankAccount = new BankAccount();
         bankAccount.setName(DEFAULT_NAME);
         bankAccount.setBalance(DEFAULT_BALANCE);
@@ -90,7 +91,7 @@ public class BankAccountResourceIntTest {
 
         // Create the BankAccount
 
-        restBankAccountMockMvc.perform(post("/api/bankAccounts")
+        restBankAccountMockMvc.perform(post("/api/bank-accounts")
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.convertObjectToJsonBytes(bankAccount)))
                 .andExpect(status().isCreated());
@@ -101,6 +102,10 @@ public class BankAccountResourceIntTest {
         BankAccount testBankAccount = bankAccounts.get(bankAccounts.size() - 1);
         assertThat(testBankAccount.getName()).isEqualTo(DEFAULT_NAME);
         assertThat(testBankAccount.getBalance()).isEqualTo(DEFAULT_BALANCE);
+
+        // Validate the BankAccount in ElasticSearch
+        BankAccount bankAccountEs = bankAccountSearchRepository.findOne(testBankAccount.getId());
+        assertThat(bankAccountEs).isEqualToComparingFieldByField(testBankAccount);
     }
 
     @Test
@@ -112,7 +117,7 @@ public class BankAccountResourceIntTest {
 
         // Create the BankAccount, which fails.
 
-        restBankAccountMockMvc.perform(post("/api/bankAccounts")
+        restBankAccountMockMvc.perform(post("/api/bank-accounts")
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.convertObjectToJsonBytes(bankAccount)))
                 .andExpect(status().isBadRequest());
@@ -130,7 +135,7 @@ public class BankAccountResourceIntTest {
 
         // Create the BankAccount, which fails.
 
-        restBankAccountMockMvc.perform(post("/api/bankAccounts")
+        restBankAccountMockMvc.perform(post("/api/bank-accounts")
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.convertObjectToJsonBytes(bankAccount)))
                 .andExpect(status().isBadRequest());
@@ -146,7 +151,7 @@ public class BankAccountResourceIntTest {
         bankAccountRepository.saveAndFlush(bankAccount);
 
         // Get all the bankAccounts
-        restBankAccountMockMvc.perform(get("/api/bankAccounts?sort=id,desc"))
+        restBankAccountMockMvc.perform(get("/api/bank-accounts?sort=id,desc"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.[*].id").value(hasItem(bankAccount.getId().intValue())))
@@ -161,7 +166,7 @@ public class BankAccountResourceIntTest {
         bankAccountRepository.saveAndFlush(bankAccount);
 
         // Get the bankAccount
-        restBankAccountMockMvc.perform(get("/api/bankAccounts/{id}", bankAccount.getId()))
+        restBankAccountMockMvc.perform(get("/api/bank-accounts/{id}", bankAccount.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.id").value(bankAccount.getId().intValue()))
@@ -173,7 +178,7 @@ public class BankAccountResourceIntTest {
     @Transactional
     public void getNonExistingBankAccount() throws Exception {
         // Get the bankAccount
-        restBankAccountMockMvc.perform(get("/api/bankAccounts/{id}", Long.MAX_VALUE))
+        restBankAccountMockMvc.perform(get("/api/bank-accounts/{id}", Long.MAX_VALUE))
                 .andExpect(status().isNotFound());
     }
 
@@ -182,16 +187,18 @@ public class BankAccountResourceIntTest {
     public void updateBankAccount() throws Exception {
         // Initialize the database
         bankAccountRepository.saveAndFlush(bankAccount);
-
-		int databaseSizeBeforeUpdate = bankAccountRepository.findAll().size();
+        bankAccountSearchRepository.save(bankAccount);
+        int databaseSizeBeforeUpdate = bankAccountRepository.findAll().size();
 
         // Update the bankAccount
-        bankAccount.setName(UPDATED_NAME);
-        bankAccount.setBalance(UPDATED_BALANCE);
+        BankAccount updatedBankAccount = new BankAccount();
+        updatedBankAccount.setId(bankAccount.getId());
+        updatedBankAccount.setName(UPDATED_NAME);
+        updatedBankAccount.setBalance(UPDATED_BALANCE);
 
-        restBankAccountMockMvc.perform(put("/api/bankAccounts")
+        restBankAccountMockMvc.perform(put("/api/bank-accounts")
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
-                .content(TestUtil.convertObjectToJsonBytes(bankAccount)))
+                .content(TestUtil.convertObjectToJsonBytes(updatedBankAccount)))
                 .andExpect(status().isOk());
 
         // Validate the BankAccount in the database
@@ -200,6 +207,10 @@ public class BankAccountResourceIntTest {
         BankAccount testBankAccount = bankAccounts.get(bankAccounts.size() - 1);
         assertThat(testBankAccount.getName()).isEqualTo(UPDATED_NAME);
         assertThat(testBankAccount.getBalance()).isEqualTo(UPDATED_BALANCE);
+
+        // Validate the BankAccount in ElasticSearch
+        BankAccount bankAccountEs = bankAccountSearchRepository.findOne(testBankAccount.getId());
+        assertThat(bankAccountEs).isEqualToComparingFieldByField(testBankAccount);
     }
 
     @Test
@@ -207,16 +218,36 @@ public class BankAccountResourceIntTest {
     public void deleteBankAccount() throws Exception {
         // Initialize the database
         bankAccountRepository.saveAndFlush(bankAccount);
-
-		int databaseSizeBeforeDelete = bankAccountRepository.findAll().size();
+        bankAccountSearchRepository.save(bankAccount);
+        int databaseSizeBeforeDelete = bankAccountRepository.findAll().size();
 
         // Get the bankAccount
-        restBankAccountMockMvc.perform(delete("/api/bankAccounts/{id}", bankAccount.getId())
+        restBankAccountMockMvc.perform(delete("/api/bank-accounts/{id}", bankAccount.getId())
                 .accept(TestUtil.APPLICATION_JSON_UTF8))
                 .andExpect(status().isOk());
+
+        // Validate ElasticSearch is empty
+        boolean bankAccountExistsInEs = bankAccountSearchRepository.exists(bankAccount.getId());
+        assertThat(bankAccountExistsInEs).isFalse();
 
         // Validate the database is empty
         List<BankAccount> bankAccounts = bankAccountRepository.findAll();
         assertThat(bankAccounts).hasSize(databaseSizeBeforeDelete - 1);
+    }
+
+    @Test
+    @Transactional
+    public void searchBankAccount() throws Exception {
+        // Initialize the database
+        bankAccountRepository.saveAndFlush(bankAccount);
+        bankAccountSearchRepository.save(bankAccount);
+
+        // Search the bankAccount
+        restBankAccountMockMvc.perform(get("/api/_search/bank-accounts?query=id:" + bankAccount.getId()))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(bankAccount.getId().intValue())))
+            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME.toString())))
+            .andExpect(jsonPath("$.[*].balance").value(hasItem(DEFAULT_BALANCE.intValue())));
     }
 }

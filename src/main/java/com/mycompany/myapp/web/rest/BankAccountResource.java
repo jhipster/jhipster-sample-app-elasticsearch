@@ -40,9 +40,13 @@ public class BankAccountResource {
     private BankAccountSearchRepository bankAccountSearchRepository;
     
     /**
-     * POST  /bankAccounts -> Create a new bankAccount.
+     * POST  /bank-accounts : Create a new bankAccount.
+     *
+     * @param bankAccount the bankAccount to create
+     * @return the ResponseEntity with status 201 (Created) and with body the new bankAccount, or with status 400 (Bad Request) if the bankAccount has already an ID
+     * @throws URISyntaxException if the Location URI syntax is incorrect
      */
-    @RequestMapping(value = "/bankAccounts",
+    @RequestMapping(value = "/bank-accounts",
         method = RequestMethod.POST,
         produces = MediaType.APPLICATION_JSON_VALUE)
     @Timed
@@ -53,15 +57,21 @@ public class BankAccountResource {
         }
         BankAccount result = bankAccountRepository.save(bankAccount);
         bankAccountSearchRepository.save(result);
-        return ResponseEntity.created(new URI("/api/bankAccounts/" + result.getId()))
+        return ResponseEntity.created(new URI("/api/bank-accounts/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert("bankAccount", result.getId().toString()))
             .body(result);
     }
 
     /**
-     * PUT  /bankAccounts -> Updates an existing bankAccount.
+     * PUT  /bank-accounts : Updates an existing bankAccount.
+     *
+     * @param bankAccount the bankAccount to update
+     * @return the ResponseEntity with status 200 (OK) and with body the updated bankAccount,
+     * or with status 400 (Bad Request) if the bankAccount is not valid,
+     * or with status 500 (Internal Server Error) if the bankAccount couldnt be updated
+     * @throws URISyntaxException if the Location URI syntax is incorrect
      */
-    @RequestMapping(value = "/bankAccounts",
+    @RequestMapping(value = "/bank-accounts",
         method = RequestMethod.PUT,
         produces = MediaType.APPLICATION_JSON_VALUE)
     @Timed
@@ -78,21 +88,27 @@ public class BankAccountResource {
     }
 
     /**
-     * GET  /bankAccounts -> get all the bankAccounts.
+     * GET  /bank-accounts : get all the bankAccounts.
+     *
+     * @return the ResponseEntity with status 200 (OK) and the list of bankAccounts in body
      */
-    @RequestMapping(value = "/bankAccounts",
+    @RequestMapping(value = "/bank-accounts",
         method = RequestMethod.GET,
         produces = MediaType.APPLICATION_JSON_VALUE)
     @Timed
     public List<BankAccount> getAllBankAccounts() {
         log.debug("REST request to get all BankAccounts");
-        return bankAccountRepository.findAll();
-            }
+        List<BankAccount> bankAccounts = bankAccountRepository.findAll();
+        return bankAccounts;
+    }
 
     /**
-     * GET  /bankAccounts/:id -> get the "id" bankAccount.
+     * GET  /bank-accounts/:id : get the "id" bankAccount.
+     *
+     * @param id the id of the bankAccount to retrieve
+     * @return the ResponseEntity with status 200 (OK) and with body the bankAccount, or with status 404 (Not Found)
      */
-    @RequestMapping(value = "/bankAccounts/{id}",
+    @RequestMapping(value = "/bank-accounts/{id}",
         method = RequestMethod.GET,
         produces = MediaType.APPLICATION_JSON_VALUE)
     @Timed
@@ -107,9 +123,12 @@ public class BankAccountResource {
     }
 
     /**
-     * DELETE  /bankAccounts/:id -> delete the "id" bankAccount.
+     * DELETE  /bank-accounts/:id : delete the "id" bankAccount.
+     *
+     * @param id the id of the bankAccount to delete
+     * @return the ResponseEntity with status 200 (OK)
      */
-    @RequestMapping(value = "/bankAccounts/{id}",
+    @RequestMapping(value = "/bank-accounts/{id}",
         method = RequestMethod.DELETE,
         produces = MediaType.APPLICATION_JSON_VALUE)
     @Timed
@@ -121,17 +140,21 @@ public class BankAccountResource {
     }
 
     /**
-     * SEARCH  /_search/bankAccounts/:query -> search for the bankAccount corresponding
+     * SEARCH  /_search/bank-accounts?query=:query : search for the bankAccount corresponding
      * to the query.
+     *
+     * @param query the query of the bankAccount search
+     * @return the result of the search
      */
-    @RequestMapping(value = "/_search/bankAccounts/{query:.+}",
+    @RequestMapping(value = "/_search/bank-accounts",
         method = RequestMethod.GET,
         produces = MediaType.APPLICATION_JSON_VALUE)
     @Timed
-    public List<BankAccount> searchBankAccounts(@PathVariable String query) {
+    public List<BankAccount> searchBankAccounts(@RequestParam String query) {
         log.debug("REST request to search BankAccounts for query {}", query);
         return StreamSupport
             .stream(bankAccountSearchRepository.search(queryStringQuery(query)).spliterator(), false)
             .collect(Collectors.toList());
     }
+
 }

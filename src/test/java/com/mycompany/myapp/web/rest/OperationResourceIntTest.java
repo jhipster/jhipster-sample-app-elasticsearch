@@ -1,6 +1,6 @@
 package com.mycompany.myapp.web.rest;
 
-import com.mycompany.myapp.Application;
+import com.mycompany.myapp.SampleElasticSearchApp;
 import com.mycompany.myapp.domain.Operation;
 import com.mycompany.myapp.repository.OperationRepository;
 import com.mycompany.myapp.repository.search.OperationSearchRepository;
@@ -42,12 +42,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @see OperationResource
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = Application.class)
+@SpringApplicationConfiguration(classes = SampleElasticSearchApp.class)
 @WebAppConfiguration
 @IntegrationTest
 public class OperationResourceIntTest {
 
-    private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME.withZone(ZoneId.of("Z"));
+    private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").withZone(ZoneId.of("Z"));
 
 
     private static final ZonedDateTime DEFAULT_DATE = ZonedDateTime.ofInstant(Instant.ofEpochMilli(0L), ZoneId.systemDefault());
@@ -88,6 +88,7 @@ public class OperationResourceIntTest {
 
     @Before
     public void initTest() {
+        operationSearchRepository.deleteAll();
         operation = new Operation();
         operation.setDate(DEFAULT_DATE);
         operation.setDescription(DEFAULT_DESCRIPTION);
@@ -113,6 +114,10 @@ public class OperationResourceIntTest {
         assertThat(testOperation.getDate()).isEqualTo(DEFAULT_DATE);
         assertThat(testOperation.getDescription()).isEqualTo(DEFAULT_DESCRIPTION);
         assertThat(testOperation.getAmount()).isEqualTo(DEFAULT_AMOUNT);
+
+        // Validate the Operation in ElasticSearch
+        Operation operationEs = operationSearchRepository.findOne(testOperation.getId());
+        assertThat(operationEs).isEqualToComparingFieldByField(testOperation);
     }
 
     @Test
@@ -196,17 +201,19 @@ public class OperationResourceIntTest {
     public void updateOperation() throws Exception {
         // Initialize the database
         operationRepository.saveAndFlush(operation);
-
-		int databaseSizeBeforeUpdate = operationRepository.findAll().size();
+        operationSearchRepository.save(operation);
+        int databaseSizeBeforeUpdate = operationRepository.findAll().size();
 
         // Update the operation
-        operation.setDate(UPDATED_DATE);
-        operation.setDescription(UPDATED_DESCRIPTION);
-        operation.setAmount(UPDATED_AMOUNT);
+        Operation updatedOperation = new Operation();
+        updatedOperation.setId(operation.getId());
+        updatedOperation.setDate(UPDATED_DATE);
+        updatedOperation.setDescription(UPDATED_DESCRIPTION);
+        updatedOperation.setAmount(UPDATED_AMOUNT);
 
         restOperationMockMvc.perform(put("/api/operations")
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
-                .content(TestUtil.convertObjectToJsonBytes(operation)))
+                .content(TestUtil.convertObjectToJsonBytes(updatedOperation)))
                 .andExpect(status().isOk());
 
         // Validate the Operation in the database
@@ -216,6 +223,10 @@ public class OperationResourceIntTest {
         assertThat(testOperation.getDate()).isEqualTo(UPDATED_DATE);
         assertThat(testOperation.getDescription()).isEqualTo(UPDATED_DESCRIPTION);
         assertThat(testOperation.getAmount()).isEqualTo(UPDATED_AMOUNT);
+
+        // Validate the Operation in ElasticSearch
+        Operation operationEs = operationSearchRepository.findOne(testOperation.getId());
+        assertThat(operationEs).isEqualToComparingFieldByField(testOperation);
     }
 
     @Test
@@ -223,16 +234,37 @@ public class OperationResourceIntTest {
     public void deleteOperation() throws Exception {
         // Initialize the database
         operationRepository.saveAndFlush(operation);
-
-		int databaseSizeBeforeDelete = operationRepository.findAll().size();
+        operationSearchRepository.save(operation);
+        int databaseSizeBeforeDelete = operationRepository.findAll().size();
 
         // Get the operation
         restOperationMockMvc.perform(delete("/api/operations/{id}", operation.getId())
                 .accept(TestUtil.APPLICATION_JSON_UTF8))
                 .andExpect(status().isOk());
 
+        // Validate ElasticSearch is empty
+        boolean operationExistsInEs = operationSearchRepository.exists(operation.getId());
+        assertThat(operationExistsInEs).isFalse();
+
         // Validate the database is empty
         List<Operation> operations = operationRepository.findAll();
         assertThat(operations).hasSize(databaseSizeBeforeDelete - 1);
+    }
+
+    @Test
+    @Transactional
+    public void searchOperation() throws Exception {
+        // Initialize the database
+        operationRepository.saveAndFlush(operation);
+        operationSearchRepository.save(operation);
+
+        // Search the operation
+        restOperationMockMvc.perform(get("/api/_search/operations?query=id:" + operation.getId()))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(operation.getId().intValue())))
+            .andExpect(jsonPath("$.[*].date").value(hasItem(DEFAULT_DATE_STR)))
+            .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION.toString())))
+            .andExpect(jsonPath("$.[*].amount").value(hasItem(DEFAULT_AMOUNT.intValue())));
     }
 }

@@ -1,0 +1,28 @@
+
+<div>
+    <h2><span translate="sampleElasticSearchApp.bankAccount.detail.title">BankAccount</span> {{vm.bankAccount.id}}</h2>
+    <hr>
+    <dl class="dl-horizontal">
+        <dt><span translate="sampleElasticSearchApp.bankAccount.name">Name</dt></dt>
+        <dd>
+            <span>{{vm.bankAccount.name}}<span>
+        </dd>
+        <hr>
+        <dt><span translate="sampleElasticSearchApp.bankAccount.balance">Balance</dt></dt>
+        <dd>
+            <span>{{vm.bankAccount.balance}}<span>
+        </dd>
+        <hr>
+        <dt><span translate="sampleElasticSearchApp.bankAccount.user">user</span></dt>
+        <dd>
+            {{vm.bankAccount.user.login}}
+        </dd>
+        <hr>
+    </dl>
+
+    <button type="submit"
+            onclick="window.history.back()"
+            class="btn btn-info">
+        <span class="glyphicon glyphicon-arrow-left"></span>&nbsp;<span translate="entity.action.back"> Back</span>
+    </button>
+</div>

@@ -1,4 +1,4 @@
-beforeEach(module('sampleelasticsearchApp'));
+beforeEach(module('sampleElasticSearchApp'));
 /**
  * returns a function whose angular will be replaced
  * with whatever mock was supplied.

@@ -11,14 +11,17 @@
 # http://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html
 # ===================================================================
 
+
 spring:
+    application:
+        name: sampleElasticSearch
     jpa:
         open-in-view: false
         hibernate:
             ddl-auto: none
             naming-strategy: org.springframework.boot.orm.jpa.hibernate.SpringNamingStrategy
     messages:
-        basename: classpath:/i18n/messages
+        basename: i18n/messages
     mvc:
         favicon:
             enabled: false
@@ -48,14 +51,16 @@ jhipster:
     mail:
         from: sampleElasticSearch@localhost
     security:
-        rememberme:
+        rememberMe:
             # security key (this key should be unique for your application, and kept secret)
-            key: 6797bef991a7532ae41bf665c7f3d20d8936efa8
+            key: d7c92d4b5984a72a6430698b49bdea98b7dc567f
     swagger:
         title: sampleElasticSearch API
         description: sampleElasticSearch API documentation
         version: 0.0.1
         termsOfServiceUrl:
-        contact:
+        contactName:
+        contactUrl:
+        contactEmail:
         license:
         licenseUrl:

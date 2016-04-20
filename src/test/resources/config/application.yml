@@ -11,6 +11,8 @@
 # ===================================================================
 
 spring:
+    application:
+        name: sampleElasticSearch
     datasource:
         url: jdbc:h2:mem:sampleElasticSearch;DB_CLOSE_DELAY=-1
         name:
@@ -81,3 +83,4 @@ jhipster:
         contactEmail:
         license:
         licenseUrl:
+        enabled: false

@@ -1,7 +1,6 @@
 package com.mycompany.myapp.service;
 
 import com.mycompany.myapp.domain.Authority;
-import com.mycompany.myapp.domain.PersistentToken;
 import com.mycompany.myapp.domain.User;
 import com.mycompany.myapp.repository.AuthorityRepository;
 import com.mycompany.myapp.repository.PersistentTokenRepository;
@@ -10,8 +9,6 @@ import com.mycompany.myapp.repository.search.UserSearchRepository;
 import com.mycompany.myapp.security.SecurityUtils;
 import com.mycompany.myapp.service.util.RandomUtil;
 import com.mycompany.myapp.web.rest.dto.ManagedUserDTO;
-import java.time.ZonedDateTime;
-import java.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -19,6 +16,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import javax.inject.Inject;
 import java.util.*;

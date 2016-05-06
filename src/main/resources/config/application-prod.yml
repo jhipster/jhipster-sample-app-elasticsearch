@@ -57,6 +57,7 @@ server:
     compression:
         enabled: true
         mime-types: text/html,text/xml,text/plain,text/css, application/javascript, application/json
+        min-response-size: 1024
 
 # ===================================================================
 # JHipster specific properties
@@ -70,6 +71,10 @@ jhipster:
         timeToLiveSeconds: 3600
         ehcache:
             maxBytesLocalHeap: 256M
+    security:
+        rememberMe:
+            # security key (this key should be unique for your application, and kept secret)
+            key: d7c92d4b5984a72a6430698b49bdea98b7dc567f
     mail: # specific JHipster mail property, for standard properties see MailProperties
         from: sampleElasticSearch@localhost
     metrics: # DropWizard Metrics configuration, used by MetricsConfiguration
@@ -83,7 +88,7 @@ jhipster:
             host: localhost
             port: 2003
             prefix: sampleElasticSearch
-        logs: # report metrics in the logs
+        logs: # Reports Dropwizard metrics in the logs
             enabled: false
             reportFrequency: 60 # in seconds
     logging:

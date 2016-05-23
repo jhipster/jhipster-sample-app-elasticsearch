@@ -2,7 +2,7 @@
     'use strict';
 
     angular
-        .module('sampleElasticSearchApp')
+        .module('jhipsterElasticsearchSampleApplicationApp')
         .factory('Activate', Activate);
 
     Activate.$inject = ['$resource'];

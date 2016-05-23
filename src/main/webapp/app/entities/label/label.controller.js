@@ -2,7 +2,7 @@
     'use strict';
 
     angular
-        .module('sampleElasticSearchApp')
+        .module('jhipsterElasticsearchSampleApplicationApp')
         .controller('LabelController', LabelController);
 
     LabelController.$inject = ['$scope', '$state', 'Label', 'LabelSearch'];

@@ -11,7 +11,7 @@
     };
 
     angular
-        .module('sampleElasticSearchApp')
+        .module('jhipsterElasticsearchSampleApplicationApp')
         .component('jhiAlert', jhiAlert);
 
     jhiAlertController.$inject = ['$scope', 'AlertService'];

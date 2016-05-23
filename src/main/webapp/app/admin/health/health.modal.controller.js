@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    angular.module('sampleElasticSearchApp')
+    angular.module('jhipsterElasticsearchSampleApplicationApp')
         .controller('HealthModalController', HealthModalController);
 
     HealthModalController.$inject = ['$uibModalInstance', 'currentHealth', 'baseName', 'subSystemName'];

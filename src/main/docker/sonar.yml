@@ -1,8 +1,8 @@
 version: '2'
 services:
-    sampleelasticsearch-sonar:
-        container_name: sampleelasticsearch-sonar
-        image: sonarqube:5.3
+    jhipsterelasticsearchsampleapplication-sonar:
+        container_name: jhipsterelasticsearchsampleapplication-sonar
+        image: sonarqube:5.5-alpine
         ports:
             - 9000:9000
             - 9092:9092

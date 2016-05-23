@@ -1,8 +1,8 @@
 {
   "generator-jhipster": {
-    "baseName": "sampleElasticSearch",
-    "packageName": "com.mycompany.myapp",
-    "packageFolder": "com/mycompany/myapp",
+    "baseName": "jhipsterElasticsearchSampleApplication",
+    "packageName": "io.github.jhipster.sample",
+    "packageFolder": "io/github/jhipster/sample",
     "authenticationType": "session",
     "hibernateCache": "ehcache",
     "clusteredHttpSession": "no",

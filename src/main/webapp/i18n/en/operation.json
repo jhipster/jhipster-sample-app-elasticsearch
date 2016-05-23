@@ -1,5 +1,5 @@
 {
-    "sampleElasticSearchApp": {
+    "jhipsterElasticsearchSampleApplicationApp": {
         "operation" : {
             "home": {
                 "title": "Operations",

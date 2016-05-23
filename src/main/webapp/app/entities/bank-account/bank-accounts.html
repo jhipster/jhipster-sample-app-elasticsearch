@@ -1,12 +1,12 @@
 <div>
-    <h2 translate="sampleElasticSearchApp.bankAccount.home.title">Bank Accounts</h2>
+    <h2 translate="jhipsterElasticsearchSampleApplicationApp.bankAccount.home.title">Bank Accounts</h2>
     <jhi-alert></jhi-alert>
     <div class="container-fluid">
         <div class="row">
             <div class="col-xs-4 no-padding-left">
                 <button class="btn btn-primary" ui-sref="bank-account.new" >
                     <span class="glyphicon glyphicon-plus"></span>
-                    <span class="hidden-xs"  translate="sampleElasticSearchApp.bankAccount.home.createLabel">
+                    <span class="hidden-xs"  translate="jhipsterElasticsearchSampleApplicationApp.bankAccount.home.createLabel">
                         Create new Bank Account
                     </span>
                 </button>
@@ -14,7 +14,7 @@
             <div class="col-xs-8 no-padding-right">
                 <form name="searchForm" class="form-inline">
                     <div class="input-group pull-right" >
-                        <input type="text" class="form-control" ng-model="vm.searchQuery" id="searchQuery" placeholder="{{ 'sampleElasticSearchApp.bankAccount.home.search' | translate }}">
+                        <input type="text" class="form-control" ng-model="vm.searchQuery" id="searchQuery" placeholder="{{ 'jhipsterElasticsearchSampleApplicationApp.bankAccount.home.search' | translate }}">
                         <span  class="input-group-btn width-min" >
                             <button class="btn btn-info" ng-click="vm.search(vm.searchQuery)">
                                 <span class="glyphicon glyphicon-search"></span>
@@ -36,9 +36,9 @@
             <thead>
                 <tr>
                     <th><span translate="global.field.id">ID</span></th>
-                    <th><span translate="sampleElasticSearchApp.bankAccount.name">Name</span></th>
-                    <th><span translate="sampleElasticSearchApp.bankAccount.balance">Balance</span></th>
-                    <th><span translate="sampleElasticSearchApp.bankAccount.user">User</span></th>
+                    <th><span translate="jhipsterElasticsearchSampleApplicationApp.bankAccount.name">Name</span></th>
+                    <th><span translate="jhipsterElasticsearchSampleApplicationApp.bankAccount.balance">Balance</span></th>
+                    <th><span translate="jhipsterElasticsearchSampleApplicationApp.bankAccount.user">User</span></th>
                     <th></th>
                 </tr>
             </thead>

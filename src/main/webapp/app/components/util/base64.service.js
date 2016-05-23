@@ -3,7 +3,7 @@
     'use strict';
 
     angular
-        .module('sampleElasticSearchApp')
+        .module('jhipsterElasticsearchSampleApplicationApp')
         .factory('Base64', Base64);
 
     function Base64 () {

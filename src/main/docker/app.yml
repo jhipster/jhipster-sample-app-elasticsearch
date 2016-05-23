@@ -1,21 +1,21 @@
 version: '2'
 services:
-    sampleelasticsearch-app:
-        image: sampleelasticsearch
+    jhipsterelasticsearchsampleapplication-app:
+        image: jhipsterelasticsearchsampleapplication
         external_links:
-            - sampleelasticsearch-mysql:mysql
-            - sampleelasticsearch-elasticsearch:elasticsearch
+            - jhipsterelasticsearchsampleapplication-mysql:mysql
+            - jhipsterelasticsearchsampleapplication-elasticsearch:elasticsearch
         environment:
             - SPRING_PROFILES_ACTIVE=prod
-            - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/sampleelasticsearch?useUnicode=true&characterEncoding=utf8&useSSL=false
+            - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/jhipsterelasticsearchsampleapplication?useUnicode=true&characterEncoding=utf8&useSSL=false
             - SPRING_DATA_ELASTICSEARCH_CLUSTER_NODES=elasticsearch:9300
         ports:
             - 8080:8080
-    sampleelasticsearch-mysql:
+    jhipsterelasticsearchsampleapplication-mysql:
         extends:
             file: mysql.yml
-            service: sampleelasticsearch-mysql
-    sampleelasticsearch-elasticsearch:
+            service: jhipsterelasticsearchsampleapplication-mysql
+    jhipsterelasticsearchsampleapplication-elasticsearch:
         extends:
             file: elasticsearch.yml
-            service: sampleelasticsearch-elasticsearch
+            service: jhipsterelasticsearchsampleapplication-elasticsearch

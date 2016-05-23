@@ -1,10 +1,10 @@
 version: '2'
 services:
-    sampleelasticsearch-elasticsearch:
-        container_name: sampleelasticsearch-elasticsearch
+    jhipsterelasticsearchsampleapplication-elasticsearch:
+        container_name: jhipsterelasticsearchsampleapplication-elasticsearch
         image: elasticsearch:1.7.5
         # volumes:
-        #     - ~/volumes/jhipster/sampleElasticSearch/elasticsearch/:/usr/share/elasticsearch/data/
+        #     - ~/volumes/jhipster/jhipsterElasticsearchSampleApplication/elasticsearch/:/usr/share/elasticsearch/data/
         ports:
             - 9200:9200
             - 9300:9300

@@ -18,15 +18,15 @@ spring:
         livereload:
             enabled: false # we use gulp + BrowserSync for livereload
     datasource:
-        url: jdbc:h2:mem:sampleelasticsearch;DB_CLOSE_DELAY=-1
+        url: jdbc:h2:mem:jhipsterelasticsearchsampleapplication;DB_CLOSE_DELAY=-1
         name:
-        username: sampleElasticSearch
+        username: jhipsterElasticsearchSampleApplication
         password:
     h2:
         console:
             enabled: false
     jpa:
-        database-platform: com.mycompany.myapp.domain.util.FixedH2Dialect
+        database-platform: io.github.jhipster.sample.domain.util.FixedH2Dialect
         database: H2
         show_sql: true
         properties:
@@ -44,6 +44,9 @@ spring:
                   data: target/elasticsearch/data
     mail:
         host: localhost
+        port: 25
+        username:
+        password:
     messages:
         cache-seconds: 1
     thymeleaf:
@@ -69,7 +72,7 @@ jhipster:
             # security key (this key should be unique for your application, and kept secret)
             key: d7c92d4b5984a72a6430698b49bdea98b7dc567f
     mail: # specific JHipster mail property, for standard properties see MailProperties
-        from: sampleElasticSearch@localhost
+        from: jhipsterElasticsearchSampleApplication@localhost
     metrics: # DropWizard Metrics configuration, used by MetricsConfiguration
         jmx.enabled: true
         spark:
@@ -80,7 +83,7 @@ jhipster:
             enabled: false
             host: localhost
             port: 2003
-            prefix: sampleElasticSearch
+            prefix: jhipsterElasticsearchSampleApplication
         logs: # Reports Dropwizard metrics in the logs
             enabled: false
             reportFrequency: 60 # in seconds

@@ -2,7 +2,7 @@
     'use strict';
 
     angular
-        .module('sampleElasticSearchApp')
+        .module('jhipsterElasticsearchSampleApplicationApp')
         .config(localStorageConfig);
 
     localStorageConfig.$inject = ['$localStorageProvider'];

@@ -1,7 +1,7 @@
 {
-  "name": "sample-elastic-search",
+  "name": "jhipster-elasticsearch-sample-application",
   "version": "0.0.0",
-  "description": "Description for sampleElasticSearch",
+  "description": "Description for jhipsterElasticsearchSampleApplication",
   "private": true,
   "cacheDirectories": [
     "node_modules",

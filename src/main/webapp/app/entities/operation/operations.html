@@ -1,12 +1,12 @@
 <div>
-    <h2 translate="sampleElasticSearchApp.operation.home.title">Operations</h2>
+    <h2 translate="jhipsterElasticsearchSampleApplicationApp.operation.home.title">Operations</h2>
     <jhi-alert></jhi-alert>
     <div class="container-fluid">
         <div class="row">
             <div class="col-xs-4 no-padding-left">
                 <button class="btn btn-primary" ui-sref="operation.new" >
                     <span class="glyphicon glyphicon-plus"></span>
-                    <span class="hidden-xs"  translate="sampleElasticSearchApp.operation.home.createLabel">
+                    <span class="hidden-xs"  translate="jhipsterElasticsearchSampleApplicationApp.operation.home.createLabel">
                         Create new Operation
                     </span>
                 </button>
@@ -14,7 +14,7 @@
             <div class="col-xs-8 no-padding-right">
                 <form name="searchForm" class="form-inline">
                     <div class="input-group pull-right" >
-                        <input type="text" class="form-control" ng-model="vm.searchQuery" id="searchQuery" placeholder="{{ 'sampleElasticSearchApp.operation.home.search' | translate }}">
+                        <input type="text" class="form-control" ng-model="vm.searchQuery" id="searchQuery" placeholder="{{ 'jhipsterElasticsearchSampleApplicationApp.operation.home.search' | translate }}">
                         <span  class="input-group-btn width-min" >
                             <button class="btn btn-info" ng-click="vm.search(vm.searchQuery)">
                                 <span class="glyphicon glyphicon-search"></span>
@@ -36,10 +36,10 @@
             <thead>
                 <tr jh-sort="vm.predicate" ascending="vm.reverse" callback="vm.reset()">
                     <th jh-sort-by="id"><span translate="global.field.id">ID</span> <span class="glyphicon glyphicon-sort"></span></th>
-                    <th jh-sort-by="date"><span translate="sampleElasticSearchApp.operation.date">Date</span> <span class="glyphicon glyphicon-sort"></span></th>
-                    <th jh-sort-by="description"><span translate="sampleElasticSearchApp.operation.description">Description</span> <span class="glyphicon glyphicon-sort"></span></th>
-                    <th jh-sort-by="amount"><span translate="sampleElasticSearchApp.operation.amount">Amount</span> <span class="glyphicon glyphicon-sort"></span></th>
-                    <th jh-sort-by="bankAccount.name"><span translate="sampleElasticSearchApp.operation.bankAccount">Bank Account</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="date"><span translate="jhipsterElasticsearchSampleApplicationApp.operation.date">Date</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="description"><span translate="jhipsterElasticsearchSampleApplicationApp.operation.description">Description</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="amount"><span translate="jhipsterElasticsearchSampleApplicationApp.operation.amount">Amount</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="bankAccount.name"><span translate="jhipsterElasticsearchSampleApplicationApp.operation.bankAccount">Bank Account</span> <span class="glyphicon glyphicon-sort"></span></th>
                     <th></th>
                 </tr>
             </thead>

@@ -2,7 +2,7 @@
     'use strict';
 
     angular
-        .module('sampleElasticSearchApp')
+        .module('jhipsterElasticsearchSampleApplicationApp')
         .factory('notificationInterceptor', notificationInterceptor);
 
     notificationInterceptor.$inject = ['$q', 'AlertService'];
@@ -15,9 +15,9 @@
         return service;
 
         function response (response) {
-            var alertKey = response.headers('X-sampleElasticSearchApp-alert');
+            var alertKey = response.headers('X-jhipsterElasticsearchSampleApplicationApp-alert');
             if (angular.isString(alertKey)) {
-                AlertService.success(alertKey, { param : response.headers('X-sampleElasticSearchApp-params')});
+                AlertService.success(alertKey, { param : response.headers('X-jhipsterElasticsearchSampleApplicationApp-params')});
             }
             return response;
         }

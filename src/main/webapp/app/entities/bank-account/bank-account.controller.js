@@ -2,7 +2,7 @@
     'use strict';
 
     angular
-        .module('sampleElasticSearchApp')
+        .module('jhipsterElasticsearchSampleApplicationApp')
         .controller('BankAccountController', BankAccountController);
 
     BankAccountController.$inject = ['$scope', '$state', 'BankAccount', 'BankAccountSearch'];

@@ -2,7 +2,7 @@
     'use strict';
 
     angular
-        .module('sampleElasticSearchApp')
+        .module('jhipsterElasticsearchSampleApplicationApp')
         .config(stateConfig);
 
     stateConfig.$inject = ['$stateProvider'];
@@ -14,7 +14,7 @@
             url: '/bank-account',
             data: {
                 authorities: ['ROLE_USER'],
-                pageTitle: 'sampleElasticSearchApp.bankAccount.home.title'
+                pageTitle: 'jhipsterElasticsearchSampleApplicationApp.bankAccount.home.title'
             },
             views: {
                 'content@': {
@@ -36,7 +36,7 @@
             url: '/bank-account/{id}',
             data: {
                 authorities: ['ROLE_USER'],
-                pageTitle: 'sampleElasticSearchApp.bankAccount.detail.title'
+                pageTitle: 'jhipsterElasticsearchSampleApplicationApp.bankAccount.detail.title'
             },
             views: {
                 'content@': {

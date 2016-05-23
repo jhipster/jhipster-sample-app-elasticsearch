@@ -1,5 +1,5 @@
 {
-    "sampleElasticSearchApp": {
+    "jhipsterElasticsearchSampleApplicationApp": {
         "label" : {
             "home": {
                 "title": "Labels",

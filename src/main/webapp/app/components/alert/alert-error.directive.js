@@ -11,7 +11,7 @@
     };
 
     angular
-        .module('sampleElasticSearchApp')
+        .module('jhipsterElasticsearchSampleApplicationApp')
         .component('jhiAlertError', jhiAlertError);
 
     jhiAlertErrorController.$inject = ['$scope', 'AlertService', '$rootScope', '$translate'];
@@ -38,7 +38,7 @@
             );
         }
 
-        var cleanHttpErrorListener = $rootScope.$on('sampleElasticSearchApp.httpError', function (event, httpResponse) {
+        var cleanHttpErrorListener = $rootScope.$on('jhipsterElasticsearchSampleApplicationApp.httpError', function (event, httpResponse) {
             var i;
             event.stopPropagation();
             switch (httpResponse.status) {
@@ -48,8 +48,8 @@
                 break;
 
             case 400:
-                var errorHeader = httpResponse.headers('X-sampleElasticSearchApp-error');
-                var entityKey = httpResponse.headers('X-sampleElasticSearchApp-params');
+                var errorHeader = httpResponse.headers('X-jhipsterElasticsearchSampleApplicationApp-error');
+                var entityKey = httpResponse.headers('X-jhipsterElasticsearchSampleApplicationApp-params');
                 if (errorHeader) {
                     var entityName = $translate.instant('global.menu.entities.' + entityKey);
                     addErrorAlert(errorHeader, errorHeader, {entityName: entityName});
@@ -58,7 +58,7 @@
                         var fieldError = httpResponse.data.fieldErrors[i];
                         // convert 'something[14].other[4].id' to 'something[].other[].id' so translations can be written to it
                         var convertedField = fieldError.field.replace(/\[\d*\]/g, '[]');
-                        var fieldName = $translate.instant('sampleElasticSearchApp.' + fieldError.objectName + '.' + convertedField);
+                        var fieldName = $translate.instant('jhipsterElasticsearchSampleApplicationApp.' + fieldError.objectName + '.' + convertedField);
                         addErrorAlert('Field ' + fieldName + ' cannot be empty', 'error.' + fieldError.message, {fieldName: fieldName});
                     }
                 } else if (httpResponse.data && httpResponse.data.message) {

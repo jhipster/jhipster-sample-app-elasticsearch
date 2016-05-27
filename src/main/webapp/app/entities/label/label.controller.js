@@ -9,22 +9,24 @@
 
     function LabelController ($scope, $state, Label, LabelSearch) {
         var vm = this;
+        
         vm.labels = [];
-        vm.loadAll = function() {
+        vm.search = search;
+
+        loadAll();
+
+        function loadAll() {
             Label.query(function(result) {
                 vm.labels = result;
             });
-        };
+        }
 
-        vm.search = function () {
+        function search () {
             if (!vm.searchQuery) {
                 return vm.loadAll();
             }
             LabelSearch.query({query: vm.searchQuery}, function(result) {
                 vm.labels = result;
             });
-        };
-        vm.loadAll();
-        
-    }
+        }    }
 })();

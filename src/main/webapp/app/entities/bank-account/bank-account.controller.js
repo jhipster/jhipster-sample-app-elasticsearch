@@ -9,22 +9,24 @@
 
     function BankAccountController ($scope, $state, BankAccount, BankAccountSearch) {
         var vm = this;
+        
         vm.bankAccounts = [];
-        vm.loadAll = function() {
+        vm.search = search;
+
+        loadAll();
+
+        function loadAll() {
             BankAccount.query(function(result) {
                 vm.bankAccounts = result;
             });
-        };
+        }
 
-        vm.search = function () {
+        function search () {
             if (!vm.searchQuery) {
                 return vm.loadAll();
             }
             BankAccountSearch.query({query: vm.searchQuery}, function(result) {
                 vm.bankAccounts = result;
             });
-        };
-        vm.loadAll();
-        
-    }
+        }    }
 })();

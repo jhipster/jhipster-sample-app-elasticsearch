@@ -13,10 +13,14 @@
         vm.operations = [];
         vm.loadPage = loadPage;
         vm.page = 0;
+        vm.links = {
+            last: 0
+        };
         vm.predicate = 'id';
         vm.reset = reset;
         vm.reverse = true;
         vm.clear = clear;
+        vm.loadAll = loadAll;
         vm.search = search;
 
         loadAll();

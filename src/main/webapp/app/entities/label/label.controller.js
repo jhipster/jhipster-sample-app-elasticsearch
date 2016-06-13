@@ -12,6 +12,7 @@
         
         vm.labels = [];
         vm.search = search;
+        vm.loadAll = loadAll;
 
         loadAll();
 

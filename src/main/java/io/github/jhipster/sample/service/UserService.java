@@ -17,7 +17,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import javax.inject.Inject;
@@ -32,16 +31,15 @@ public class UserService {
 
     private final Logger log = LoggerFactory.getLogger(UserService.class);
 
-
     @Inject
     private PasswordEncoder passwordEncoder;
+
 
     @Inject
     private UserRepository userRepository;
 
     @Inject
     private UserSearchRepository userSearchRepository;
-
 
     @Inject
     private PersistentTokenRepository persistentTokenRepository;

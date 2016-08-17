@@ -10,13 +10,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import static org.hamcrest.Matchers.hasItem;
 import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.IntegrationTest;
-import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -24,24 +22,21 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.persistence.EntityManager;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-
 /**
  * Test class for the LabelResource REST controller.
  *
  * @see LabelResource
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = JhipsterElasticsearchSampleApplicationApp.class)
-@WebAppConfiguration
-@IntegrationTest
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = JhipsterElasticsearchSampleApplicationApp.class)
 public class LabelResourceIntTest {
-
     private static final String DEFAULT_LABEL = "AAA";
     private static final String UPDATED_LABEL = "BBB";
 
@@ -56,6 +51,9 @@ public class LabelResourceIntTest {
 
     @Inject
     private PageableHandlerMethodArgumentResolver pageableArgumentResolver;
+
+    @Inject
+    private EntityManager em;
 
     private MockMvc restLabelMockMvc;
 
@@ -72,11 +70,23 @@ public class LabelResourceIntTest {
             .setMessageConverters(jacksonMessageConverter).build();
     }
 
+    /**
+     * Create an entity for this test.
+     *
+     * This is a static method, as tests for other entities might also need it,
+     * if they test an entity which requires the current entity.
+     */
+    public static Label createEntity(EntityManager em) {
+        Label label = new Label();
+        label = new Label();
+        label.setLabel(DEFAULT_LABEL);
+        return label;
+    }
+
     @Before
     public void initTest() {
         labelSearchRepository.deleteAll();
-        label = new Label();
-        label.setLabel(DEFAULT_LABEL);
+        label = createEntity(em);
     }
 
     @Test
@@ -129,7 +139,7 @@ public class LabelResourceIntTest {
         // Get all the labels
         restLabelMockMvc.perform(get("/api/labels?sort=id,desc"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
                 .andExpect(jsonPath("$.[*].id").value(hasItem(label.getId().intValue())))
                 .andExpect(jsonPath("$.[*].label").value(hasItem(DEFAULT_LABEL.toString())));
     }
@@ -143,7 +153,7 @@ public class LabelResourceIntTest {
         // Get the label
         restLabelMockMvc.perform(get("/api/labels/{id}", label.getId()))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.id").value(label.getId().intValue()))
             .andExpect(jsonPath("$.label").value(DEFAULT_LABEL.toString()));
     }
@@ -165,8 +175,7 @@ public class LabelResourceIntTest {
         int databaseSizeBeforeUpdate = labelRepository.findAll().size();
 
         // Update the label
-        Label updatedLabel = new Label();
-        updatedLabel.setId(label.getId());
+        Label updatedLabel = labelRepository.findOne(label.getId());
         updatedLabel.setLabel(UPDATED_LABEL);
 
         restLabelMockMvc.perform(put("/api/labels")
@@ -217,7 +226,7 @@ public class LabelResourceIntTest {
         // Search the label
         restLabelMockMvc.perform(get("/api/_search/labels?query=id:" + label.getId()))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(label.getId().intValue())))
             .andExpect(jsonPath("$.[*].label").value(hasItem(DEFAULT_LABEL.toString())));
     }

@@ -2,6 +2,7 @@ package io.github.jhipster.sample.web.rest;
 
 import com.codahale.metrics.annotation.Timed;
 import io.github.jhipster.sample.domain.BankAccount;
+
 import io.github.jhipster.sample.repository.BankAccountRepository;
 import io.github.jhipster.sample.repository.search.BankAccountSearchRepository;
 import io.github.jhipster.sample.web.rest.util.HeaderUtil;
@@ -35,10 +36,10 @@ public class BankAccountResource {
         
     @Inject
     private BankAccountRepository bankAccountRepository;
-    
+
     @Inject
     private BankAccountSearchRepository bankAccountSearchRepository;
-    
+
     /**
      * POST  /bank-accounts : Create a new bankAccount.
      *
@@ -143,7 +144,7 @@ public class BankAccountResource {
      * SEARCH  /_search/bank-accounts?query=:query : search for the bankAccount corresponding
      * to the query.
      *
-     * @param query the query of the bankAccount search
+     * @param query the query of the bankAccount search 
      * @return the result of the search
      */
     @RequestMapping(value = "/_search/bank-accounts",

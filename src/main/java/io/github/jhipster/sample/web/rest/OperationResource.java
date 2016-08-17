@@ -2,6 +2,7 @@ package io.github.jhipster.sample.web.rest;
 
 import com.codahale.metrics.annotation.Timed;
 import io.github.jhipster.sample.domain.Operation;
+
 import io.github.jhipster.sample.repository.OperationRepository;
 import io.github.jhipster.sample.repository.search.OperationSearchRepository;
 import io.github.jhipster.sample.web.rest.util.HeaderUtil;
@@ -38,10 +39,10 @@ public class OperationResource {
         
     @Inject
     private OperationRepository operationRepository;
-    
+
     @Inject
     private OperationSearchRepository operationSearchRepository;
-    
+
     /**
      * POST  /operations : Create a new operation.
      *
@@ -104,7 +105,7 @@ public class OperationResource {
     public ResponseEntity<List<Operation>> getAllOperations(Pageable pageable)
         throws URISyntaxException {
         log.debug("REST request to get a page of Operations");
-        Page<Operation> page = operationRepository.findAll(pageable); 
+        Page<Operation> page = operationRepository.findAll(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/operations");
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
@@ -150,8 +151,10 @@ public class OperationResource {
      * SEARCH  /_search/operations?query=:query : search for the operation corresponding
      * to the query.
      *
-     * @param query the query of the operation search
+     * @param query the query of the operation search 
+     * @param pageable the pagination information
      * @return the result of the search
+     * @throws URISyntaxException if there is an error to generate the pagination HTTP headers
      */
     @RequestMapping(value = "/_search/operations",
         method = RequestMethod.GET,

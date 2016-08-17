@@ -2,6 +2,7 @@ package io.github.jhipster.sample.web.rest;
 
 import com.codahale.metrics.annotation.Timed;
 import io.github.jhipster.sample.domain.Label;
+
 import io.github.jhipster.sample.repository.LabelRepository;
 import io.github.jhipster.sample.repository.search.LabelSearchRepository;
 import io.github.jhipster.sample.web.rest.util.HeaderUtil;
@@ -35,10 +36,10 @@ public class LabelResource {
         
     @Inject
     private LabelRepository labelRepository;
-    
+
     @Inject
     private LabelSearchRepository labelSearchRepository;
-    
+
     /**
      * POST  /labels : Create a new label.
      *
@@ -143,7 +144,7 @@ public class LabelResource {
      * SEARCH  /_search/labels?query=:query : search for the label corresponding
      * to the query.
      *
-     * @param query the query of the label search
+     * @param query the query of the label search 
      * @return the result of the search
      */
     @RequestMapping(value = "/_search/labels",

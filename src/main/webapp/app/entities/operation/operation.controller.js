@@ -74,7 +74,9 @@
 
         function clear () {
             vm.operations = [];
-            vm.links = null;
+            vm.links = {
+                last: 0
+            };
             vm.page = 0;
             vm.predicate = 'id';
             vm.reverse = true;
@@ -88,7 +90,9 @@
                 return vm.clear();
             }
             vm.operations = [];
-            vm.links = null;
+            vm.links = {
+                last: 0
+            };
             vm.page = 0;
             vm.predicate = '_score';
             vm.reverse = false;

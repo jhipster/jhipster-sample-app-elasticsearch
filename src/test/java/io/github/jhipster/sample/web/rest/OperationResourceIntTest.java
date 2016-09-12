@@ -1,6 +1,7 @@
 package io.github.jhipster.sample.web.rest;
 
 import io.github.jhipster.sample.JhipsterElasticsearchSampleApplicationApp;
+
 import io.github.jhipster.sample.domain.Operation;
 import io.github.jhipster.sample.repository.OperationRepository;
 import io.github.jhipster.sample.repository.search.OperationSearchRepository;
@@ -40,7 +41,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @see OperationResource
  */
 @RunWith(SpringRunner.class)
+
 @SpringBootTest(classes = JhipsterElasticsearchSampleApplicationApp.class)
+
 public class OperationResourceIntTest {
     private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").withZone(ZoneId.of("Z"));
 
@@ -91,7 +94,6 @@ public class OperationResourceIntTest {
      */
     public static Operation createEntity(EntityManager em) {
         Operation operation = new Operation();
-        operation = new Operation();
         operation.setDate(DEFAULT_DATE);
         operation.setDescription(DEFAULT_DESCRIPTION);
         operation.setAmount(DEFAULT_AMOUNT);

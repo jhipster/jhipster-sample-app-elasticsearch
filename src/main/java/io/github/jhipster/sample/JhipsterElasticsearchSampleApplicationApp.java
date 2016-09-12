@@ -72,5 +72,4 @@ public class JhipsterElasticsearchSampleApplicationApp {
             env.getProperty("server.port"));
 
     }
-
 }

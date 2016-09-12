@@ -5,9 +5,9 @@
         .module('jhipsterElasticsearchSampleApplicationApp')
         .factory('ProfileService', ProfileService);
 
-    ProfileService.$inject = ['$q', '$http'];
+    ProfileService.$inject = ['$http'];
 
-    function ProfileService($q, $http) {
+    function ProfileService($http) {
 
         var dataPromise;
 

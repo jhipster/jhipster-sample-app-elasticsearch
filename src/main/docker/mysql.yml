@@ -2,7 +2,7 @@ version: '2'
 services:
     jhipsterelasticsearchsampleapplication-mysql:
         container_name: jhipsterelasticsearchsampleapplication-mysql
-        image: mysql:5.7.14
+        image: mysql:5.7.15
         # volumes:
         #     - ~/volumes/jhipster/jhipsterElasticsearchSampleApplication/mysql/:/var/lib/mysql/
         environment:

@@ -78,12 +78,9 @@ jhipster:
             key: d7c92d4b5984a72a6430698b49bdea98b7dc567f
     mail: # specific JHipster mail property, for standard properties see MailProperties
         from: jhipsterElasticsearchSampleApplication@localhost
+        baseUrl: # keep empty to use the server's default URL
     metrics: # DropWizard Metrics configuration, used by MetricsConfiguration
         jmx.enabled: true
-        spark:
-            enabled: false
-            host: localhost
-            port: 9999
         graphite:
             enabled: false
             host: localhost

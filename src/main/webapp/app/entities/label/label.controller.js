@@ -9,7 +9,7 @@
 
     function LabelController ($scope, $state, Label, LabelSearch) {
         var vm = this;
-        
+
         vm.labels = [];
         vm.search = search;
         vm.loadAll = loadAll;

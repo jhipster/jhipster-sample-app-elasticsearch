@@ -9,7 +9,7 @@
 
     function BankAccountController ($scope, $state, BankAccount, BankAccountSearch) {
         var vm = this;
-        
+
         vm.bankAccounts = [];
         vm.search = search;
         vm.loadAll = loadAll;

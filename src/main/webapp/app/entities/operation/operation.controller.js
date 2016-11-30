@@ -5,13 +5,14 @@
         .module('jhipsterElasticsearchSampleApplicationApp')
         .controller('OperationController', OperationController);
 
-    OperationController.$inject = ['$scope', '$state', 'Operation', 'OperationSearch', 'ParseLinks', 'AlertService'];
+    OperationController.$inject = ['$scope', '$state', 'Operation', 'OperationSearch', 'ParseLinks', 'AlertService', 'paginationConstants'];
 
-    function OperationController ($scope, $state, Operation, OperationSearch, ParseLinks, AlertService) {
+    function OperationController ($scope, $state, Operation, OperationSearch, ParseLinks, AlertService, paginationConstants) {
         var vm = this;
 
         vm.operations = [];
         vm.loadPage = loadPage;
+        vm.itemsPerPage = paginationConstants.itemsPerPage;
         vm.page = 0;
         vm.links = {
             last: 0
@@ -30,13 +31,13 @@
                 OperationSearch.query({
                     query: vm.currentSearch,
                     page: vm.page,
-                    size: 20,
+                    size: vm.itemsPerPage,
                     sort: sort()
                 }, onSuccess, onError);
             } else {
                 Operation.query({
                     page: vm.page,
-                    size: 20,
+                    size: vm.itemsPerPage,
                     sort: sort()
                 }, onSuccess, onError);
             }

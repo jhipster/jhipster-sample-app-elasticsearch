@@ -53,7 +53,6 @@ public class UserService {
                 // activate given user for the registration key.
                 user.setActivated(true);
                 user.setActivationKey(null);
-                userRepository.save(user);
                 userSearchRepository.save(user);
                 log.debug("Activated user: {}", user);
                 return user;
@@ -72,7 +71,6 @@ public class UserService {
                 user.setPassword(passwordEncoder.encode(newPassword));
                 user.setResetKey(null);
                 user.setResetDate(null);
-                userRepository.save(user);
                 return user;
            });
     }
@@ -83,7 +81,6 @@ public class UserService {
             .map(user -> {
                 user.setResetKey(RandomUtil.generateResetKey());
                 user.setResetDate(ZonedDateTime.now());
-                userRepository.save(user);
                 return user;
             });
     }
@@ -127,7 +124,7 @@ public class UserService {
         }
         if (managedUserVM.getAuthorities() != null) {
             Set<Authority> authorities = new HashSet<>();
-            managedUserVM.getAuthorities().stream().forEach(
+            managedUserVM.getAuthorities().forEach(
                 authority -> authorities.add(authorityRepository.findOne(authority))
             );
             user.setAuthorities(authorities);
@@ -144,14 +141,13 @@ public class UserService {
     }
 
     public void updateUser(String firstName, String lastName, String email, String langKey) {
-        userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin()).ifPresent(u -> {
-            u.setFirstName(firstName);
-            u.setLastName(lastName);
-            u.setEmail(email);
-            u.setLangKey(langKey);
-            userRepository.save(u);
-            userSearchRepository.save(u);
-            log.debug("Changed Information for User: {}", u);
+        userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin()).ifPresent(user -> {
+            user.setFirstName(firstName);
+            user.setLastName(lastName);
+            user.setEmail(email);
+            user.setLangKey(langKey);
+            userSearchRepository.save(user);
+            log.debug("Changed Information for User: {}", user);
         });
     }
 
@@ -160,44 +156,43 @@ public class UserService {
 
         Optional.of(userRepository
             .findOne(id))
-            .ifPresent(u -> {
-                u.setLogin(login);
-                u.setFirstName(firstName);
-                u.setLastName(lastName);
-                u.setEmail(email);
-                u.setActivated(activated);
-                u.setLangKey(langKey);
-                Set<Authority> managedAuthorities = u.getAuthorities();
+            .ifPresent(user -> {
+                user.setLogin(login);
+                user.setFirstName(firstName);
+                user.setLastName(lastName);
+                user.setEmail(email);
+                user.setActivated(activated);
+                user.setLangKey(langKey);
+                Set<Authority> managedAuthorities = user.getAuthorities();
                 managedAuthorities.clear();
-                authorities.stream().forEach(
+                authorities.forEach(
                     authority -> managedAuthorities.add(authorityRepository.findOne(authority))
                 );
-                log.debug("Changed Information for User: {}", u);
+                log.debug("Changed Information for User: {}", user);
             });
     }
 
     public void deleteUser(String login) {
-        userRepository.findOneByLogin(login).ifPresent(u -> {
-            userRepository.delete(u);
-            userSearchRepository.delete(u);
-            log.debug("Deleted User: {}", u);
+        userRepository.findOneByLogin(login).ifPresent(user -> {
+            userRepository.delete(user);
+            userSearchRepository.delete(user);
+            log.debug("Deleted User: {}", user);
         });
     }
 
     public void changePassword(String password) {
-        userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin()).ifPresent(u -> {
+        userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin()).ifPresent(user -> {
             String encryptedPassword = passwordEncoder.encode(password);
-            u.setPassword(encryptedPassword);
-            userRepository.save(u);
-            log.debug("Changed password for User: {}", u);
+            user.setPassword(encryptedPassword);
+            log.debug("Changed password for User: {}", user);
         });
     }
 
     @Transactional(readOnly = true)
     public Optional<User> getUserWithAuthoritiesByLogin(String login) {
-        return userRepository.findOneByLogin(login).map(u -> {
-            u.getAuthorities().size();
-            return u;
+        return userRepository.findOneByLogin(login).map(user -> {
+            user.getAuthorities().size();
+            return user;
         });
     }
 

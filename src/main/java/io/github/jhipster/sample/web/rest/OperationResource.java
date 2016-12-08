@@ -7,6 +7,8 @@ import io.github.jhipster.sample.repository.OperationRepository;
 import io.github.jhipster.sample.repository.search.OperationSearchRepository;
 import io.github.jhipster.sample.web.rest.util.HeaderUtil;
 import io.github.jhipster.sample.web.rest.util.PaginationUtil;
+
+import io.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -95,7 +97,7 @@ public class OperationResource {
      */
     @GetMapping("/operations")
     @Timed
-    public ResponseEntity<List<Operation>> getAllOperations(Pageable pageable)
+    public ResponseEntity<List<Operation>> getAllOperations(@ApiParam Pageable pageable)
         throws URISyntaxException {
         log.debug("REST request to get a page of Operations");
         Page<Operation> page = operationRepository.findAll(pageable);
@@ -147,7 +149,7 @@ public class OperationResource {
      */
     @GetMapping("/_search/operations")
     @Timed
-    public ResponseEntity<List<Operation>> searchOperations(@RequestParam String query, Pageable pageable)
+    public ResponseEntity<List<Operation>> searchOperations(@RequestParam String query, @ApiParam Pageable pageable)
         throws URISyntaxException {
         log.debug("REST request to search for a page of Operations for query {}", query);
         Page<Operation> page = operationSearchRepository.search(queryStringQuery(query), pageable);

@@ -10,17 +10,16 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import java.util.List;
 
@@ -41,19 +40,19 @@ public class LabelResourceIntTest {
     private static final String DEFAULT_LABEL = "AAAAAAAAAA";
     private static final String UPDATED_LABEL = "BBBBBBBBBB";
 
-    @Inject
+    @Autowired
     private LabelRepository labelRepository;
 
-    @Inject
+    @Autowired
     private LabelSearchRepository labelSearchRepository;
 
-    @Inject
+    @Autowired
     private MappingJackson2HttpMessageConverter jacksonMessageConverter;
 
-    @Inject
+    @Autowired
     private PageableHandlerMethodArgumentResolver pageableArgumentResolver;
 
-    @Inject
+    @Autowired
     private EntityManager em;
 
     private MockMvc restLabelMockMvc;
@@ -63,9 +62,7 @@ public class LabelResourceIntTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        LabelResource labelResource = new LabelResource();
-        ReflectionTestUtils.setField(labelResource, "labelSearchRepository", labelSearchRepository);
-        ReflectionTestUtils.setField(labelResource, "labelRepository", labelRepository);
+            LabelResource labelResource = new LabelResource(labelRepository, labelSearchRepository);
         this.restLabelMockMvc = MockMvcBuilders.standaloneSetup(labelResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setMessageConverters(jacksonMessageConverter).build();
@@ -107,7 +104,7 @@ public class LabelResourceIntTest {
         Label testLabel = labelList.get(labelList.size() - 1);
         assertThat(testLabel.getLabel()).isEqualTo(DEFAULT_LABEL);
 
-        // Validate the Label in ElasticSearch
+        // Validate the Label in Elasticsearch
         Label labelEs = labelSearchRepository.findOne(testLabel.getId());
         assertThat(labelEs).isEqualToComparingFieldByField(testLabel);
     }
@@ -209,7 +206,7 @@ public class LabelResourceIntTest {
         Label testLabel = labelList.get(labelList.size() - 1);
         assertThat(testLabel.getLabel()).isEqualTo(UPDATED_LABEL);
 
-        // Validate the Label in ElasticSearch
+        // Validate the Label in Elasticsearch
         Label labelEs = labelSearchRepository.findOne(testLabel.getId());
         assertThat(labelEs).isEqualToComparingFieldByField(testLabel);
     }
@@ -245,7 +242,7 @@ public class LabelResourceIntTest {
             .accept(TestUtil.APPLICATION_JSON_UTF8))
             .andExpect(status().isOk());
 
-        // Validate ElasticSearch is empty
+        // Validate Elasticsearch is empty
         boolean labelExistsInEs = labelSearchRepository.exists(label.getId());
         assertThat(labelExistsInEs).isFalse();
 
@@ -267,5 +264,10 @@ public class LabelResourceIntTest {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(label.getId().intValue())))
             .andExpect(jsonPath("$.[*].label").value(hasItem(DEFAULT_LABEL.toString())));
+    }
+
+    @Test
+    public void equalsVerifier() throws Exception {
+        TestUtil.equalsVerifier(Label.class);
     }
 }

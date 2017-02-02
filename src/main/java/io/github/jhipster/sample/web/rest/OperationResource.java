@@ -7,8 +7,8 @@ import io.github.jhipster.sample.repository.OperationRepository;
 import io.github.jhipster.sample.repository.search.OperationSearchRepository;
 import io.github.jhipster.sample.web.rest.util.HeaderUtil;
 import io.github.jhipster.sample.web.rest.util.PaginationUtil;
-
 import io.swagger.annotations.ApiParam;
+import io.github.jhipster.web.util.ResponseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -18,7 +18,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.inject.Inject;
 import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -37,12 +36,17 @@ import static org.elasticsearch.index.query.QueryBuilders.*;
 public class OperationResource {
 
     private final Logger log = LoggerFactory.getLogger(OperationResource.class);
-        
-    @Inject
-    private OperationRepository operationRepository;
 
-    @Inject
-    private OperationSearchRepository operationSearchRepository;
+    private static final String ENTITY_NAME = "operation";
+        
+    private final OperationRepository operationRepository;
+
+    private final OperationSearchRepository operationSearchRepository;
+
+    public OperationResource(OperationRepository operationRepository, OperationSearchRepository operationSearchRepository) {
+        this.operationRepository = operationRepository;
+        this.operationSearchRepository = operationSearchRepository;
+    }
 
     /**
      * POST  /operations : Create a new operation.
@@ -56,12 +60,12 @@ public class OperationResource {
     public ResponseEntity<Operation> createOperation(@Valid @RequestBody Operation operation) throws URISyntaxException {
         log.debug("REST request to save Operation : {}", operation);
         if (operation.getId() != null) {
-            return ResponseEntity.badRequest().headers(HeaderUtil.createFailureAlert("operation", "idexists", "A new operation cannot already have an ID")).body(null);
+            return ResponseEntity.badRequest().headers(HeaderUtil.createFailureAlert(ENTITY_NAME, "idexists", "A new operation cannot already have an ID")).body(null);
         }
         Operation result = operationRepository.save(operation);
         operationSearchRepository.save(result);
         return ResponseEntity.created(new URI("/api/operations/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert("operation", result.getId().toString()))
+            .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
             .body(result);
     }
 
@@ -84,7 +88,7 @@ public class OperationResource {
         Operation result = operationRepository.save(operation);
         operationSearchRepository.save(result);
         return ResponseEntity.ok()
-            .headers(HeaderUtil.createEntityUpdateAlert("operation", operation.getId().toString()))
+            .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, operation.getId().toString()))
             .body(result);
     }
 
@@ -116,11 +120,7 @@ public class OperationResource {
     public ResponseEntity<Operation> getOperation(@PathVariable Long id) {
         log.debug("REST request to get Operation : {}", id);
         Operation operation = operationRepository.findOneWithEagerRelationships(id);
-        return Optional.ofNullable(operation)
-            .map(result -> new ResponseEntity<>(
-                result,
-                HttpStatus.OK))
-            .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        return ResponseUtil.wrapOrNotFound(Optional.ofNullable(operation));
     }
 
     /**
@@ -135,7 +135,7 @@ public class OperationResource {
         log.debug("REST request to delete Operation : {}", id);
         operationRepository.delete(id);
         operationSearchRepository.delete(id);
-        return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert("operation", id.toString())).build();
+        return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
     }
 
     /**

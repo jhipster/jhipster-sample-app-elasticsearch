@@ -10,17 +10,16 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import java.time.Instant;
 import java.time.ZonedDateTime;
@@ -53,19 +52,19 @@ public class OperationResourceIntTest {
     private static final BigDecimal DEFAULT_AMOUNT = new BigDecimal(1);
     private static final BigDecimal UPDATED_AMOUNT = new BigDecimal(2);
 
-    @Inject
+    @Autowired
     private OperationRepository operationRepository;
 
-    @Inject
+    @Autowired
     private OperationSearchRepository operationSearchRepository;
 
-    @Inject
+    @Autowired
     private MappingJackson2HttpMessageConverter jacksonMessageConverter;
 
-    @Inject
+    @Autowired
     private PageableHandlerMethodArgumentResolver pageableArgumentResolver;
 
-    @Inject
+    @Autowired
     private EntityManager em;
 
     private MockMvc restOperationMockMvc;
@@ -75,9 +74,7 @@ public class OperationResourceIntTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        OperationResource operationResource = new OperationResource();
-        ReflectionTestUtils.setField(operationResource, "operationSearchRepository", operationSearchRepository);
-        ReflectionTestUtils.setField(operationResource, "operationRepository", operationRepository);
+            OperationResource operationResource = new OperationResource(operationRepository, operationSearchRepository);
         this.restOperationMockMvc = MockMvcBuilders.standaloneSetup(operationResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setMessageConverters(jacksonMessageConverter).build();
@@ -123,7 +120,7 @@ public class OperationResourceIntTest {
         assertThat(testOperation.getDescription()).isEqualTo(DEFAULT_DESCRIPTION);
         assertThat(testOperation.getAmount()).isEqualTo(DEFAULT_AMOUNT);
 
-        // Validate the Operation in ElasticSearch
+        // Validate the Operation in Elasticsearch
         Operation operationEs = operationSearchRepository.findOne(testOperation.getId());
         assertThat(operationEs).isEqualToComparingFieldByField(testOperation);
     }
@@ -251,7 +248,7 @@ public class OperationResourceIntTest {
         assertThat(testOperation.getDescription()).isEqualTo(UPDATED_DESCRIPTION);
         assertThat(testOperation.getAmount()).isEqualTo(UPDATED_AMOUNT);
 
-        // Validate the Operation in ElasticSearch
+        // Validate the Operation in Elasticsearch
         Operation operationEs = operationSearchRepository.findOne(testOperation.getId());
         assertThat(operationEs).isEqualToComparingFieldByField(testOperation);
     }
@@ -287,7 +284,7 @@ public class OperationResourceIntTest {
             .accept(TestUtil.APPLICATION_JSON_UTF8))
             .andExpect(status().isOk());
 
-        // Validate ElasticSearch is empty
+        // Validate Elasticsearch is empty
         boolean operationExistsInEs = operationSearchRepository.exists(operation.getId());
         assertThat(operationExistsInEs).isFalse();
 
@@ -311,5 +308,10 @@ public class OperationResourceIntTest {
             .andExpect(jsonPath("$.[*].date").value(hasItem(sameInstant(DEFAULT_DATE))))
             .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION.toString())))
             .andExpect(jsonPath("$.[*].amount").value(hasItem(DEFAULT_AMOUNT.intValue())));
+    }
+
+    @Test
+    public void equalsVerifier() throws Exception {
+        TestUtil.equalsVerifier(Operation.class);
     }
 }

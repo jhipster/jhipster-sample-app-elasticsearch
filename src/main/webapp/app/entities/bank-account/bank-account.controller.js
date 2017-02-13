@@ -5,9 +5,9 @@
         .module('jhipsterElasticsearchSampleApplicationApp')
         .controller('BankAccountController', BankAccountController);
 
-    BankAccountController.$inject = ['$scope', '$state', 'BankAccount', 'BankAccountSearch'];
+    BankAccountController.$inject = ['BankAccount', 'BankAccountSearch'];
 
-    function BankAccountController ($scope, $state, BankAccount, BankAccountSearch) {
+    function BankAccountController(BankAccount, BankAccountSearch) {
         var vm = this;
 
         vm.bankAccounts = [];

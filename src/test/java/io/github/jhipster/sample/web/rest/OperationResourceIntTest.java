@@ -5,6 +5,7 @@ import io.github.jhipster.sample.JhipsterElasticsearchSampleApplicationApp;
 import io.github.jhipster.sample.domain.Operation;
 import io.github.jhipster.sample.repository.OperationRepository;
 import io.github.jhipster.sample.repository.search.OperationSearchRepository;
+import io.github.jhipster.sample.web.rest.errors.ExceptionTranslator;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -65,6 +66,9 @@ public class OperationResourceIntTest {
     private PageableHandlerMethodArgumentResolver pageableArgumentResolver;
 
     @Autowired
+    private ExceptionTranslator exceptionTranslator;
+
+    @Autowired
     private EntityManager em;
 
     private MockMvc restOperationMockMvc;
@@ -77,6 +81,7 @@ public class OperationResourceIntTest {
             OperationResource operationResource = new OperationResource(operationRepository, operationSearchRepository);
         this.restOperationMockMvc = MockMvcBuilders.standaloneSetup(operationResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
+            .setControllerAdvice(exceptionTranslator)
             .setMessageConverters(jacksonMessageConverter).build();
     }
 

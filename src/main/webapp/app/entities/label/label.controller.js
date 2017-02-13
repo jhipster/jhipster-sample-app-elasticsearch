@@ -5,9 +5,9 @@
         .module('jhipsterElasticsearchSampleApplicationApp')
         .controller('LabelController', LabelController);
 
-    LabelController.$inject = ['$scope', '$state', 'Label', 'LabelSearch'];
+    LabelController.$inject = ['Label', 'LabelSearch'];
 
-    function LabelController ($scope, $state, Label, LabelSearch) {
+    function LabelController(Label, LabelSearch) {
         var vm = this;
 
         vm.labels = [];

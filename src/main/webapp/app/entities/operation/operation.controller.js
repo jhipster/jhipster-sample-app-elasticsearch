@@ -5,9 +5,9 @@
         .module('jhipsterElasticsearchSampleApplicationApp')
         .controller('OperationController', OperationController);
 
-    OperationController.$inject = ['$scope', '$state', 'Operation', 'OperationSearch', 'ParseLinks', 'AlertService', 'paginationConstants'];
+    OperationController.$inject = ['Operation', 'OperationSearch', 'ParseLinks', 'AlertService', 'paginationConstants'];
 
-    function OperationController ($scope, $state, Operation, OperationSearch, ParseLinks, AlertService, paginationConstants) {
+    function OperationController(Operation, OperationSearch, ParseLinks, AlertService, paginationConstants) {
         var vm = this;
 
         vm.operations = [];

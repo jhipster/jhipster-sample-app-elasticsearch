@@ -5,6 +5,7 @@ import io.github.jhipster.sample.JhipsterElasticsearchSampleApplicationApp;
 import io.github.jhipster.sample.domain.Label;
 import io.github.jhipster.sample.repository.LabelRepository;
 import io.github.jhipster.sample.repository.search.LabelSearchRepository;
+import io.github.jhipster.sample.web.rest.errors.ExceptionTranslator;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -53,6 +54,9 @@ public class LabelResourceIntTest {
     private PageableHandlerMethodArgumentResolver pageableArgumentResolver;
 
     @Autowired
+    private ExceptionTranslator exceptionTranslator;
+
+    @Autowired
     private EntityManager em;
 
     private MockMvc restLabelMockMvc;
@@ -65,6 +69,7 @@ public class LabelResourceIntTest {
             LabelResource labelResource = new LabelResource(labelRepository, labelSearchRepository);
         this.restLabelMockMvc = MockMvcBuilders.standaloneSetup(labelResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
+            .setControllerAdvice(exceptionTranslator)
             .setMessageConverters(jacksonMessageConverter).build();
     }
 

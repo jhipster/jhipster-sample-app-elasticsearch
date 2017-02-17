@@ -8,6 +8,7 @@
     BankAccountController.$inject = ['BankAccount', 'BankAccountSearch'];
 
     function BankAccountController(BankAccount, BankAccountSearch) {
+
         var vm = this;
 
         vm.bankAccounts = [];

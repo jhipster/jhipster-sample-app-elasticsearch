@@ -8,6 +8,7 @@
     LabelController.$inject = ['Label', 'LabelSearch'];
 
     function LabelController(Label, LabelSearch) {
+
         var vm = this;
 
         vm.labels = [];

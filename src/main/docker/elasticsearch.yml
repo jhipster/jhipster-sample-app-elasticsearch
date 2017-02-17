@@ -1,7 +1,6 @@
 version: '2'
 services:
     jhipsterelasticsearchsampleapplication-elasticsearch:
-        container_name: jhipsterelasticsearchsampleapplication-elasticsearch
         image: elasticsearch:2.4.1
         # volumes:
         #     - ~/volumes/jhipster/jhipsterElasticsearchSampleApplication/elasticsearch/:/usr/share/elasticsearch/data/

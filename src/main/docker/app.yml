@@ -2,14 +2,11 @@ version: '2'
 services:
     jhipsterelasticsearchsampleapplication-app:
         image: jhipsterelasticsearchsampleapplication
-        external_links:
-            - jhipsterelasticsearchsampleapplication-mysql:mysql
-            - jhipsterelasticsearchsampleapplication-elasticsearch:elasticsearch
         environment:
             - SPRING_PROFILES_ACTIVE=prod,swagger
-            - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/jhipsterelasticsearchsampleapplication?useUnicode=true&characterEncoding=utf8&useSSL=false
+            - SPRING_DATASOURCE_URL=jdbc:mysql://jhipsterelasticsearchsampleapplication-mysql:3306/jhipsterelasticsearchsampleapplication?useUnicode=true&characterEncoding=utf8&useSSL=false
             - JHIPSTER_SLEEP=10 # gives time for the database to boot before the application
-            - SPRING_DATA_ELASTICSEARCH_CLUSTER_NODES=elasticsearch:9300
+            - SPRING_DATA_ELASTICSEARCH_CLUSTER_NODES=jhipsterelasticsearchsampleapplication-elasticsearch:9300
         ports:
             - 8080:8080
     jhipsterelasticsearchsampleapplication-mysql:

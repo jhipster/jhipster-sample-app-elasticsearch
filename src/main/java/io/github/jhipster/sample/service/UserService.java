@@ -4,6 +4,7 @@ import io.github.jhipster.sample.domain.Authority;
 import io.github.jhipster.sample.domain.User;
 import io.github.jhipster.sample.repository.AuthorityRepository;
 import io.github.jhipster.sample.repository.PersistentTokenRepository;
+import io.github.jhipster.sample.config.Constants;
 import io.github.jhipster.sample.repository.UserRepository;
 import io.github.jhipster.sample.repository.search.UserSearchRepository;
 import io.github.jhipster.sample.security.AuthoritiesConstants;
@@ -204,7 +205,7 @@ public class UserService {
 
     @Transactional(readOnly = true)    
     public Page<UserDTO> getAllManagedUsers(Pageable pageable) {
-        return userRepository.findAll(pageable).map(UserDTO::new);
+        return userRepository.findAllByLoginNot(pageable, Constants.ANONYMOUS_USER).map(UserDTO::new);
     }
 
     @Transactional(readOnly = true)

@@ -78,7 +78,7 @@ public class OperationResourceIntTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-            OperationResource operationResource = new OperationResource(operationRepository, operationSearchRepository);
+        OperationResource operationResource = new OperationResource(operationRepository, operationSearchRepository);
         this.restOperationMockMvc = MockMvcBuilders.standaloneSetup(operationResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)
@@ -111,7 +111,6 @@ public class OperationResourceIntTest {
         int databaseSizeBeforeCreate = operationRepository.findAll().size();
 
         // Create the Operation
-
         restOperationMockMvc.perform(post("/api/operations")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
             .content(TestUtil.convertObjectToJsonBytes(operation)))
@@ -136,13 +135,12 @@ public class OperationResourceIntTest {
         int databaseSizeBeforeCreate = operationRepository.findAll().size();
 
         // Create the Operation with an existing ID
-        Operation existingOperation = new Operation();
-        existingOperation.setId(1L);
+        operation.setId(1L);
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restOperationMockMvc.perform(post("/api/operations")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(existingOperation)))
+            .content(TestUtil.convertObjectToJsonBytes(operation)))
             .andExpect(status().isBadRequest());
 
         // Validate the Alice in the database
@@ -316,6 +314,7 @@ public class OperationResourceIntTest {
     }
 
     @Test
+    @Transactional
     public void equalsVerifier() throws Exception {
         TestUtil.equalsVerifier(Operation.class);
     }

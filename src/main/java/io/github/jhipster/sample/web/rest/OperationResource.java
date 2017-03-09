@@ -101,8 +101,7 @@ public class OperationResource {
      */
     @GetMapping("/operations")
     @Timed
-    public ResponseEntity<List<Operation>> getAllOperations(@ApiParam Pageable pageable)
-        throws URISyntaxException {
+    public ResponseEntity<List<Operation>> getAllOperations(@ApiParam Pageable pageable) {
         log.debug("REST request to get a page of Operations");
         Page<Operation> page = operationRepository.findAll(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/operations");
@@ -149,8 +148,7 @@ public class OperationResource {
      */
     @GetMapping("/_search/operations")
     @Timed
-    public ResponseEntity<List<Operation>> searchOperations(@RequestParam String query, @ApiParam Pageable pageable)
-        throws URISyntaxException {
+    public ResponseEntity<List<Operation>> searchOperations(@RequestParam String query, @ApiParam Pageable pageable) {
         log.debug("REST request to search for a page of Operations for query {}", query);
         Page<Operation> page = operationSearchRepository.search(queryStringQuery(query), pageable);
         HttpHeaders headers = PaginationUtil.generateSearchPaginationHttpHeaders(query, page, "/api/_search/operations");

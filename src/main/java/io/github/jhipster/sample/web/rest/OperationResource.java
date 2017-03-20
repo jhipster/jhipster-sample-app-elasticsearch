@@ -97,7 +97,6 @@ public class OperationResource {
      *
      * @param pageable the pagination information
      * @return the ResponseEntity with status 200 (OK) and the list of operations in body
-     * @throws URISyntaxException if there is an error to generate the pagination HTTP headers
      */
     @GetMapping("/operations")
     @Timed
@@ -144,7 +143,6 @@ public class OperationResource {
      * @param query the query of the operation search 
      * @param pageable the pagination information
      * @return the result of the search
-     * @throws URISyntaxException if there is an error to generate the pagination HTTP headers
      */
     @GetMapping("/_search/operations")
     @Timed

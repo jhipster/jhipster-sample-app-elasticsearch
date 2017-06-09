@@ -33,7 +33,7 @@ public class BankAccountResource {
     private final Logger log = LoggerFactory.getLogger(BankAccountResource.class);
 
     private static final String ENTITY_NAME = "bankAccount";
-        
+
     private final BankAccountRepository bankAccountRepository;
 
     private final BankAccountSearchRepository bankAccountSearchRepository;
@@ -70,7 +70,7 @@ public class BankAccountResource {
      * @param bankAccount the bankAccount to update
      * @return the ResponseEntity with status 200 (OK) and with body the updated bankAccount,
      * or with status 400 (Bad Request) if the bankAccount is not valid,
-     * or with status 500 (Internal Server Error) if the bankAccount couldnt be updated
+     * or with status 500 (Internal Server Error) if the bankAccount couldn't be updated
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     @PutMapping("/bank-accounts")
@@ -96,8 +96,7 @@ public class BankAccountResource {
     @Timed
     public List<BankAccount> getAllBankAccounts() {
         log.debug("REST request to get all BankAccounts");
-        List<BankAccount> bankAccounts = bankAccountRepository.findAll();
-        return bankAccounts;
+        return bankAccountRepository.findAll();
     }
 
     /**
@@ -133,7 +132,7 @@ public class BankAccountResource {
      * SEARCH  /_search/bank-accounts?query=:query : search for the bankAccount corresponding
      * to the query.
      *
-     * @param query the query of the bankAccount search 
+     * @param query the query of the bankAccount search
      * @return the result of the search
      */
     @GetMapping("/_search/bank-accounts")
@@ -144,6 +143,5 @@ public class BankAccountResource {
             .stream(bankAccountSearchRepository.search(queryStringQuery(query)).spliterator(), false)
             .collect(Collectors.toList());
     }
-
 
 }

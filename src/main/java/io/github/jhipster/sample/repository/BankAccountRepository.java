@@ -15,5 +15,5 @@ public interface BankAccountRepository extends JpaRepository<BankAccount,Long> {
 
     @Query("select bank_account from BankAccount bank_account where bank_account.user.login = ?#{principal.username}")
     List<BankAccount> findByUserIsCurrentUser();
-
+    
 }

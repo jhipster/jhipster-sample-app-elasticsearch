@@ -33,7 +33,7 @@ public class LabelResource {
     private final Logger log = LoggerFactory.getLogger(LabelResource.class);
 
     private static final String ENTITY_NAME = "label";
-        
+
     private final LabelRepository labelRepository;
 
     private final LabelSearchRepository labelSearchRepository;
@@ -70,7 +70,7 @@ public class LabelResource {
      * @param label the label to update
      * @return the ResponseEntity with status 200 (OK) and with body the updated label,
      * or with status 400 (Bad Request) if the label is not valid,
-     * or with status 500 (Internal Server Error) if the label couldnt be updated
+     * or with status 500 (Internal Server Error) if the label couldn't be updated
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     @PutMapping("/labels")
@@ -96,8 +96,7 @@ public class LabelResource {
     @Timed
     public List<Label> getAllLabels() {
         log.debug("REST request to get all Labels");
-        List<Label> labels = labelRepository.findAll();
-        return labels;
+        return labelRepository.findAll();
     }
 
     /**
@@ -133,7 +132,7 @@ public class LabelResource {
      * SEARCH  /_search/labels?query=:query : search for the label corresponding
      * to the query.
      *
-     * @param query the query of the label search 
+     * @param query the query of the label search
      * @return the result of the search
      */
     @GetMapping("/_search/labels")
@@ -144,6 +143,5 @@ public class LabelResource {
             .stream(labelSearchRepository.search(queryStringQuery(query)).spliterator(), false)
             .collect(Collectors.toList());
     }
-
 
 }

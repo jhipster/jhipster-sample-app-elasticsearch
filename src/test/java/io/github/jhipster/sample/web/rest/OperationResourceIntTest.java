@@ -75,7 +75,7 @@ public class OperationResourceIntTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        OperationResource operationResource = new OperationResource(operationRepository, operationSearchRepository);
+        final OperationResource operationResource = new OperationResource(operationRepository, operationSearchRepository);
         this.restOperationMockMvc = MockMvcBuilders.standaloneSetup(operationResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)

@@ -37,7 +37,6 @@ public class BankAccountResource {
     private final BankAccountRepository bankAccountRepository;
 
     private final BankAccountSearchRepository bankAccountSearchRepository;
-
     public BankAccountResource(BankAccountRepository bankAccountRepository, BankAccountSearchRepository bankAccountSearchRepository) {
         this.bankAccountRepository = bankAccountRepository;
         this.bankAccountSearchRepository = bankAccountSearchRepository;
@@ -97,7 +96,7 @@ public class BankAccountResource {
     public List<BankAccount> getAllBankAccounts() {
         log.debug("REST request to get all BankAccounts");
         return bankAccountRepository.findAll();
-    }
+        }
 
     /**
      * GET  /bank-accounts/:id : get the "id" bankAccount.

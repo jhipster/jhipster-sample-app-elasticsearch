@@ -37,7 +37,6 @@ public class LabelResource {
     private final LabelRepository labelRepository;
 
     private final LabelSearchRepository labelSearchRepository;
-
     public LabelResource(LabelRepository labelRepository, LabelSearchRepository labelSearchRepository) {
         this.labelRepository = labelRepository;
         this.labelSearchRepository = labelSearchRepository;
@@ -97,7 +96,7 @@ public class LabelResource {
     public List<Label> getAllLabels() {
         log.debug("REST request to get all Labels");
         return labelRepository.findAll();
-    }
+        }
 
     /**
      * GET  /labels/:id : get the "id" label.

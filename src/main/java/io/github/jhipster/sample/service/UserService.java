@@ -14,6 +14,7 @@ import io.github.jhipster.sample.service.dto.UserDTO;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.CacheManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -46,12 +47,15 @@ public class UserService {
 
     private final AuthorityRepository authorityRepository;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, UserSearchRepository userSearchRepository, PersistentTokenRepository persistentTokenRepository, AuthorityRepository authorityRepository) {
+    private final CacheManager cacheManager;
+
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, UserSearchRepository userSearchRepository, PersistentTokenRepository persistentTokenRepository, AuthorityRepository authorityRepository, CacheManager cacheManager) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.userSearchRepository = userSearchRepository;
         this.persistentTokenRepository = persistentTokenRepository;
         this.authorityRepository = authorityRepository;
+        this.cacheManager = cacheManager;
     }
 
     public Optional<User> activateRegistration(String key) {
@@ -62,6 +66,7 @@ public class UserService {
                 user.setActivated(true);
                 user.setActivationKey(null);
                 userSearchRepository.save(user);
+                cacheManager.getCache("users").evict(user.getLogin());
                 log.debug("Activated user: {}", user);
                 return user;
             });
@@ -76,6 +81,7 @@ public class UserService {
                 user.setPassword(passwordEncoder.encode(newPassword));
                 user.setResetKey(null);
                 user.setResetDate(null);
+                cacheManager.getCache("users").evict(user.getLogin());
                 return user;
            });
     }
@@ -86,6 +92,7 @@ public class UserService {
             .map(user -> {
                 user.setResetKey(RandomUtil.generateResetKey());
                 user.setResetDate(Instant.now());
+                cacheManager.getCache("users").evict(user.getLogin());
                 return user;
             });
     }
@@ -164,6 +171,7 @@ public class UserService {
             user.setLangKey(langKey);
             user.setImageUrl(imageUrl);
             userSearchRepository.save(user);
+            cacheManager.getCache("users").evict(user.getLogin());
             log.debug("Changed Information for User: {}", user);
         });
     }
@@ -191,6 +199,7 @@ public class UserService {
                     .map(authorityRepository::findOne)
                     .forEach(managedAuthorities::add);
                 userSearchRepository.save(user);
+                cacheManager.getCache("users").evict(user.getLogin());
                 log.debug("Changed Information for User: {}", user);
                 return user;
             })
@@ -201,6 +210,7 @@ public class UserService {
         userRepository.findOneByLogin(login).ifPresent(user -> {
             userRepository.delete(user);
             userSearchRepository.delete(user);
+            cacheManager.getCache("users").evict(login);
             log.debug("Deleted User: {}", user);
         });
     }
@@ -209,6 +219,7 @@ public class UserService {
         userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin()).ifPresent(user -> {
             String encryptedPassword = passwordEncoder.encode(password);
             user.setPassword(encryptedPassword);
+            cacheManager.getCache("users").evict(user.getLogin());
             log.debug("Changed password for User: {}", user);
         });
     }
@@ -262,6 +273,7 @@ public class UserService {
             log.debug("Deleting not activated user {}", user.getLogin());
             userRepository.delete(user);
             userSearchRepository.delete(user);
+            cacheManager.getCache("users").evict(user.getLogin());
         }
     }
 

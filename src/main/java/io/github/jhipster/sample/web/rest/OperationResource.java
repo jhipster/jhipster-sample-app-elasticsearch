@@ -43,6 +43,7 @@ public class OperationResource {
     private final OperationRepository operationRepository;
 
     private final OperationSearchRepository operationSearchRepository;
+
     public OperationResource(OperationRepository operationRepository, OperationSearchRepository operationSearchRepository) {
         this.operationRepository = operationRepository;
         this.operationSearchRepository = operationSearchRepository;

@@ -37,6 +37,7 @@ public class LabelResource {
     private final LabelRepository labelRepository;
 
     private final LabelSearchRepository labelSearchRepository;
+
     public LabelResource(LabelRepository labelRepository, LabelSearchRepository labelSearchRepository) {
         this.labelRepository = labelRepository;
         this.labelSearchRepository = labelSearchRepository;

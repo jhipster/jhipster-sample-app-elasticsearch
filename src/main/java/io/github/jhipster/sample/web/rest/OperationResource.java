@@ -8,7 +8,6 @@ import io.github.jhipster.sample.repository.search.OperationSearchRepository;
 import io.github.jhipster.sample.web.rest.errors.BadRequestAlertException;
 import io.github.jhipster.sample.web.rest.util.HeaderUtil;
 import io.github.jhipster.sample.web.rest.util.PaginationUtil;
-import io.swagger.annotations.ApiParam;
 import io.github.jhipster.web.util.ResponseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -102,7 +101,7 @@ public class OperationResource {
      */
     @GetMapping("/operations")
     @Timed
-    public ResponseEntity<List<Operation>> getAllOperations(@ApiParam Pageable pageable) {
+    public ResponseEntity<List<Operation>> getAllOperations(Pageable pageable) {
         log.debug("REST request to get a page of Operations");
         Page<Operation> page = operationRepository.findAll(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/operations");
@@ -148,7 +147,7 @@ public class OperationResource {
      */
     @GetMapping("/_search/operations")
     @Timed
-    public ResponseEntity<List<Operation>> searchOperations(@RequestParam String query, @ApiParam Pageable pageable) {
+    public ResponseEntity<List<Operation>> searchOperations(@RequestParam String query, Pageable pageable) {
         log.debug("REST request to search for a page of Operations for query {}", query);
         Page<Operation> page = operationSearchRepository.search(queryStringQuery(query), pageable);
         HttpHeaders headers = PaginationUtil.generateSearchPaginationHttpHeaders(query, page, "/api/_search/operations");

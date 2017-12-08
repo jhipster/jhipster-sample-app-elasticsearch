@@ -112,7 +112,7 @@ public class LabelResourceIntTest {
 
         // Validate the Label in Elasticsearch
         Label labelEs = labelSearchRepository.findOne(testLabel.getId());
-        assertThat(labelEs).isEqualToComparingFieldByField(testLabel);
+        assertThat(labelEs).isEqualToIgnoringGivenFields(testLabel);
     }
 
     @Test
@@ -215,7 +215,7 @@ public class LabelResourceIntTest {
 
         // Validate the Label in Elasticsearch
         Label labelEs = labelSearchRepository.findOne(testLabel.getId());
-        assertThat(labelEs).isEqualToComparingFieldByField(testLabel);
+        assertThat(labelEs).isEqualToIgnoringGivenFields(testLabel);
     }
 
     @Test

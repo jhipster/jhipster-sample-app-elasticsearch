@@ -118,7 +118,7 @@ public class BankAccountResourceIntTest {
 
         // Validate the BankAccount in Elasticsearch
         BankAccount bankAccountEs = bankAccountSearchRepository.findOne(testBankAccount.getId());
-        assertThat(bankAccountEs).isEqualToComparingFieldByField(testBankAccount);
+        assertThat(bankAccountEs).isEqualToIgnoringGivenFields(testBankAccount);
     }
 
     @Test
@@ -243,7 +243,7 @@ public class BankAccountResourceIntTest {
 
         // Validate the BankAccount in Elasticsearch
         BankAccount bankAccountEs = bankAccountSearchRepository.findOne(testBankAccount.getId());
-        assertThat(bankAccountEs).isEqualToComparingFieldByField(testBankAccount);
+        assertThat(bankAccountEs).isEqualToIgnoringGivenFields(testBankAccount);
     }
 
     @Test

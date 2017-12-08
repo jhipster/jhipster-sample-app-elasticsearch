@@ -125,7 +125,7 @@ public class OperationResourceIntTest {
 
         // Validate the Operation in Elasticsearch
         Operation operationEs = operationSearchRepository.findOne(testOperation.getId());
-        assertThat(operationEs).isEqualToComparingFieldByField(testOperation);
+        assertThat(operationEs).isEqualToIgnoringGivenFields(testOperation);
     }
 
     @Test
@@ -254,7 +254,7 @@ public class OperationResourceIntTest {
 
         // Validate the Operation in Elasticsearch
         Operation operationEs = operationSearchRepository.findOne(testOperation.getId());
-        assertThat(operationEs).isEqualToComparingFieldByField(testOperation);
+        assertThat(operationEs).isEqualToIgnoringGivenFields(testOperation);
     }
 
     @Test

@@ -2,8 +2,8 @@ import { JhiEventManager, JhiInterceptableHttp } from 'ng-jhipster';
 import { Injector } from '@angular/core';
 import { Http, XHRBackend, RequestOptions } from '@angular/http';
 
-import { LoginModalService } from '../../shared/login/login-modal.service';
-import { StateStorageService } from '../../shared/auth/state-storage.service';
+import { AuthInterceptor } from './auth.interceptor';
+import { LocalStorageService, SessionStorageService } from 'ngx-webstorage';
 import { AuthExpiredInterceptor } from './auth-expired.interceptor';
 import { ErrorHandlerInterceptor } from './errorhandler.interceptor';
 import { NotificationInterceptor } from './notification.interceptor';
@@ -11,17 +11,17 @@ import { NotificationInterceptor } from './notification.interceptor';
 export function interceptableFactory(
     backend: XHRBackend,
     defaultOptions: RequestOptions,
+    localStorage: LocalStorageService,
+    sessionStorage: SessionStorageService,
     injector: Injector,
-    stateStorageService: StateStorageService,
-    loginServiceModal: LoginModalService,
     eventManager: JhiEventManager
 ) {
     return new JhiInterceptableHttp(
         backend,
         defaultOptions,
         [
-            new AuthExpiredInterceptor(injector, stateStorageService,
-                loginServiceModal),
+            new AuthInterceptor(localStorage, sessionStorage),
+            new AuthExpiredInterceptor(injector),
             // Other interceptors can be added here
             new ErrorHandlerInterceptor(eventManager),
             new NotificationInterceptor(injector)
@@ -36,9 +36,9 @@ export function customHttpProvider() {
         deps: [
             XHRBackend,
             RequestOptions,
+            LocalStorageService,
+            SessionStorageService,
             Injector,
-            StateStorageService,
-            LoginModalService,
             JhiEventManager
         ]
     };

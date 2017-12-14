@@ -107,13 +107,16 @@ jhipster:
         allowed-origins: "*"
         allowed-methods: "*"
         allowed-headers: "*"
-        exposed-headers: "Link,X-Total-Count"
+        exposed-headers: "Authorization,Link,X-Total-Count"
         allow-credentials: true
         max-age: 1800
     security:
-        remember-me:
-            # security key (this key should be unique for your application, and kept secret)
-            key: d7c92d4b5984a72a6430698b49bdea98b7dc567f
+        authentication:
+            jwt:
+                secret: my-secret-token-to-change-in-production
+                # Token is valid 24 hours
+                token-validity-in-seconds: 86400
+                token-validity-in-seconds-for-remember-me: 2592000
     mail: # specific JHipster mail property, for standard properties see MailProperties
         from: jhipsterElasticsearchSampleApplication@localhost
         base-url: http://127.0.0.1:8080

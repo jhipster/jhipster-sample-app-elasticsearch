@@ -18,14 +18,16 @@ describe('Label e2e test', () => {
     it('should load Labels', () => {
         navBarPage.goToEntity('label');
         labelComponentsPage = new LabelComponentsPage();
-        expect(labelComponentsPage.getTitle()).toMatch(/jhipsterElasticsearchSampleApplicationApp.label.home.title/);
+        expect(labelComponentsPage.getTitle())
+            .toMatch(/jhipsterElasticsearchSampleApplicationApp.label.home.title/);
 
     });
 
     it('should load create Label dialog', () => {
         labelComponentsPage.clickOnCreateButton();
         labelDialogPage = new LabelDialogPage();
-        expect(labelDialogPage.getModalTitle()).toMatch(/jhipsterElasticsearchSampleApplicationApp.label.home.createOrEditLabel/);
+        expect(labelDialogPage.getModalTitle())
+            .toMatch(/jhipsterElasticsearchSampleApplicationApp.label.home.createOrEditLabel/);
         labelDialogPage.close();
     });
 

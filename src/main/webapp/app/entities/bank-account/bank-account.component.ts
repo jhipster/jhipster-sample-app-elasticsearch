@@ -1,11 +1,12 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { HttpResponse, HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
 import { JhiEventManager, JhiAlertService } from 'ng-jhipster';
 
 import { BankAccount } from './bank-account.model';
 import { BankAccountService } from './bank-account.service';
-import { Principal, ResponseWrapper } from '../../shared';
+import { Principal } from '../../shared';
 
 @Component({
     selector: 'jhi-bank-account',
@@ -33,17 +34,17 @@ bankAccounts: BankAccount[];
             this.bankAccountService.search({
                 query: this.currentSearch,
                 }).subscribe(
-                    (res: ResponseWrapper) => this.bankAccounts = res.json,
-                    (res: ResponseWrapper) => this.onError(res.json)
+                    (res: HttpResponse<BankAccount[]>) => this.bankAccounts = res.body,
+                    (res: HttpErrorResponse) => this.onError(res.message)
                 );
             return;
        }
         this.bankAccountService.query().subscribe(
-            (res: ResponseWrapper) => {
-                this.bankAccounts = res.json;
+            (res: HttpResponse<BankAccount[]>) => {
+                this.bankAccounts = res.body;
                 this.currentSearch = '';
             },
-            (res: ResponseWrapper) => this.onError(res.json)
+            (res: HttpErrorResponse) => this.onError(res.message)
         );
     }
 

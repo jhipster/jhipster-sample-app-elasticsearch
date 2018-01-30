@@ -1,11 +1,12 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { HttpResponse, HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
 import { JhiEventManager, JhiAlertService } from 'ng-jhipster';
 
 import { Label } from './label.model';
 import { LabelService } from './label.service';
-import { Principal, ResponseWrapper } from '../../shared';
+import { Principal } from '../../shared';
 
 @Component({
     selector: 'jhi-label',
@@ -33,17 +34,17 @@ labels: Label[];
             this.labelService.search({
                 query: this.currentSearch,
                 }).subscribe(
-                    (res: ResponseWrapper) => this.labels = res.json,
-                    (res: ResponseWrapper) => this.onError(res.json)
+                    (res: HttpResponse<Label[]>) => this.labels = res.body,
+                    (res: HttpErrorResponse) => this.onError(res.message)
                 );
             return;
        }
         this.labelService.query().subscribe(
-            (res: ResponseWrapper) => {
-                this.labels = res.json;
+            (res: HttpResponse<Label[]>) => {
+                this.labels = res.body;
                 this.currentSearch = '';
             },
-            (res: ResponseWrapper) => this.onError(res.json)
+            (res: HttpErrorResponse) => this.onError(res.message)
         );
     }
 

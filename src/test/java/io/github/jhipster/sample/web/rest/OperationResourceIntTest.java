@@ -10,9 +10,12 @@ import io.github.jhipster.sample.web.rest.errors.ExceptionTranslator;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -25,11 +28,15 @@ import javax.persistence.EntityManager;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Collections;
 import java.util.List;
+import java.util.ArrayList;
 
 import static io.github.jhipster.sample.web.rest.TestUtil.createFormattingConversionService;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
 import static org.hamcrest.Matchers.hasItem;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -54,8 +61,16 @@ public class OperationResourceIntTest {
     @Autowired
     private OperationRepository operationRepository;
 
+    @Mock
+    private OperationRepository operationRepositoryMock;
+
+    /**
+     * This repository is mocked in the io.github.jhipster.sample.repository.search test package.
+     *
+     * @see io.github.jhipster.sample.repository.search.OperationSearchRepositoryMockConfiguration
+     */
     @Autowired
-    private OperationSearchRepository operationSearchRepository;
+    private OperationSearchRepository mockOperationSearchRepository;
 
     @Autowired
     private MappingJackson2HttpMessageConverter jacksonMessageConverter;
@@ -76,7 +91,7 @@ public class OperationResourceIntTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        final OperationResource operationResource = new OperationResource(operationRepository, operationSearchRepository);
+        final OperationResource operationResource = new OperationResource(operationRepository, mockOperationSearchRepository);
         this.restOperationMockMvc = MockMvcBuilders.standaloneSetup(operationResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)
@@ -100,7 +115,6 @@ public class OperationResourceIntTest {
 
     @Before
     public void initTest() {
-        operationSearchRepository.deleteAll();
         operation = createEntity(em);
     }
 
@@ -124,8 +138,7 @@ public class OperationResourceIntTest {
         assertThat(testOperation.getAmount()).isEqualTo(DEFAULT_AMOUNT);
 
         // Validate the Operation in Elasticsearch
-        Operation operationEs = operationSearchRepository.findOne(testOperation.getId());
-        assertThat(operationEs).isEqualToIgnoringGivenFields(testOperation);
+        verify(mockOperationSearchRepository, times(1)).save(testOperation);
     }
 
     @Test
@@ -145,6 +158,9 @@ public class OperationResourceIntTest {
         // Validate the Operation in the database
         List<Operation> operationList = operationRepository.findAll();
         assertThat(operationList).hasSize(databaseSizeBeforeCreate);
+
+        // Validate the Operation in Elasticsearch
+        verify(mockOperationSearchRepository, times(0)).save(operation);
     }
 
     @Test
@@ -198,6 +214,37 @@ public class OperationResourceIntTest {
             .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION.toString())))
             .andExpect(jsonPath("$.[*].amount").value(hasItem(DEFAULT_AMOUNT.intValue())));
     }
+    
+    public void getAllOperationsWithEagerRelationshipsIsEnabled() throws Exception {
+        OperationResource operationResource = new OperationResource(operationRepositoryMock, mockOperationSearchRepository);
+        when(operationRepositoryMock.findAllWithEagerRelationships(any())).thenReturn(new PageImpl(new ArrayList<>()));
+
+        MockMvc restOperationMockMvc = MockMvcBuilders.standaloneSetup(operationResource)
+            .setCustomArgumentResolvers(pageableArgumentResolver)
+            .setControllerAdvice(exceptionTranslator)
+            .setConversionService(createFormattingConversionService())
+            .setMessageConverters(jacksonMessageConverter).build();
+
+        restOperationMockMvc.perform(get("/api/operations?eagerload=true"))
+        .andExpect(status().isOk());
+
+        verify(operationRepositoryMock, times(1)).findAllWithEagerRelationships(any());
+    }
+
+    public void getAllOperationsWithEagerRelationshipsIsNotEnabled() throws Exception {
+        OperationResource operationResource = new OperationResource(operationRepositoryMock, mockOperationSearchRepository);
+            when(operationRepositoryMock.findAllWithEagerRelationships(any())).thenReturn(new PageImpl(new ArrayList<>()));
+            MockMvc restOperationMockMvc = MockMvcBuilders.standaloneSetup(operationResource)
+            .setCustomArgumentResolvers(pageableArgumentResolver)
+            .setControllerAdvice(exceptionTranslator)
+            .setConversionService(createFormattingConversionService())
+            .setMessageConverters(jacksonMessageConverter).build();
+
+        restOperationMockMvc.perform(get("/api/operations?eagerload=true"))
+        .andExpect(status().isOk());
+
+            verify(operationRepositoryMock, times(1)).findAllWithEagerRelationships(any());
+    }
 
     @Test
     @Transactional
@@ -228,11 +275,11 @@ public class OperationResourceIntTest {
     public void updateOperation() throws Exception {
         // Initialize the database
         operationRepository.saveAndFlush(operation);
-        operationSearchRepository.save(operation);
+
         int databaseSizeBeforeUpdate = operationRepository.findAll().size();
 
         // Update the operation
-        Operation updatedOperation = operationRepository.findOne(operation.getId());
+        Operation updatedOperation = operationRepository.findById(operation.getId()).get();
         // Disconnect from session so that the updates on updatedOperation are not directly saved in db
         em.detach(updatedOperation);
         updatedOperation.setDate(UPDATED_DATE);
@@ -253,8 +300,7 @@ public class OperationResourceIntTest {
         assertThat(testOperation.getAmount()).isEqualTo(UPDATED_AMOUNT);
 
         // Validate the Operation in Elasticsearch
-        Operation operationEs = operationSearchRepository.findOne(testOperation.getId());
-        assertThat(operationEs).isEqualToIgnoringGivenFields(testOperation);
+        verify(mockOperationSearchRepository, times(1)).save(testOperation);
     }
 
     @Test
@@ -273,6 +319,9 @@ public class OperationResourceIntTest {
         // Validate the Operation in the database
         List<Operation> operationList = operationRepository.findAll();
         assertThat(operationList).hasSize(databaseSizeBeforeUpdate + 1);
+
+        // Validate the Operation in Elasticsearch
+        verify(mockOperationSearchRepository, times(0)).save(operation);
     }
 
     @Test
@@ -280,7 +329,7 @@ public class OperationResourceIntTest {
     public void deleteOperation() throws Exception {
         // Initialize the database
         operationRepository.saveAndFlush(operation);
-        operationSearchRepository.save(operation);
+
         int databaseSizeBeforeDelete = operationRepository.findAll().size();
 
         // Get the operation
@@ -288,13 +337,12 @@ public class OperationResourceIntTest {
             .accept(TestUtil.APPLICATION_JSON_UTF8))
             .andExpect(status().isOk());
 
-        // Validate Elasticsearch is empty
-        boolean operationExistsInEs = operationSearchRepository.exists(operation.getId());
-        assertThat(operationExistsInEs).isFalse();
-
         // Validate the database is empty
         List<Operation> operationList = operationRepository.findAll();
         assertThat(operationList).hasSize(databaseSizeBeforeDelete - 1);
+
+        // Validate the Operation in Elasticsearch
+        verify(mockOperationSearchRepository, times(1)).deleteById(operation.getId());
     }
 
     @Test
@@ -302,8 +350,8 @@ public class OperationResourceIntTest {
     public void searchOperation() throws Exception {
         // Initialize the database
         operationRepository.saveAndFlush(operation);
-        operationSearchRepository.save(operation);
-
+    when(mockOperationSearchRepository.search(queryStringQuery("id:" + operation.getId()), PageRequest.of(0, 20)))
+        .thenReturn(new PageImpl<>(Collections.singletonList(operation), PageRequest.of(0, 1), 1));
         // Search the operation
         restOperationMockMvc.perform(get("/api/_search/operations?query=id:" + operation.getId()))
             .andExpect(status().isOk())

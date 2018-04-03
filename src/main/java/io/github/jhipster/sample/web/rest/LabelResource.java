@@ -98,7 +98,7 @@ public class LabelResource {
     public List<Label> getAllLabels() {
         log.debug("REST request to get all Labels");
         return labelRepository.findAll();
-        }
+    }
 
     /**
      * GET  /labels/:id : get the "id" label.
@@ -110,8 +110,8 @@ public class LabelResource {
     @Timed
     public ResponseEntity<Label> getLabel(@PathVariable Long id) {
         log.debug("REST request to get Label : {}", id);
-        Label label = labelRepository.findOne(id);
-        return ResponseUtil.wrapOrNotFound(Optional.ofNullable(label));
+        Optional<Label> label = labelRepository.findById(id);
+        return ResponseUtil.wrapOrNotFound(label);
     }
 
     /**
@@ -124,8 +124,8 @@ public class LabelResource {
     @Timed
     public ResponseEntity<Void> deleteLabel(@PathVariable Long id) {
         log.debug("REST request to delete Label : {}", id);
-        labelRepository.delete(id);
-        labelSearchRepository.delete(id);
+        labelRepository.deleteById(id);
+        labelSearchRepository.deleteById(id);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
     }
 

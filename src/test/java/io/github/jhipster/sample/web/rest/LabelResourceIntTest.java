@@ -10,6 +10,7 @@ import io.github.jhipster.sample.web.rest.errors.ExceptionTranslator;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,11 +23,15 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import java.util.Collections;
 import java.util.List;
+import java.util.ArrayList;
 
 import static io.github.jhipster.sample.web.rest.TestUtil.createFormattingConversionService;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
 import static org.hamcrest.Matchers.hasItem;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -45,8 +50,15 @@ public class LabelResourceIntTest {
     @Autowired
     private LabelRepository labelRepository;
 
+
+
+    /**
+     * This repository is mocked in the io.github.jhipster.sample.repository.search test package.
+     *
+     * @see io.github.jhipster.sample.repository.search.LabelSearchRepositoryMockConfiguration
+     */
     @Autowired
-    private LabelSearchRepository labelSearchRepository;
+    private LabelSearchRepository mockLabelSearchRepository;
 
     @Autowired
     private MappingJackson2HttpMessageConverter jacksonMessageConverter;
@@ -67,7 +79,7 @@ public class LabelResourceIntTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        final LabelResource labelResource = new LabelResource(labelRepository, labelSearchRepository);
+        final LabelResource labelResource = new LabelResource(labelRepository, mockLabelSearchRepository);
         this.restLabelMockMvc = MockMvcBuilders.standaloneSetup(labelResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)
@@ -89,7 +101,6 @@ public class LabelResourceIntTest {
 
     @Before
     public void initTest() {
-        labelSearchRepository.deleteAll();
         label = createEntity(em);
     }
 
@@ -111,8 +122,7 @@ public class LabelResourceIntTest {
         assertThat(testLabel.getLabel()).isEqualTo(DEFAULT_LABEL);
 
         // Validate the Label in Elasticsearch
-        Label labelEs = labelSearchRepository.findOne(testLabel.getId());
-        assertThat(labelEs).isEqualToIgnoringGivenFields(testLabel);
+        verify(mockLabelSearchRepository, times(1)).save(testLabel);
     }
 
     @Test
@@ -132,6 +142,9 @@ public class LabelResourceIntTest {
         // Validate the Label in the database
         List<Label> labelList = labelRepository.findAll();
         assertThat(labelList).hasSize(databaseSizeBeforeCreate);
+
+        // Validate the Label in Elasticsearch
+        verify(mockLabelSearchRepository, times(0)).save(label);
     }
 
     @Test
@@ -165,6 +178,7 @@ public class LabelResourceIntTest {
             .andExpect(jsonPath("$.[*].id").value(hasItem(label.getId().intValue())))
             .andExpect(jsonPath("$.[*].label").value(hasItem(DEFAULT_LABEL.toString())));
     }
+    
 
     @Test
     @Transactional
@@ -193,11 +207,11 @@ public class LabelResourceIntTest {
     public void updateLabel() throws Exception {
         // Initialize the database
         labelRepository.saveAndFlush(label);
-        labelSearchRepository.save(label);
+
         int databaseSizeBeforeUpdate = labelRepository.findAll().size();
 
         // Update the label
-        Label updatedLabel = labelRepository.findOne(label.getId());
+        Label updatedLabel = labelRepository.findById(label.getId()).get();
         // Disconnect from session so that the updates on updatedLabel are not directly saved in db
         em.detach(updatedLabel);
         updatedLabel.setLabel(UPDATED_LABEL);
@@ -214,8 +228,7 @@ public class LabelResourceIntTest {
         assertThat(testLabel.getLabel()).isEqualTo(UPDATED_LABEL);
 
         // Validate the Label in Elasticsearch
-        Label labelEs = labelSearchRepository.findOne(testLabel.getId());
-        assertThat(labelEs).isEqualToIgnoringGivenFields(testLabel);
+        verify(mockLabelSearchRepository, times(1)).save(testLabel);
     }
 
     @Test
@@ -234,6 +247,9 @@ public class LabelResourceIntTest {
         // Validate the Label in the database
         List<Label> labelList = labelRepository.findAll();
         assertThat(labelList).hasSize(databaseSizeBeforeUpdate + 1);
+
+        // Validate the Label in Elasticsearch
+        verify(mockLabelSearchRepository, times(0)).save(label);
     }
 
     @Test
@@ -241,7 +257,7 @@ public class LabelResourceIntTest {
     public void deleteLabel() throws Exception {
         // Initialize the database
         labelRepository.saveAndFlush(label);
-        labelSearchRepository.save(label);
+
         int databaseSizeBeforeDelete = labelRepository.findAll().size();
 
         // Get the label
@@ -249,13 +265,12 @@ public class LabelResourceIntTest {
             .accept(TestUtil.APPLICATION_JSON_UTF8))
             .andExpect(status().isOk());
 
-        // Validate Elasticsearch is empty
-        boolean labelExistsInEs = labelSearchRepository.exists(label.getId());
-        assertThat(labelExistsInEs).isFalse();
-
         // Validate the database is empty
         List<Label> labelList = labelRepository.findAll();
         assertThat(labelList).hasSize(databaseSizeBeforeDelete - 1);
+
+        // Validate the Label in Elasticsearch
+        verify(mockLabelSearchRepository, times(1)).deleteById(label.getId());
     }
 
     @Test
@@ -263,8 +278,8 @@ public class LabelResourceIntTest {
     public void searchLabel() throws Exception {
         // Initialize the database
         labelRepository.saveAndFlush(label);
-        labelSearchRepository.save(label);
-
+    when(mockLabelSearchRepository.search(queryStringQuery("id:" + label.getId())))
+        .thenReturn(Collections.singletonList(label));
         // Search the label
         restLabelMockMvc.perform(get("/api/_search/labels?query=id:" + label.getId()))
             .andExpect(status().isOk())

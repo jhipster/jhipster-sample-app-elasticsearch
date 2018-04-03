@@ -98,7 +98,7 @@ public class BankAccountResource {
     public List<BankAccount> getAllBankAccounts() {
         log.debug("REST request to get all BankAccounts");
         return bankAccountRepository.findAll();
-        }
+    }
 
     /**
      * GET  /bank-accounts/:id : get the "id" bankAccount.
@@ -110,8 +110,8 @@ public class BankAccountResource {
     @Timed
     public ResponseEntity<BankAccount> getBankAccount(@PathVariable Long id) {
         log.debug("REST request to get BankAccount : {}", id);
-        BankAccount bankAccount = bankAccountRepository.findOne(id);
-        return ResponseUtil.wrapOrNotFound(Optional.ofNullable(bankAccount));
+        Optional<BankAccount> bankAccount = bankAccountRepository.findById(id);
+        return ResponseUtil.wrapOrNotFound(bankAccount);
     }
 
     /**
@@ -124,8 +124,8 @@ public class BankAccountResource {
     @Timed
     public ResponseEntity<Void> deleteBankAccount(@PathVariable Long id) {
         log.debug("REST request to delete BankAccount : {}", id);
-        bankAccountRepository.delete(id);
-        bankAccountSearchRepository.delete(id);
+        bankAccountRepository.deleteById(id);
+        bankAccountSearchRepository.deleteById(id);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
     }
 

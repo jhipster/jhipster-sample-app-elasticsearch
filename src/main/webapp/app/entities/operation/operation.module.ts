@@ -1,49 +1,32 @@
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
-import { JhipsterElasticsearchSampleApplicationSharedModule } from '../../shared';
+import { JhipsterElasticsearchSampleApplicationSharedModule } from 'app/shared';
 import {
-    OperationService,
-    OperationPopupService,
-    OperationComponent,
-    OperationDetailComponent,
-    OperationDialogComponent,
-    OperationPopupComponent,
-    OperationDeletePopupComponent,
-    OperationDeleteDialogComponent,
-    operationRoute,
-    operationPopupRoute,
+  OperationService,
+  OperationComponent,
+  OperationDetailComponent,
+  OperationUpdateComponent,
+  OperationDeletePopupComponent,
+  OperationDeleteDialogComponent,
+  operationRoute,
+  operationPopupRoute,
+  OperationResolve
 } from './';
 
-const ENTITY_STATES = [
-    ...operationRoute,
-    ...operationPopupRoute,
-];
+const ENTITY_STATES = [...operationRoute, ...operationPopupRoute];
 
 @NgModule({
-    imports: [
-        JhipsterElasticsearchSampleApplicationSharedModule,
-        RouterModule.forChild(ENTITY_STATES)
-    ],
-    declarations: [
-        OperationComponent,
-        OperationDetailComponent,
-        OperationDialogComponent,
-        OperationDeleteDialogComponent,
-        OperationPopupComponent,
-        OperationDeletePopupComponent,
-    ],
-    entryComponents: [
-        OperationComponent,
-        OperationDialogComponent,
-        OperationPopupComponent,
-        OperationDeleteDialogComponent,
-        OperationDeletePopupComponent,
-    ],
-    providers: [
-        OperationService,
-        OperationPopupService,
-    ],
-    schemas: [CUSTOM_ELEMENTS_SCHEMA]
+  imports: [JhipsterElasticsearchSampleApplicationSharedModule, RouterModule.forChild(ENTITY_STATES)],
+  declarations: [
+    OperationComponent,
+    OperationDetailComponent,
+    OperationUpdateComponent,
+    OperationDeleteDialogComponent,
+    OperationDeletePopupComponent
+  ],
+  entryComponents: [OperationComponent, OperationUpdateComponent, OperationDeleteDialogComponent, OperationDeletePopupComponent],
+  providers: [OperationService, OperationResolve],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class JhipsterElasticsearchSampleApplicationOperationModule {}

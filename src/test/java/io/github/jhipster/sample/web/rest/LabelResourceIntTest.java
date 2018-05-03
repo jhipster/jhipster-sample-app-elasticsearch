@@ -51,7 +51,6 @@ public class LabelResourceIntTest {
     private LabelRepository labelRepository;
 
 
-
     /**
      * This repository is mocked in the io.github.jhipster.sample.repository.search test package.
      *
@@ -193,7 +192,6 @@ public class LabelResourceIntTest {
             .andExpect(jsonPath("$.id").value(label.getId().intValue()))
             .andExpect(jsonPath("$.label").value(DEFAULT_LABEL.toString()));
     }
-
     @Test
     @Transactional
     public void getNonExistingLabel() throws Exception {
@@ -242,11 +240,11 @@ public class LabelResourceIntTest {
         restLabelMockMvc.perform(put("/api/labels")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
             .content(TestUtil.convertObjectToJsonBytes(label)))
-            .andExpect(status().isCreated());
+            .andExpect(status().isBadRequest());
 
         // Validate the Label in the database
         List<Label> labelList = labelRepository.findAll();
-        assertThat(labelList).hasSize(databaseSizeBeforeUpdate + 1);
+        assertThat(labelList).hasSize(databaseSizeBeforeUpdate);
 
         // Validate the Label in Elasticsearch
         verify(mockLabelSearchRepository, times(0)).save(label);
@@ -278,8 +276,8 @@ public class LabelResourceIntTest {
     public void searchLabel() throws Exception {
         // Initialize the database
         labelRepository.saveAndFlush(label);
-    when(mockLabelSearchRepository.search(queryStringQuery("id:" + label.getId())))
-        .thenReturn(Collections.singletonList(label));
+        when(mockLabelSearchRepository.search(queryStringQuery("id:" + label.getId())))
+            .thenReturn(Collections.singletonList(label));
         // Search the label
         restLabelMockMvc.perform(get("/api/_search/labels?query=id:" + label.getId()))
             .andExpect(status().isOk())

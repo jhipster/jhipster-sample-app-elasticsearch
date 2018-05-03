@@ -55,7 +55,6 @@ public class BankAccountResourceIntTest {
     private BankAccountRepository bankAccountRepository;
 
 
-
     /**
      * This repository is mocked in the io.github.jhipster.sample.repository.search test package.
      *
@@ -219,7 +218,6 @@ public class BankAccountResourceIntTest {
             .andExpect(jsonPath("$.name").value(DEFAULT_NAME.toString()))
             .andExpect(jsonPath("$.balance").value(DEFAULT_BALANCE.intValue()));
     }
-
     @Test
     @Transactional
     public void getNonExistingBankAccount() throws Exception {
@@ -270,11 +268,11 @@ public class BankAccountResourceIntTest {
         restBankAccountMockMvc.perform(put("/api/bank-accounts")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
             .content(TestUtil.convertObjectToJsonBytes(bankAccount)))
-            .andExpect(status().isCreated());
+            .andExpect(status().isBadRequest());
 
         // Validate the BankAccount in the database
         List<BankAccount> bankAccountList = bankAccountRepository.findAll();
-        assertThat(bankAccountList).hasSize(databaseSizeBeforeUpdate + 1);
+        assertThat(bankAccountList).hasSize(databaseSizeBeforeUpdate);
 
         // Validate the BankAccount in Elasticsearch
         verify(mockBankAccountSearchRepository, times(0)).save(bankAccount);
@@ -306,8 +304,8 @@ public class BankAccountResourceIntTest {
     public void searchBankAccount() throws Exception {
         // Initialize the database
         bankAccountRepository.saveAndFlush(bankAccount);
-    when(mockBankAccountSearchRepository.search(queryStringQuery("id:" + bankAccount.getId())))
-        .thenReturn(Collections.singletonList(bankAccount));
+        when(mockBankAccountSearchRepository.search(queryStringQuery("id:" + bankAccount.getId())))
+            .thenReturn(Collections.singletonList(bankAccount));
         // Search the bankAccount
         restBankAccountMockMvc.perform(get("/api/_search/bank-accounts?query=id:" + bankAccount.getId()))
             .andExpect(status().isOk())

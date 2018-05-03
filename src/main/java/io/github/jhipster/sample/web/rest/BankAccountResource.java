@@ -2,7 +2,6 @@ package io.github.jhipster.sample.web.rest;
 
 import com.codahale.metrics.annotation.Timed;
 import io.github.jhipster.sample.domain.BankAccount;
-
 import io.github.jhipster.sample.repository.BankAccountRepository;
 import io.github.jhipster.sample.repository.search.BankAccountSearchRepository;
 import io.github.jhipster.sample.web.rest.errors.BadRequestAlertException;
@@ -57,7 +56,7 @@ public class BankAccountResource {
         log.debug("REST request to save BankAccount : {}", bankAccount);
         if (bankAccount.getId() != null) {
             throw new BadRequestAlertException("A new bankAccount cannot already have an ID", ENTITY_NAME, "idexists");
-        }
+        }        
         BankAccount result = bankAccountRepository.save(bankAccount);
         bankAccountSearchRepository.save(result);
         return ResponseEntity.created(new URI("/api/bank-accounts/" + result.getId()))
@@ -79,8 +78,8 @@ public class BankAccountResource {
     public ResponseEntity<BankAccount> updateBankAccount(@Valid @RequestBody BankAccount bankAccount) throws URISyntaxException {
         log.debug("REST request to update BankAccount : {}", bankAccount);
         if (bankAccount.getId() == null) {
-            return createBankAccount(bankAccount);
-        }
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        }        
         BankAccount result = bankAccountRepository.save(bankAccount);
         bankAccountSearchRepository.save(result);
         return ResponseEntity.ok()

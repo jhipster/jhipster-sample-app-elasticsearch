@@ -60,7 +60,6 @@ public class OperationResourceIntTest {
 
     @Autowired
     private OperationRepository operationRepository;
-
     @Mock
     private OperationRepository operationRepositoryMock;
 
@@ -261,7 +260,6 @@ public class OperationResourceIntTest {
             .andExpect(jsonPath("$.description").value(DEFAULT_DESCRIPTION.toString()))
             .andExpect(jsonPath("$.amount").value(DEFAULT_AMOUNT.intValue()));
     }
-
     @Test
     @Transactional
     public void getNonExistingOperation() throws Exception {
@@ -314,11 +312,11 @@ public class OperationResourceIntTest {
         restOperationMockMvc.perform(put("/api/operations")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
             .content(TestUtil.convertObjectToJsonBytes(operation)))
-            .andExpect(status().isCreated());
+            .andExpect(status().isBadRequest());
 
         // Validate the Operation in the database
         List<Operation> operationList = operationRepository.findAll();
-        assertThat(operationList).hasSize(databaseSizeBeforeUpdate + 1);
+        assertThat(operationList).hasSize(databaseSizeBeforeUpdate);
 
         // Validate the Operation in Elasticsearch
         verify(mockOperationSearchRepository, times(0)).save(operation);
@@ -350,8 +348,8 @@ public class OperationResourceIntTest {
     public void searchOperation() throws Exception {
         // Initialize the database
         operationRepository.saveAndFlush(operation);
-    when(mockOperationSearchRepository.search(queryStringQuery("id:" + operation.getId()), PageRequest.of(0, 20)))
-        .thenReturn(new PageImpl<>(Collections.singletonList(operation), PageRequest.of(0, 1), 1));
+        when(mockOperationSearchRepository.search(queryStringQuery("id:" + operation.getId()), PageRequest.of(0, 20)))
+            .thenReturn(new PageImpl<>(Collections.singletonList(operation), PageRequest.of(0, 1), 1));
         // Search the operation
         restOperationMockMvc.perform(get("/api/_search/operations?query=id:" + operation.getId()))
             .andExpect(status().isOk())

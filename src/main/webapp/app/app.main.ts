@@ -9,6 +9,6 @@ if (module['hot']) {
 }
 
 platformBrowserDynamic()
-    .bootstrapModule(JhipsterElasticsearchSampleApplicationAppModule)
+    .bootstrapModule(JhipsterElasticsearchSampleApplicationAppModule, { preserveWhitespaces: true })
     .then(success => console.log(`Application started`))
     .catch(err => console.error(err));

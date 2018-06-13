@@ -10,7 +10,6 @@ import io.github.jhipster.sample.web.rest.errors.ExceptionTranslator;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,7 +25,7 @@ import javax.persistence.EntityManager;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
-import java.util.ArrayList;
+
 
 import static io.github.jhipster.sample.web.rest.TestUtil.createFormattingConversionService;
 import static org.assertj.core.api.Assertions.assertThat;

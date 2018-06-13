@@ -16,17 +16,8 @@ import { JhipsterElasticsearchSampleApplicationAppRoutingModule } from './app-ro
 import { JhipsterElasticsearchSampleApplicationHomeModule } from './home/home.module';
 import { JhipsterElasticsearchSampleApplicationAccountModule } from './account/account.module';
 import { JhipsterElasticsearchSampleApplicationEntityModule } from './entities/entity.module';
-import { PaginationConfig } from './blocks/config/uib-pagination.config';
 // jhipster-needle-angular-add-module-import JHipster will add new module here
-import {
-    JhiMainComponent,
-    NavbarComponent,
-    FooterComponent,
-    ProfileService,
-    PageRibbonComponent,
-    ActiveMenuDirective,
-    ErrorComponent
-} from './layouts';
+import { JhiMainComponent, NavbarComponent, FooterComponent, PageRibbonComponent, ActiveMenuDirective, ErrorComponent } from './layouts';
 
 @NgModule({
     imports: [
@@ -42,8 +33,6 @@ import {
     ],
     declarations: [JhiMainComponent, NavbarComponent, ErrorComponent, PageRibbonComponent, ActiveMenuDirective, FooterComponent],
     providers: [
-        ProfileService,
-        PaginationConfig,
         {
             provide: HTTP_INTERCEPTORS,
             useClass: AuthInterceptor,

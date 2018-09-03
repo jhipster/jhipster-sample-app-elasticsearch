@@ -31,7 +31,7 @@
     "serviceDiscoveryType": false,
     "clientPackageManager": "npm",
     "clientFramework": "angularX",
-    "jwtSecretKey": "a6169d272bf7d2b2a2dbb4865d2db7b576f576b7",
+    "jwtSecretKey": "bXktc2VjcmV0LWtleS13aGljaC1zaG91bGQtYmUtY2hhbmdlZC1pbi1wcm9kdWN0aW9uLWFuZC1iZS1iYXNlNjQtZW5jb2RlZAo=",
     "cacheProvider": "ehcache",
     "enableHibernateCache": true,
     "reactive": false

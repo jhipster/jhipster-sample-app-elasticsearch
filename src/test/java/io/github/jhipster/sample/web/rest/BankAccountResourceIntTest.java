@@ -53,7 +53,6 @@ public class BankAccountResourceIntTest {
     @Autowired
     private BankAccountRepository bankAccountRepository;
 
-
     /**
      * This repository is mocked in the io.github.jhipster.sample.repository.search test package.
      *
@@ -202,7 +201,6 @@ public class BankAccountResourceIntTest {
             .andExpect(jsonPath("$.[*].balance").value(hasItem(DEFAULT_BALANCE.intValue())));
     }
     
-
     @Test
     @Transactional
     public void getBankAccount() throws Exception {
@@ -217,6 +215,7 @@ public class BankAccountResourceIntTest {
             .andExpect(jsonPath("$.name").value(DEFAULT_NAME.toString()))
             .andExpect(jsonPath("$.balance").value(DEFAULT_BALANCE.intValue()));
     }
+
     @Test
     @Transactional
     public void getNonExistingBankAccount() throws Exception {
@@ -263,7 +262,7 @@ public class BankAccountResourceIntTest {
 
         // Create the BankAccount
 
-        // If the entity doesn't have an ID, it will throw BadRequestAlertException 
+        // If the entity doesn't have an ID, it will throw BadRequestAlertException
         restBankAccountMockMvc.perform(put("/api/bank-accounts")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
             .content(TestUtil.convertObjectToJsonBytes(bankAccount)))

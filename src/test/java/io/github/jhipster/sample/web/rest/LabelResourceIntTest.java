@@ -49,7 +49,6 @@ public class LabelResourceIntTest {
     @Autowired
     private LabelRepository labelRepository;
 
-
     /**
      * This repository is mocked in the io.github.jhipster.sample.repository.search test package.
      *
@@ -177,7 +176,6 @@ public class LabelResourceIntTest {
             .andExpect(jsonPath("$.[*].label").value(hasItem(DEFAULT_LABEL.toString())));
     }
     
-
     @Test
     @Transactional
     public void getLabel() throws Exception {
@@ -191,6 +189,7 @@ public class LabelResourceIntTest {
             .andExpect(jsonPath("$.id").value(label.getId().intValue()))
             .andExpect(jsonPath("$.label").value(DEFAULT_LABEL.toString()));
     }
+
     @Test
     @Transactional
     public void getNonExistingLabel() throws Exception {
@@ -235,7 +234,7 @@ public class LabelResourceIntTest {
 
         // Create the Label
 
-        // If the entity doesn't have an ID, it will throw BadRequestAlertException 
+        // If the entity doesn't have an ID, it will throw BadRequestAlertException
         restLabelMockMvc.perform(put("/api/labels")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
             .content(TestUtil.convertObjectToJsonBytes(label)))

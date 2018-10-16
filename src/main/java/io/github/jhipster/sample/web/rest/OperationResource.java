@@ -39,9 +39,9 @@ public class OperationResource {
 
     private static final String ENTITY_NAME = "operation";
 
-    private final OperationRepository operationRepository;
+    private OperationRepository operationRepository;
 
-    private final OperationSearchRepository operationSearchRepository;
+    private OperationSearchRepository operationSearchRepository;
 
     public OperationResource(OperationRepository operationRepository, OperationSearchRepository operationSearchRepository) {
         this.operationRepository = operationRepository;

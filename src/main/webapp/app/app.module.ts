@@ -30,8 +30,8 @@ import { JhiMainComponent, NavbarComponent, FooterComponent, PageRibbonComponent
         JhipsterElasticsearchSampleApplicationCoreModule,
         JhipsterElasticsearchSampleApplicationHomeModule,
         JhipsterElasticsearchSampleApplicationAccountModule,
-        JhipsterElasticsearchSampleApplicationEntityModule
         // jhipster-needle-angular-add-module JHipster will add new module here
+        JhipsterElasticsearchSampleApplicationEntityModule
     ],
     declarations: [JhiMainComponent, NavbarComponent, ErrorComponent, PageRibbonComponent, ActiveMenuDirective, FooterComponent],
     providers: [

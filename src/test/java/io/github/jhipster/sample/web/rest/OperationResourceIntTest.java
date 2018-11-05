@@ -216,6 +216,7 @@ public class OperationResourceIntTest {
             .andExpect(jsonPath("$.[*].amount").value(hasItem(DEFAULT_AMOUNT.intValue())));
     }
     
+    @SuppressWarnings({"unchecked"})
     public void getAllOperationsWithEagerRelationshipsIsEnabled() throws Exception {
         OperationResource operationResource = new OperationResource(operationRepositoryMock, mockOperationSearchRepository);
         when(operationRepositoryMock.findAllWithEagerRelationships(any())).thenReturn(new PageImpl(new ArrayList<>()));
@@ -232,6 +233,7 @@ public class OperationResourceIntTest {
         verify(operationRepositoryMock, times(1)).findAllWithEagerRelationships(any());
     }
 
+    @SuppressWarnings({"unchecked"})
     public void getAllOperationsWithEagerRelationshipsIsNotEnabled() throws Exception {
         OperationResource operationResource = new OperationResource(operationRepositoryMock, mockOperationSearchRepository);
             when(operationRepositoryMock.findAllWithEagerRelationships(any())).thenReturn(new PageImpl(new ArrayList<>()));
@@ -359,7 +361,7 @@ public class OperationResourceIntTest {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(operation.getId().intValue())))
             .andExpect(jsonPath("$.[*].date").value(hasItem(DEFAULT_DATE.toString())))
-            .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION.toString())))
+            .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION)))
             .andExpect(jsonPath("$.[*].amount").value(hasItem(DEFAULT_AMOUNT.intValue())));
     }
 

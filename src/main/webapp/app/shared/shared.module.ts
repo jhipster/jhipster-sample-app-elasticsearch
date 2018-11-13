@@ -17,4 +17,10 @@ import {
     exports: [JhipsterElasticsearchSampleApplicationSharedCommonModule, JhiLoginModalComponent, HasAnyAuthorityDirective],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class JhipsterElasticsearchSampleApplicationSharedModule {}
+export class JhipsterElasticsearchSampleApplicationSharedModule {
+    static forRoot() {
+        return {
+            ngModule: JhipsterElasticsearchSampleApplicationSharedModule
+        };
+    }
+}

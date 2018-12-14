@@ -3,24 +3,24 @@ import { NgbDateAdapter } from '@ng-bootstrap/ng-bootstrap';
 
 import { NgbDateMomentAdapter } from './util/datepicker-adapter';
 import {
-    JhipsterElasticsearchSampleApplicationSharedLibsModule,
-    JhipsterElasticsearchSampleApplicationSharedCommonModule,
-    JhiLoginModalComponent,
-    HasAnyAuthorityDirective
+  JhipsterElasticsearchSampleApplicationSharedLibsModule,
+  JhipsterElasticsearchSampleApplicationSharedCommonModule,
+  JhiLoginModalComponent,
+  HasAnyAuthorityDirective
 } from './';
 
 @NgModule({
-    imports: [JhipsterElasticsearchSampleApplicationSharedLibsModule, JhipsterElasticsearchSampleApplicationSharedCommonModule],
-    declarations: [JhiLoginModalComponent, HasAnyAuthorityDirective],
-    providers: [{ provide: NgbDateAdapter, useClass: NgbDateMomentAdapter }],
-    entryComponents: [JhiLoginModalComponent],
-    exports: [JhipsterElasticsearchSampleApplicationSharedCommonModule, JhiLoginModalComponent, HasAnyAuthorityDirective],
-    schemas: [CUSTOM_ELEMENTS_SCHEMA]
+  imports: [JhipsterElasticsearchSampleApplicationSharedLibsModule, JhipsterElasticsearchSampleApplicationSharedCommonModule],
+  declarations: [JhiLoginModalComponent, HasAnyAuthorityDirective],
+  providers: [{ provide: NgbDateAdapter, useClass: NgbDateMomentAdapter }],
+  entryComponents: [JhiLoginModalComponent],
+  exports: [JhipsterElasticsearchSampleApplicationSharedCommonModule, JhiLoginModalComponent, HasAnyAuthorityDirective],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class JhipsterElasticsearchSampleApplicationSharedModule {
-    static forRoot() {
-        return {
-            ngModule: JhipsterElasticsearchSampleApplicationSharedModule
-        };
-    }
+  static forRoot() {
+    return {
+      ngModule: JhipsterElasticsearchSampleApplicationSharedModule
+    };
+  }
 }

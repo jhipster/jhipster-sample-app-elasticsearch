@@ -5,87 +5,82 @@ import { Subscription } from 'rxjs';
 import { JhiEventManager, JhiAlertService } from 'ng-jhipster';
 
 import { ILabel } from 'app/shared/model/label.model';
-import { Principal } from 'app/core';
+import { AccountService } from 'app/core';
 import { LabelService } from './label.service';
 
 @Component({
-    selector: 'jhi-label',
-    templateUrl: './label.component.html'
+  selector: 'jhi-label',
+  templateUrl: './label.component.html'
 })
 export class LabelComponent implements OnInit, OnDestroy {
-    labels: ILabel[];
-    currentAccount: any;
-    eventSubscriber: Subscription;
-    currentSearch: string;
+  labels: ILabel[];
+  currentAccount: any;
+  eventSubscriber: Subscription;
+  currentSearch: string;
 
-    constructor(
-        private labelService: LabelService,
-        private jhiAlertService: JhiAlertService,
-        private eventManager: JhiEventManager,
-        private activatedRoute: ActivatedRoute,
-        private principal: Principal
-    ) {
-        this.currentSearch =
-            this.activatedRoute.snapshot && this.activatedRoute.snapshot.params['search']
-                ? this.activatedRoute.snapshot.params['search']
-                : '';
+  constructor(
+    protected labelService: LabelService,
+    protected jhiAlertService: JhiAlertService,
+    protected eventManager: JhiEventManager,
+    protected activatedRoute: ActivatedRoute,
+    protected accountService: AccountService
+  ) {
+    this.currentSearch =
+      this.activatedRoute.snapshot && this.activatedRoute.snapshot.params['search'] ? this.activatedRoute.snapshot.params['search'] : '';
+  }
+
+  loadAll() {
+    if (this.currentSearch) {
+      this.labelService
+        .search({
+          query: this.currentSearch
+        })
+        .subscribe((res: HttpResponse<ILabel[]>) => (this.labels = res.body), (res: HttpErrorResponse) => this.onError(res.message));
+      return;
     }
-
-    loadAll() {
-        if (this.currentSearch) {
-            this.labelService
-                .search({
-                    query: this.currentSearch
-                })
-                .subscribe(
-                    (res: HttpResponse<ILabel[]>) => (this.labels = res.body),
-                    (res: HttpErrorResponse) => this.onError(res.message)
-                );
-            return;
-        }
-        this.labelService.query().subscribe(
-            (res: HttpResponse<ILabel[]>) => {
-                this.labels = res.body;
-                this.currentSearch = '';
-            },
-            (res: HttpErrorResponse) => this.onError(res.message)
-        );
-    }
-
-    search(query) {
-        if (!query) {
-            return this.clear();
-        }
-        this.currentSearch = query;
-        this.loadAll();
-    }
-
-    clear() {
+    this.labelService.query().subscribe(
+      (res: HttpResponse<ILabel[]>) => {
+        this.labels = res.body;
         this.currentSearch = '';
-        this.loadAll();
-    }
+      },
+      (res: HttpErrorResponse) => this.onError(res.message)
+    );
+  }
 
-    ngOnInit() {
-        this.loadAll();
-        this.principal.identity().then(account => {
-            this.currentAccount = account;
-        });
-        this.registerChangeInLabels();
+  search(query) {
+    if (!query) {
+      return this.clear();
     }
+    this.currentSearch = query;
+    this.loadAll();
+  }
 
-    ngOnDestroy() {
-        this.eventManager.destroy(this.eventSubscriber);
-    }
+  clear() {
+    this.currentSearch = '';
+    this.loadAll();
+  }
 
-    trackId(index: number, item: ILabel) {
-        return item.id;
-    }
+  ngOnInit() {
+    this.loadAll();
+    this.accountService.identity().then(account => {
+      this.currentAccount = account;
+    });
+    this.registerChangeInLabels();
+  }
 
-    registerChangeInLabels() {
-        this.eventSubscriber = this.eventManager.subscribe('labelListModification', response => this.loadAll());
-    }
+  ngOnDestroy() {
+    this.eventManager.destroy(this.eventSubscriber);
+  }
 
-    private onError(errorMessage: string) {
-        this.jhiAlertService.error(errorMessage, null, null);
-    }
+  trackId(index: number, item: ILabel) {
+    return item.id;
+  }
+
+  registerChangeInLabels() {
+    this.eventSubscriber = this.eventManager.subscribe('labelListModification', response => this.loadAll());
+  }
+
+  protected onError(errorMessage: string) {
+    this.jhiAlertService.error(errorMessage, null, null);
+  }
 }

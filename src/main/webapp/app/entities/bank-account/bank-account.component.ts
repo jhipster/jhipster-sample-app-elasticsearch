@@ -5,87 +5,85 @@ import { Subscription } from 'rxjs';
 import { JhiEventManager, JhiAlertService } from 'ng-jhipster';
 
 import { IBankAccount } from 'app/shared/model/bank-account.model';
-import { Principal } from 'app/core';
+import { AccountService } from 'app/core';
 import { BankAccountService } from './bank-account.service';
 
 @Component({
-    selector: 'jhi-bank-account',
-    templateUrl: './bank-account.component.html'
+  selector: 'jhi-bank-account',
+  templateUrl: './bank-account.component.html'
 })
 export class BankAccountComponent implements OnInit, OnDestroy {
-    bankAccounts: IBankAccount[];
-    currentAccount: any;
-    eventSubscriber: Subscription;
-    currentSearch: string;
+  bankAccounts: IBankAccount[];
+  currentAccount: any;
+  eventSubscriber: Subscription;
+  currentSearch: string;
 
-    constructor(
-        private bankAccountService: BankAccountService,
-        private jhiAlertService: JhiAlertService,
-        private eventManager: JhiEventManager,
-        private activatedRoute: ActivatedRoute,
-        private principal: Principal
-    ) {
-        this.currentSearch =
-            this.activatedRoute.snapshot && this.activatedRoute.snapshot.params['search']
-                ? this.activatedRoute.snapshot.params['search']
-                : '';
-    }
+  constructor(
+    protected bankAccountService: BankAccountService,
+    protected jhiAlertService: JhiAlertService,
+    protected eventManager: JhiEventManager,
+    protected activatedRoute: ActivatedRoute,
+    protected accountService: AccountService
+  ) {
+    this.currentSearch =
+      this.activatedRoute.snapshot && this.activatedRoute.snapshot.params['search'] ? this.activatedRoute.snapshot.params['search'] : '';
+  }
 
-    loadAll() {
-        if (this.currentSearch) {
-            this.bankAccountService
-                .search({
-                    query: this.currentSearch
-                })
-                .subscribe(
-                    (res: HttpResponse<IBankAccount[]>) => (this.bankAccounts = res.body),
-                    (res: HttpErrorResponse) => this.onError(res.message)
-                );
-            return;
-        }
-        this.bankAccountService.query().subscribe(
-            (res: HttpResponse<IBankAccount[]>) => {
-                this.bankAccounts = res.body;
-                this.currentSearch = '';
-            },
-            (res: HttpErrorResponse) => this.onError(res.message)
+  loadAll() {
+    if (this.currentSearch) {
+      this.bankAccountService
+        .search({
+          query: this.currentSearch
+        })
+        .subscribe(
+          (res: HttpResponse<IBankAccount[]>) => (this.bankAccounts = res.body),
+          (res: HttpErrorResponse) => this.onError(res.message)
         );
+      return;
     }
-
-    search(query) {
-        if (!query) {
-            return this.clear();
-        }
-        this.currentSearch = query;
-        this.loadAll();
-    }
-
-    clear() {
+    this.bankAccountService.query().subscribe(
+      (res: HttpResponse<IBankAccount[]>) => {
+        this.bankAccounts = res.body;
         this.currentSearch = '';
-        this.loadAll();
-    }
+      },
+      (res: HttpErrorResponse) => this.onError(res.message)
+    );
+  }
 
-    ngOnInit() {
-        this.loadAll();
-        this.principal.identity().then(account => {
-            this.currentAccount = account;
-        });
-        this.registerChangeInBankAccounts();
+  search(query) {
+    if (!query) {
+      return this.clear();
     }
+    this.currentSearch = query;
+    this.loadAll();
+  }
 
-    ngOnDestroy() {
-        this.eventManager.destroy(this.eventSubscriber);
-    }
+  clear() {
+    this.currentSearch = '';
+    this.loadAll();
+  }
 
-    trackId(index: number, item: IBankAccount) {
-        return item.id;
-    }
+  ngOnInit() {
+    this.loadAll();
+    this.accountService.identity().then(account => {
+      this.currentAccount = account;
+    });
+    this.registerChangeInBankAccounts();
+  }
 
-    registerChangeInBankAccounts() {
-        this.eventSubscriber = this.eventManager.subscribe('bankAccountListModification', response => this.loadAll());
-    }
+  ngOnDestroy() {
+    this.eventManager.destroy(this.eventSubscriber);
+  }
 
-    private onError(errorMessage: string) {
-        this.jhiAlertService.error(errorMessage, null, null);
-    }
+  trackId(index: number, item: IBankAccount) {
+    return item.id;
+  }
+
+  registerChangeInBankAccounts() {
+    this.eventSubscriber = this.eventManager.subscribe('bankAccountListModification', response => this.loadAll());
+  }
+
+  protected onError(errorMessage: string) {
+    this.jhiAlertService.error(errorMessage, null, null);
+  }
 }

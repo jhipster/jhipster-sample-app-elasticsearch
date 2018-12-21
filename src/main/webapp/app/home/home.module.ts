@@ -5,8 +5,8 @@ import { JhipsterElasticsearchSampleApplicationSharedModule } from 'app/shared';
 import { HOME_ROUTE, HomeComponent } from './';
 
 @NgModule({
-  imports: [JhipsterElasticsearchSampleApplicationSharedModule, RouterModule.forChild([HOME_ROUTE])],
-  declarations: [HomeComponent],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA]
+    imports: [JhipsterElasticsearchSampleApplicationSharedModule, RouterModule.forChild([HOME_ROUTE])],
+    declarations: [HomeComponent],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class JhipsterElasticsearchSampleApplicationHomeModule {}

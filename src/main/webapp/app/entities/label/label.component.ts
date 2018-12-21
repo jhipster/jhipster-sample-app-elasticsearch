@@ -9,78 +9,83 @@ import { AccountService } from 'app/core';
 import { LabelService } from './label.service';
 
 @Component({
-  selector: 'jhi-label',
-  templateUrl: './label.component.html'
+    selector: 'jhi-label',
+    templateUrl: './label.component.html'
 })
 export class LabelComponent implements OnInit, OnDestroy {
-  labels: ILabel[];
-  currentAccount: any;
-  eventSubscriber: Subscription;
-  currentSearch: string;
+    labels: ILabel[];
+    currentAccount: any;
+    eventSubscriber: Subscription;
+    currentSearch: string;
 
-  constructor(
-    protected labelService: LabelService,
-    protected jhiAlertService: JhiAlertService,
-    protected eventManager: JhiEventManager,
-    protected activatedRoute: ActivatedRoute,
-    protected accountService: AccountService
-  ) {
-    this.currentSearch =
-      this.activatedRoute.snapshot && this.activatedRoute.snapshot.params['search'] ? this.activatedRoute.snapshot.params['search'] : '';
-  }
-
-  loadAll() {
-    if (this.currentSearch) {
-      this.labelService
-        .search({
-          query: this.currentSearch
-        })
-        .subscribe((res: HttpResponse<ILabel[]>) => (this.labels = res.body), (res: HttpErrorResponse) => this.onError(res.message));
-      return;
+    constructor(
+        protected labelService: LabelService,
+        protected jhiAlertService: JhiAlertService,
+        protected eventManager: JhiEventManager,
+        protected activatedRoute: ActivatedRoute,
+        protected accountService: AccountService
+    ) {
+        this.currentSearch =
+            this.activatedRoute.snapshot && this.activatedRoute.snapshot.params['search']
+                ? this.activatedRoute.snapshot.params['search']
+                : '';
     }
-    this.labelService.query().subscribe(
-      (res: HttpResponse<ILabel[]>) => {
-        this.labels = res.body;
+
+    loadAll() {
+        if (this.currentSearch) {
+            this.labelService
+                .search({
+                    query: this.currentSearch
+                })
+                .subscribe(
+                    (res: HttpResponse<ILabel[]>) => (this.labels = res.body),
+                    (res: HttpErrorResponse) => this.onError(res.message)
+                );
+            return;
+        }
+        this.labelService.query().subscribe(
+            (res: HttpResponse<ILabel[]>) => {
+                this.labels = res.body;
+                this.currentSearch = '';
+            },
+            (res: HttpErrorResponse) => this.onError(res.message)
+        );
+    }
+
+    search(query) {
+        if (!query) {
+            return this.clear();
+        }
+        this.currentSearch = query;
+        this.loadAll();
+    }
+
+    clear() {
         this.currentSearch = '';
-      },
-      (res: HttpErrorResponse) => this.onError(res.message)
-    );
-  }
-
-  search(query) {
-    if (!query) {
-      return this.clear();
+        this.loadAll();
     }
-    this.currentSearch = query;
-    this.loadAll();
-  }
 
-  clear() {
-    this.currentSearch = '';
-    this.loadAll();
-  }
+    ngOnInit() {
+        this.loadAll();
+        this.accountService.identity().then(account => {
+            this.currentAccount = account;
+        });
+        this.registerChangeInLabels();
+    }
 
-  ngOnInit() {
-    this.loadAll();
-    this.accountService.identity().then(account => {
-      this.currentAccount = account;
-    });
-    this.registerChangeInLabels();
-  }
+    ngOnDestroy() {
+        this.eventManager.destroy(this.eventSubscriber);
+    }
 
-  ngOnDestroy() {
-    this.eventManager.destroy(this.eventSubscriber);
-  }
+    trackId(index: number, item: ILabel) {
+        return item.id;
+    }
 
-  trackId(index: number, item: ILabel) {
-    return item.id;
-  }
+    registerChangeInLabels() {
+        this.eventSubscriber = this.eventManager.subscribe('labelListModification', response => this.loadAll());
+    }
 
-  registerChangeInLabels() {
-    this.eventSubscriber = this.eventManager.subscribe('labelListModification', response => this.loadAll());
-  }
-
-  protected onError(errorMessage: string) {
-    this.jhiAlertService.error(errorMessage, null, null);
-  }
+    protected onError(errorMessage: string) {
+        this.jhiAlertService.error(errorMessage, null, null);
+    }
 }

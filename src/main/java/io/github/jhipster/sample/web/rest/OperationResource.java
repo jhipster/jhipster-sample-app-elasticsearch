@@ -1,6 +1,4 @@
 package io.github.jhipster.sample.web.rest;
-
-import com.codahale.metrics.annotation.Timed;
 import io.github.jhipster.sample.domain.Operation;
 import io.github.jhipster.sample.repository.OperationRepository;
 import io.github.jhipster.sample.repository.search.OperationSearchRepository;
@@ -56,7 +54,6 @@ public class OperationResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     @PostMapping("/operations")
-    @Timed
     public ResponseEntity<Operation> createOperation(@Valid @RequestBody Operation operation) throws URISyntaxException {
         log.debug("REST request to save Operation : {}", operation);
         if (operation.getId() != null) {
@@ -79,7 +76,6 @@ public class OperationResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     @PutMapping("/operations")
-    @Timed
     public ResponseEntity<Operation> updateOperation(@Valid @RequestBody Operation operation) throws URISyntaxException {
         log.debug("REST request to update Operation : {}", operation);
         if (operation.getId() == null) {
@@ -100,7 +96,6 @@ public class OperationResource {
      * @return the ResponseEntity with status 200 (OK) and the list of operations in body
      */
     @GetMapping("/operations")
-    @Timed
     public ResponseEntity<List<Operation>> getAllOperations(Pageable pageable, @RequestParam(required = false, defaultValue = "false") boolean eagerload) {
         log.debug("REST request to get a page of Operations");
         Page<Operation> page;
@@ -120,7 +115,6 @@ public class OperationResource {
      * @return the ResponseEntity with status 200 (OK) and with body the operation, or with status 404 (Not Found)
      */
     @GetMapping("/operations/{id}")
-    @Timed
     public ResponseEntity<Operation> getOperation(@PathVariable Long id) {
         log.debug("REST request to get Operation : {}", id);
         Optional<Operation> operation = operationRepository.findOneWithEagerRelationships(id);
@@ -134,10 +128,8 @@ public class OperationResource {
      * @return the ResponseEntity with status 200 (OK)
      */
     @DeleteMapping("/operations/{id}")
-    @Timed
     public ResponseEntity<Void> deleteOperation(@PathVariable Long id) {
         log.debug("REST request to delete Operation : {}", id);
-
         operationRepository.deleteById(id);
         operationSearchRepository.deleteById(id);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
@@ -152,12 +144,11 @@ public class OperationResource {
      * @return the result of the search
      */
     @GetMapping("/_search/operations")
-    @Timed
     public ResponseEntity<List<Operation>> searchOperations(@RequestParam String query, Pageable pageable) {
         log.debug("REST request to search for a page of Operations for query {}", query);
         Page<Operation> page = operationSearchRepository.search(queryStringQuery(query), pageable);
         HttpHeaders headers = PaginationUtil.generateSearchPaginationHttpHeaders(query, page, "/api/_search/operations");
-        return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 
 }

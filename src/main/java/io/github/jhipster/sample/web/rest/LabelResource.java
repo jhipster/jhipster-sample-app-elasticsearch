@@ -1,6 +1,4 @@
 package io.github.jhipster.sample.web.rest;
-
-import com.codahale.metrics.annotation.Timed;
 import io.github.jhipster.sample.domain.Label;
 import io.github.jhipster.sample.repository.LabelRepository;
 import io.github.jhipster.sample.repository.search.LabelSearchRepository;
@@ -51,7 +49,6 @@ public class LabelResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     @PostMapping("/labels")
-    @Timed
     public ResponseEntity<Label> createLabel(@Valid @RequestBody Label label) throws URISyntaxException {
         log.debug("REST request to save Label : {}", label);
         if (label.getId() != null) {
@@ -74,7 +71,6 @@ public class LabelResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     @PutMapping("/labels")
-    @Timed
     public ResponseEntity<Label> updateLabel(@Valid @RequestBody Label label) throws URISyntaxException {
         log.debug("REST request to update Label : {}", label);
         if (label.getId() == null) {
@@ -93,7 +89,6 @@ public class LabelResource {
      * @return the ResponseEntity with status 200 (OK) and the list of labels in body
      */
     @GetMapping("/labels")
-    @Timed
     public List<Label> getAllLabels() {
         log.debug("REST request to get all Labels");
         return labelRepository.findAll();
@@ -106,7 +101,6 @@ public class LabelResource {
      * @return the ResponseEntity with status 200 (OK) and with body the label, or with status 404 (Not Found)
      */
     @GetMapping("/labels/{id}")
-    @Timed
     public ResponseEntity<Label> getLabel(@PathVariable Long id) {
         log.debug("REST request to get Label : {}", id);
         Optional<Label> label = labelRepository.findById(id);
@@ -120,10 +114,8 @@ public class LabelResource {
      * @return the ResponseEntity with status 200 (OK)
      */
     @DeleteMapping("/labels/{id}")
-    @Timed
     public ResponseEntity<Void> deleteLabel(@PathVariable Long id) {
         log.debug("REST request to delete Label : {}", id);
-
         labelRepository.deleteById(id);
         labelSearchRepository.deleteById(id);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
@@ -137,7 +129,6 @@ public class LabelResource {
      * @return the result of the search
      */
     @GetMapping("/_search/labels")
-    @Timed
     public List<Label> searchLabels(@RequestParam String query) {
         log.debug("REST request to search Labels for query {}", query);
         return StreamSupport

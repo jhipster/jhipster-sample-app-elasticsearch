@@ -289,7 +289,7 @@ public class BankAccountResourceIntTest {
 
         int databaseSizeBeforeDelete = bankAccountRepository.findAll().size();
 
-        // Get the bankAccount
+        // Delete the bankAccount
         restBankAccountMockMvc.perform(delete("/api/bank-accounts/{id}", bankAccount.getId())
             .accept(TestUtil.APPLICATION_JSON_UTF8))
             .andExpect(status().isOk());

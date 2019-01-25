@@ -1,17 +1,23 @@
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-
-import { JhipsterElasticsearchSampleApplicationBankAccountModule } from './bank-account/bank-account.module';
-import { JhipsterElasticsearchSampleApplicationLabelModule } from './label/label.module';
-import { JhipsterElasticsearchSampleApplicationOperationModule } from './operation/operation.module';
-/* jhipster-needle-add-entity-module-import - JHipster will add entity modules imports here */
+import { RouterModule } from '@angular/router';
 
 @NgModule({
-    // prettier-ignore
     imports: [
-        JhipsterElasticsearchSampleApplicationBankAccountModule,
-        JhipsterElasticsearchSampleApplicationLabelModule,
-        JhipsterElasticsearchSampleApplicationOperationModule,
-        /* jhipster-needle-add-entity-module - JHipster will add entity modules here */
+        RouterModule.forChild([
+            {
+                path: 'bank-account',
+                loadChildren: './bank-account/bank-account.module#JhipsterElasticsearchSampleApplicationBankAccountModule'
+            },
+            {
+                path: 'label',
+                loadChildren: './label/label.module#JhipsterElasticsearchSampleApplicationLabelModule'
+            },
+            {
+                path: 'operation',
+                loadChildren: './operation/operation.module#JhipsterElasticsearchSampleApplicationOperationModule'
+            }
+            /* jhipster-needle-add-entity-route - JHipster will add entity modules routes here */
+        ])
     ],
     declarations: [],
     entryComponents: [],

@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { filter, map } from 'rxjs/operators';
 import { JhiEventManager, JhiAlertService } from 'ng-jhipster';
 
 import { IBankAccount } from 'app/shared/model/bank-account.model';
@@ -37,19 +38,26 @@ export class BankAccountComponent implements OnInit, OnDestroy {
                 .search({
                     query: this.currentSearch
                 })
-                .subscribe(
-                    (res: HttpResponse<IBankAccount[]>) => (this.bankAccounts = res.body),
-                    (res: HttpErrorResponse) => this.onError(res.message)
-                );
+                .pipe(
+                    filter((res: HttpResponse<IBankAccount[]>) => res.ok),
+                    map((res: HttpResponse<IBankAccount[]>) => res.body)
+                )
+                .subscribe((res: IBankAccount[]) => (this.bankAccounts = res), (res: HttpErrorResponse) => this.onError(res.message));
             return;
         }
-        this.bankAccountService.query().subscribe(
-            (res: HttpResponse<IBankAccount[]>) => {
-                this.bankAccounts = res.body;
-                this.currentSearch = '';
-            },
-            (res: HttpErrorResponse) => this.onError(res.message)
-        );
+        this.bankAccountService
+            .query()
+            .pipe(
+                filter((res: HttpResponse<IBankAccount[]>) => res.ok),
+                map((res: HttpResponse<IBankAccount[]>) => res.body)
+            )
+            .subscribe(
+                (res: IBankAccount[]) => {
+                    this.bankAccounts = res;
+                    this.currentSearch = '';
+                },
+                (res: HttpErrorResponse) => this.onError(res.message)
+            );
     }
 
     search(query) {

@@ -4,7 +4,7 @@ import io.github.jhipster.sample.domain.BankAccount;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 
 /**
- * Spring Data Elasticsearch repository for the BankAccount entity.
+ * Spring Data Elasticsearch repository for the {@link BankAccount} entity.
  */
 public interface BankAccountSearchRepository extends ElasticsearchRepository<BankAccount, Long> {
 }

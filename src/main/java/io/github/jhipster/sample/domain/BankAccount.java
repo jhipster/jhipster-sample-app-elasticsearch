@@ -9,7 +9,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import javax.persistence.*;
 import javax.validation.constraints.*;
 
-import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.HashSet;
@@ -22,13 +22,14 @@ import java.util.Objects;
 @Entity
 @Table(name = "bank_account")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-@Document(indexName = "bankaccount")
+@org.springframework.data.elasticsearch.annotations.Document(indexName = "bankaccount")
 public class BankAccount implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @org.springframework.data.elasticsearch.annotations.Field(type = FieldType.Keyword)
     private Long id;
 
     @NotNull
@@ -36,7 +37,7 @@ public class BankAccount implements Serializable {
     private String name;
 
     @NotNull
-    @Column(name = "balance", precision = 10, scale = 2, nullable = false)
+    @Column(name = "balance", precision = 21, scale = 2, nullable = false)
     private BigDecimal balance;
 
     @ManyToOne
@@ -46,6 +47,7 @@ public class BankAccount implements Serializable {
     @OneToMany(mappedBy = "bankAccount")
     @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     private Set<Operation> operations = new HashSet<>();
+
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public Long getId() {
         return id;
@@ -93,19 +95,15 @@ public class BankAccount implements Serializable {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (!(o instanceof BankAccount)) {
             return false;
         }
-        BankAccount bankAccount = (BankAccount) o;
-        if (bankAccount.getId() == null || getId() == null) {
-            return false;
-        }
-        return Objects.equals(getId(), bankAccount.getId());
+        return id != null && id.equals(((BankAccount) o).id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(getId());
+        return 31;
     }
 
     @Override

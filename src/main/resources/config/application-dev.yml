@@ -19,6 +19,11 @@ logging:
     io.github.jhipster: DEBUG
     io.github.jhipster.sample: DEBUG
 
+management:
+  health:
+    elasticsearch:
+      enabled: false
+
 spring:
   profiles:
     active: dev

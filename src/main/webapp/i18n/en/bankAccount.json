@@ -5,7 +5,8 @@
         "title": "Bank Accounts",
         "createLabel": "Create a new Bank Account",
         "createOrEditLabel": "Create or edit a Bank Account",
-        "search": "Search for Bank Account"
+        "search": "Search for Bank Account",
+        "notFound": "No Bank Account found"
       },
       "created": "A new Bank Account is created with identifier {{ param }}",
       "updated": "A Bank Account is updated with identifier {{ param }}",

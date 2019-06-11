@@ -25,7 +25,10 @@
         </div>
     </div>
     <br/>
-    <div class="table-responsive" *ngIf="labels">
+    <div class="alert alert-warning" *ngIf="labels?.length === 0">
+        <span jhiTranslate="jhipsterElasticsearchSampleApplicationApp.label.home.notFound">No labels found</span>
+    </div>
+    <div class="table-responsive" *ngIf="labels?.length > 0">
         <table class="table table-striped">
             <thead>
             <tr>

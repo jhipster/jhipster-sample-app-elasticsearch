@@ -33,7 +33,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
- * Integration tests for the {@Link BankAccountResource} REST controller.
+ * Integration tests for the {@link BankAccountResource} REST controller.
  */
 @SpringBootTest(classes = JhipsterElasticsearchSampleApplicationApp.class)
 public class BankAccountResourceIT {
@@ -43,6 +43,7 @@ public class BankAccountResourceIT {
 
     private static final BigDecimal DEFAULT_BALANCE = new BigDecimal(1);
     private static final BigDecimal UPDATED_BALANCE = new BigDecimal(2);
+    private static final BigDecimal SMALLER_BALANCE = new BigDecimal(1 - 1);
 
     @Autowired
     private BankAccountRepository bankAccountRepository;

@@ -6,7 +6,7 @@
         "createLabel": "Create a new Label",
         "createOrEditLabel": "Create or edit a Label",
         "search": "Search for Label",
-        "notFound": "No Label found"
+        "notFound": "No Labels found"
       },
       "created": "A new Label is created with identifier {{ param }}",
       "updated": "A Label is updated with identifier {{ param }}",

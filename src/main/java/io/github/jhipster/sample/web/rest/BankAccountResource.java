@@ -142,5 +142,4 @@ public class BankAccountResource {
             .stream(bankAccountSearchRepository.search(queryStringQuery(query)).spliterator(), false)
             .collect(Collectors.toList());
     }
-
 }

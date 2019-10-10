@@ -1,10 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
+import { HttpResponse } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { filter, map } from 'rxjs/operators';
-import { JhiEventManager, JhiAlertService } from 'ng-jhipster';
+import { JhiEventManager } from 'ng-jhipster';
 
 import { ILabel } from 'app/shared/model/label.model';
 import { AccountService } from 'app/core/auth/account.service';
@@ -22,7 +22,6 @@ export class LabelComponent implements OnInit, OnDestroy {
 
   constructor(
     protected labelService: LabelService,
-    protected jhiAlertService: JhiAlertService,
     protected eventManager: JhiEventManager,
     protected activatedRoute: ActivatedRoute,
     protected accountService: AccountService
@@ -43,7 +42,7 @@ export class LabelComponent implements OnInit, OnDestroy {
           filter((res: HttpResponse<ILabel[]>) => res.ok),
           map((res: HttpResponse<ILabel[]>) => res.body)
         )
-        .subscribe((res: ILabel[]) => (this.labels = res), (res: HttpErrorResponse) => this.onError(res.message));
+        .subscribe((res: ILabel[]) => (this.labels = res));
       return;
     }
     this.labelService
@@ -52,13 +51,10 @@ export class LabelComponent implements OnInit, OnDestroy {
         filter((res: HttpResponse<ILabel[]>) => res.ok),
         map((res: HttpResponse<ILabel[]>) => res.body)
       )
-      .subscribe(
-        (res: ILabel[]) => {
-          this.labels = res;
-          this.currentSearch = '';
-        },
-        (res: HttpErrorResponse) => this.onError(res.message)
-      );
+      .subscribe((res: ILabel[]) => {
+        this.labels = res;
+        this.currentSearch = '';
+      });
   }
 
   search(query) {
@@ -76,7 +72,7 @@ export class LabelComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.loadAll();
-    this.accountService.identity().then(account => {
+    this.accountService.identity().subscribe(account => {
       this.currentAccount = account;
     });
     this.registerChangeInLabels();
@@ -92,9 +88,5 @@ export class LabelComponent implements OnInit, OnDestroy {
 
   registerChangeInLabels() {
     this.eventSubscriber = this.eventManager.subscribe('labelListModification', response => this.loadAll());
-  }
-
-  protected onError(errorMessage: string) {
-    this.jhiAlertService.error(errorMessage, null, null);
   }
 }

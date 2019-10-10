@@ -1,10 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
+import { HttpResponse } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { filter, map } from 'rxjs/operators';
-import { JhiEventManager, JhiAlertService } from 'ng-jhipster';
+import { JhiEventManager } from 'ng-jhipster';
 
 import { IBankAccount } from 'app/shared/model/bank-account.model';
 import { AccountService } from 'app/core/auth/account.service';
@@ -22,7 +22,6 @@ export class BankAccountComponent implements OnInit, OnDestroy {
 
   constructor(
     protected bankAccountService: BankAccountService,
-    protected jhiAlertService: JhiAlertService,
     protected eventManager: JhiEventManager,
     protected activatedRoute: ActivatedRoute,
     protected accountService: AccountService
@@ -43,7 +42,7 @@ export class BankAccountComponent implements OnInit, OnDestroy {
           filter((res: HttpResponse<IBankAccount[]>) => res.ok),
           map((res: HttpResponse<IBankAccount[]>) => res.body)
         )
-        .subscribe((res: IBankAccount[]) => (this.bankAccounts = res), (res: HttpErrorResponse) => this.onError(res.message));
+        .subscribe((res: IBankAccount[]) => (this.bankAccounts = res));
       return;
     }
     this.bankAccountService
@@ -52,13 +51,10 @@ export class BankAccountComponent implements OnInit, OnDestroy {
         filter((res: HttpResponse<IBankAccount[]>) => res.ok),
         map((res: HttpResponse<IBankAccount[]>) => res.body)
       )
-      .subscribe(
-        (res: IBankAccount[]) => {
-          this.bankAccounts = res;
-          this.currentSearch = '';
-        },
-        (res: HttpErrorResponse) => this.onError(res.message)
-      );
+      .subscribe((res: IBankAccount[]) => {
+        this.bankAccounts = res;
+        this.currentSearch = '';
+      });
   }
 
   search(query) {
@@ -76,7 +72,7 @@ export class BankAccountComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.loadAll();
-    this.accountService.identity().then(account => {
+    this.accountService.identity().subscribe(account => {
       this.currentAccount = account;
     });
     this.registerChangeInBankAccounts();
@@ -92,9 +88,5 @@ export class BankAccountComponent implements OnInit, OnDestroy {
 
   registerChangeInBankAccounts() {
     this.eventSubscriber = this.eventManager.subscribe('bankAccountListModification', response => this.loadAll());
-  }
-
-  protected onError(errorMessage: string) {
-    this.jhiAlertService.error(errorMessage, null, null);
   }
 }

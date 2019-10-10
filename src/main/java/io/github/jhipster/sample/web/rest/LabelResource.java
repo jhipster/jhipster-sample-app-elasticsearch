@@ -142,5 +142,4 @@ public class LabelResource {
             .stream(labelSearchRepository.search(queryStringQuery(query)).spliterator(), false)
             .collect(Collectors.toList());
     }
-
 }

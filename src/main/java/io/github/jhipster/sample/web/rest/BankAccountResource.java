@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional; 
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -29,6 +30,7 @@ import static org.elasticsearch.index.query.QueryBuilders.*;
  */
 @RestController
 @RequestMapping("/api")
+@Transactional
 public class BankAccountResource {
 
     private final Logger log = LoggerFactory.getLogger(BankAccountResource.class);

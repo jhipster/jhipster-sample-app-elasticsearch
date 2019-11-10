@@ -2,12 +2,9 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { filter, map } from 'rxjs/operators';
 import { JhiEventManager } from 'ng-jhipster';
 
 import { ILabel } from 'app/shared/model/label.model';
-import { AccountService } from 'app/core/auth/account.service';
 import { LabelService } from './label.service';
 
 @Component({
@@ -16,16 +13,10 @@ import { LabelService } from './label.service';
 })
 export class LabelComponent implements OnInit, OnDestroy {
   labels: ILabel[];
-  currentAccount: any;
   eventSubscriber: Subscription;
   currentSearch: string;
 
-  constructor(
-    protected labelService: LabelService,
-    protected eventManager: JhiEventManager,
-    protected activatedRoute: ActivatedRoute,
-    protected accountService: AccountService
-  ) {
+  constructor(protected labelService: LabelService, protected eventManager: JhiEventManager, protected activatedRoute: ActivatedRoute) {
     this.currentSearch =
       this.activatedRoute.snapshot && this.activatedRoute.snapshot.queryParams['search']
         ? this.activatedRoute.snapshot.queryParams['search']
@@ -38,23 +29,13 @@ export class LabelComponent implements OnInit, OnDestroy {
         .search({
           query: this.currentSearch
         })
-        .pipe(
-          filter((res: HttpResponse<ILabel[]>) => res.ok),
-          map((res: HttpResponse<ILabel[]>) => res.body)
-        )
-        .subscribe((res: ILabel[]) => (this.labels = res));
+        .subscribe((res: HttpResponse<ILabel[]>) => (this.labels = res.body));
       return;
     }
-    this.labelService
-      .query()
-      .pipe(
-        filter((res: HttpResponse<ILabel[]>) => res.ok),
-        map((res: HttpResponse<ILabel[]>) => res.body)
-      )
-      .subscribe((res: ILabel[]) => {
-        this.labels = res;
-        this.currentSearch = '';
-      });
+    this.labelService.query().subscribe((res: HttpResponse<ILabel[]>) => {
+      this.labels = res.body;
+      this.currentSearch = '';
+    });
   }
 
   search(query) {
@@ -72,9 +53,6 @@ export class LabelComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.loadAll();
-    this.accountService.identity().subscribe(account => {
-      this.currentAccount = account;
-    });
     this.registerChangeInLabels();
   }
 
@@ -87,6 +65,6 @@ export class LabelComponent implements OnInit, OnDestroy {
   }
 
   registerChangeInLabels() {
-    this.eventSubscriber = this.eventManager.subscribe('labelListModification', response => this.loadAll());
+    this.eventSubscriber = this.eventManager.subscribe('labelListModification', () => this.loadAll());
   }
 }

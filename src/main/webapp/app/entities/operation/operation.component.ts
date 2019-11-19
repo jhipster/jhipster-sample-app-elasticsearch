@@ -3,11 +3,13 @@ import { HttpHeaders, HttpResponse } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { JhiEventManager, JhiParseLinks } from 'ng-jhipster';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { IOperation } from 'app/shared/model/operation.model';
 
 import { ITEMS_PER_PAGE } from 'app/shared/constants/pagination.constants';
 import { OperationService } from './operation.service';
+import { OperationDeleteDialogComponent } from './operation-delete-dialog.component';
 
 @Component({
   selector: 'jhi-operation',
@@ -27,6 +29,7 @@ export class OperationComponent implements OnInit, OnDestroy {
   constructor(
     protected operationService: OperationService,
     protected eventManager: JhiEventManager,
+    protected modalService: NgbModal,
     protected parseLinks: JhiParseLinks,
     protected activatedRoute: ActivatedRoute
   ) {
@@ -118,6 +121,11 @@ export class OperationComponent implements OnInit, OnDestroy {
 
   registerChangeInOperations() {
     this.eventSubscriber = this.eventManager.subscribe('operationListModification', () => this.reset());
+  }
+
+  delete(operation: IOperation) {
+    const modalRef = this.modalService.open(OperationDeleteDialogComponent, { size: 'lg', backdrop: 'static' });
+    modalRef.componentInstance.operation = operation;
   }
 
   sort() {

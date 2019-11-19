@@ -3,9 +3,11 @@ import { HttpResponse } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { JhiEventManager } from 'ng-jhipster';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { ILabel } from 'app/shared/model/label.model';
 import { LabelService } from './label.service';
+import { LabelDeleteDialogComponent } from './label-delete-dialog.component';
 
 @Component({
   selector: 'jhi-label',
@@ -16,7 +18,12 @@ export class LabelComponent implements OnInit, OnDestroy {
   eventSubscriber: Subscription;
   currentSearch: string;
 
-  constructor(protected labelService: LabelService, protected eventManager: JhiEventManager, protected activatedRoute: ActivatedRoute) {
+  constructor(
+    protected labelService: LabelService,
+    protected eventManager: JhiEventManager,
+    protected modalService: NgbModal,
+    protected activatedRoute: ActivatedRoute
+  ) {
     this.currentSearch =
       this.activatedRoute.snapshot && this.activatedRoute.snapshot.queryParams['search']
         ? this.activatedRoute.snapshot.queryParams['search']
@@ -66,5 +73,10 @@ export class LabelComponent implements OnInit, OnDestroy {
 
   registerChangeInLabels() {
     this.eventSubscriber = this.eventManager.subscribe('labelListModification', () => this.loadAll());
+  }
+
+  delete(label: ILabel) {
+    const modalRef = this.modalService.open(LabelDeleteDialogComponent, { size: 'lg', backdrop: 'static' });
+    modalRef.componentInstance.label = label;
   }
 }

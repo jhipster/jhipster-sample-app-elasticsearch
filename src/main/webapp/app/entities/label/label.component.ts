@@ -14,8 +14,8 @@ import { LabelDeleteDialogComponent } from './label-delete-dialog.component';
   templateUrl: './label.component.html'
 })
 export class LabelComponent implements OnInit, OnDestroy {
-  labels: ILabel[];
-  eventSubscriber: Subscription;
+  labels?: ILabel[];
+  eventSubscriber?: Subscription;
   currentSearch: string;
 
   constructor(
@@ -30,52 +30,47 @@ export class LabelComponent implements OnInit, OnDestroy {
         : '';
   }
 
-  loadAll() {
+  loadAll(): void {
     if (this.currentSearch) {
       this.labelService
         .search({
           query: this.currentSearch
         })
-        .subscribe((res: HttpResponse<ILabel[]>) => (this.labels = res.body));
+        .subscribe((res: HttpResponse<ILabel[]>) => (this.labels = res.body ? res.body : []));
       return;
     }
     this.labelService.query().subscribe((res: HttpResponse<ILabel[]>) => {
-      this.labels = res.body;
+      this.labels = res.body ? res.body : [];
       this.currentSearch = '';
     });
   }
 
-  search(query) {
-    if (!query) {
-      return this.clear();
-    }
+  search(query: string): void {
     this.currentSearch = query;
     this.loadAll();
   }
 
-  clear() {
-    this.currentSearch = '';
-    this.loadAll();
-  }
-
-  ngOnInit() {
+  ngOnInit(): void {
     this.loadAll();
     this.registerChangeInLabels();
   }
 
-  ngOnDestroy() {
-    this.eventManager.destroy(this.eventSubscriber);
+  ngOnDestroy(): void {
+    if (this.eventSubscriber) {
+      this.eventManager.destroy(this.eventSubscriber);
+    }
   }
 
-  trackId(index: number, item: ILabel) {
-    return item.id;
+  trackId(index: number, item: ILabel): number {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    return item.id!;
   }
 
-  registerChangeInLabels() {
+  registerChangeInLabels(): void {
     this.eventSubscriber = this.eventManager.subscribe('labelListModification', () => this.loadAll());
   }
 
-  delete(label: ILabel) {
+  delete(label: ILabel): void {
     const modalRef = this.modalService.open(LabelDeleteDialogComponent, { size: 'lg', backdrop: 'static' });
     modalRef.componentInstance.label = label;
   }

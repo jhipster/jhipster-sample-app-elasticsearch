@@ -1,4 +1,5 @@
 package io.github.jhipster.sample.repository.search;
+
 import io.github.jhipster.sample.domain.BankAccount;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 

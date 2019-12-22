@@ -14,8 +14,8 @@ import { BankAccountDeleteDialogComponent } from './bank-account-delete-dialog.c
   templateUrl: './bank-account.component.html'
 })
 export class BankAccountComponent implements OnInit, OnDestroy {
-  bankAccounts: IBankAccount[];
-  eventSubscriber: Subscription;
+  bankAccounts?: IBankAccount[];
+  eventSubscriber?: Subscription;
   currentSearch: string;
 
   constructor(
@@ -30,52 +30,47 @@ export class BankAccountComponent implements OnInit, OnDestroy {
         : '';
   }
 
-  loadAll() {
+  loadAll(): void {
     if (this.currentSearch) {
       this.bankAccountService
         .search({
           query: this.currentSearch
         })
-        .subscribe((res: HttpResponse<IBankAccount[]>) => (this.bankAccounts = res.body));
+        .subscribe((res: HttpResponse<IBankAccount[]>) => (this.bankAccounts = res.body ? res.body : []));
       return;
     }
     this.bankAccountService.query().subscribe((res: HttpResponse<IBankAccount[]>) => {
-      this.bankAccounts = res.body;
+      this.bankAccounts = res.body ? res.body : [];
       this.currentSearch = '';
     });
   }
 
-  search(query) {
-    if (!query) {
-      return this.clear();
-    }
+  search(query: string): void {
     this.currentSearch = query;
     this.loadAll();
   }
 
-  clear() {
-    this.currentSearch = '';
-    this.loadAll();
-  }
-
-  ngOnInit() {
+  ngOnInit(): void {
     this.loadAll();
     this.registerChangeInBankAccounts();
   }
 
-  ngOnDestroy() {
-    this.eventManager.destroy(this.eventSubscriber);
+  ngOnDestroy(): void {
+    if (this.eventSubscriber) {
+      this.eventManager.destroy(this.eventSubscriber);
+    }
   }
 
-  trackId(index: number, item: IBankAccount) {
-    return item.id;
+  trackId(index: number, item: IBankAccount): number {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    return item.id!;
   }
 
-  registerChangeInBankAccounts() {
+  registerChangeInBankAccounts(): void {
     this.eventSubscriber = this.eventManager.subscribe('bankAccountListModification', () => this.loadAll());
   }
 
-  delete(bankAccount: IBankAccount) {
+  delete(bankAccount: IBankAccount): void {
     const modalRef = this.modalService.open(BankAccountDeleteDialogComponent, { size: 'lg', backdrop: 'static' });
     modalRef.componentInstance.bankAccount = bankAccount;
   }

@@ -36,13 +36,11 @@ export class BankAccountComponent implements OnInit, OnDestroy {
         .search({
           query: this.currentSearch
         })
-        .subscribe((res: HttpResponse<IBankAccount[]>) => (this.bankAccounts = res.body ? res.body : []));
+        .subscribe((res: HttpResponse<IBankAccount[]>) => (this.bankAccounts = res.body || []));
       return;
     }
-    this.bankAccountService.query().subscribe((res: HttpResponse<IBankAccount[]>) => {
-      this.bankAccounts = res.body ? res.body : [];
-      this.currentSearch = '';
-    });
+
+    this.bankAccountService.query().subscribe((res: HttpResponse<IBankAccount[]>) => (this.bankAccounts = res.body || []));
   }
 
   search(query: string): void {

@@ -58,6 +58,7 @@ export class OperationComponent implements OnInit, OnDestroy {
         .subscribe((res: HttpResponse<IOperation[]>) => this.paginateOperations(res.body, res.headers));
       return;
     }
+
     this.operationService
       .query({
         page: this.page,

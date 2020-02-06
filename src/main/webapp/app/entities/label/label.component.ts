@@ -36,13 +36,11 @@ export class LabelComponent implements OnInit, OnDestroy {
         .search({
           query: this.currentSearch
         })
-        .subscribe((res: HttpResponse<ILabel[]>) => (this.labels = res.body ? res.body : []));
+        .subscribe((res: HttpResponse<ILabel[]>) => (this.labels = res.body || []));
       return;
     }
-    this.labelService.query().subscribe((res: HttpResponse<ILabel[]>) => {
-      this.labels = res.body ? res.body : [];
-      this.currentSearch = '';
-    });
+
+    this.labelService.query().subscribe((res: HttpResponse<ILabel[]>) => (this.labels = res.body || []));
   }
 
   search(query: string): void {

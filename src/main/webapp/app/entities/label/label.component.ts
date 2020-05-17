@@ -11,7 +11,7 @@ import { LabelDeleteDialogComponent } from './label-delete-dialog.component';
 
 @Component({
   selector: 'jhi-label',
-  templateUrl: './label.component.html'
+  templateUrl: './label.component.html',
 })
 export class LabelComponent implements OnInit, OnDestroy {
   labels?: ILabel[];
@@ -34,7 +34,7 @@ export class LabelComponent implements OnInit, OnDestroy {
     if (this.currentSearch) {
       this.labelService
         .search({
-          query: this.currentSearch
+          query: this.currentSearch,
         })
         .subscribe((res: HttpResponse<ILabel[]>) => (this.labels = res.body || []));
       return;

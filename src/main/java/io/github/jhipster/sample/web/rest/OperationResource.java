@@ -138,6 +138,7 @@ public class OperationResource {
     @DeleteMapping("/operations/{id}")
     public ResponseEntity<Void> deleteOperation(@PathVariable Long id) {
         log.debug("REST request to delete Operation : {}", id);
+
         operationRepository.deleteById(id);
         operationSearchRepository.deleteById(id);
         return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
@@ -157,5 +158,5 @@ public class OperationResource {
         Page<Operation> page = operationSearchRepository.search(queryStringQuery(query), pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
-    }
+        }
 }

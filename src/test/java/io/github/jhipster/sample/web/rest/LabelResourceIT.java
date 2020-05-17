@@ -91,7 +91,6 @@ public class LabelResourceIT {
     @Transactional
     public void createLabel() throws Exception {
         int databaseSizeBeforeCreate = labelRepository.findAll().size();
-
         // Create the Label
         restLabelMockMvc.perform(post("/api/labels")
             .contentType(MediaType.APPLICATION_JSON)
@@ -140,6 +139,7 @@ public class LabelResourceIT {
 
         // Create the Label, which fails.
 
+
         restLabelMockMvc.perform(post("/api/labels")
             .contentType(MediaType.APPLICATION_JSON)
             .content(TestUtil.convertObjectToJsonBytes(label)))
@@ -176,7 +176,6 @@ public class LabelResourceIT {
             .andExpect(jsonPath("$.id").value(label.getId().intValue()))
             .andExpect(jsonPath("$.label").value(DEFAULT_LABEL));
     }
-
     @Test
     @Transactional
     public void getNonExistingLabel() throws Exception {
@@ -219,8 +218,6 @@ public class LabelResourceIT {
     public void updateNonExistingLabel() throws Exception {
         int databaseSizeBeforeUpdate = labelRepository.findAll().size();
 
-        // Create the Label
-
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
         restLabelMockMvc.perform(put("/api/labels")
             .contentType(MediaType.APPLICATION_JSON)
@@ -259,10 +256,12 @@ public class LabelResourceIT {
     @Test
     @Transactional
     public void searchLabel() throws Exception {
+        // Configure the mock search repository
         // Initialize the database
         labelRepository.saveAndFlush(label);
         when(mockLabelSearchRepository.search(queryStringQuery("id:" + label.getId())))
             .thenReturn(Collections.singletonList(label));
+
         // Search the label
         restLabelMockMvc.perform(get("/api/_search/labels?query=id:" + label.getId()))
             .andExpect(status().isOk())

@@ -7,6 +7,6 @@ import { HomeComponent } from './home.component';
 
 @NgModule({
   imports: [JhipsterElasticsearchSampleApplicationSharedModule, RouterModule.forChild([HOME_ROUTE])],
-  declarations: [HomeComponent]
+  declarations: [HomeComponent],
 })
 export class JhipsterElasticsearchSampleApplicationHomeModule {}

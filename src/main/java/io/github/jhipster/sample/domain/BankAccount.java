@@ -9,7 +9,6 @@ import javax.validation.constraints.*;
 
 import org.springframework.data.elasticsearch.annotations.FieldType;
 import java.io.Serializable;
-import java.util.Objects;
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
@@ -19,7 +18,7 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "bank_account")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @org.springframework.data.elasticsearch.annotations.Document(indexName = "bankaccount")
 public class BankAccount implements Serializable {
 
@@ -38,14 +37,14 @@ public class BankAccount implements Serializable {
     private BigDecimal balance;
 
     @ManyToOne
-    @JsonIgnoreProperties("bankAccounts")
+    @JsonIgnoreProperties(value = "bankAccounts", allowSetters = true)
     private User user;
 
     @OneToMany(mappedBy = "bankAccount")
-    @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     private Set<Operation> operations = new HashSet<>();
 
-    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    // jhipster-needle-entity-add-field - JHipster will add fields here
     public Long getId() {
         return id;
     }
@@ -85,7 +84,7 @@ public class BankAccount implements Serializable {
     public void setOperations(Set<Operation> operations) {
         this.operations = operations;
     }
-    // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
+    // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override
     public boolean equals(Object o) {
@@ -103,6 +102,7 @@ public class BankAccount implements Serializable {
         return 31;
     }
 
+    // prettier-ignore
     @Override
     public String toString() {
         return "BankAccount{" +

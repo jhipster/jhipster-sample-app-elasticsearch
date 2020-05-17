@@ -97,7 +97,6 @@ public class BankAccountResourceIT {
     @Transactional
     public void createBankAccount() throws Exception {
         int databaseSizeBeforeCreate = bankAccountRepository.findAll().size();
-
         // Create the BankAccount
         restBankAccountMockMvc.perform(post("/api/bank-accounts")
             .contentType(MediaType.APPLICATION_JSON)
@@ -147,6 +146,7 @@ public class BankAccountResourceIT {
 
         // Create the BankAccount, which fails.
 
+
         restBankAccountMockMvc.perform(post("/api/bank-accounts")
             .contentType(MediaType.APPLICATION_JSON)
             .content(TestUtil.convertObjectToJsonBytes(bankAccount)))
@@ -164,6 +164,7 @@ public class BankAccountResourceIT {
         bankAccount.setBalance(null);
 
         // Create the BankAccount, which fails.
+
 
         restBankAccountMockMvc.perform(post("/api/bank-accounts")
             .contentType(MediaType.APPLICATION_JSON)
@@ -203,7 +204,6 @@ public class BankAccountResourceIT {
             .andExpect(jsonPath("$.name").value(DEFAULT_NAME))
             .andExpect(jsonPath("$.balance").value(DEFAULT_BALANCE.intValue()));
     }
-
     @Test
     @Transactional
     public void getNonExistingBankAccount() throws Exception {
@@ -248,8 +248,6 @@ public class BankAccountResourceIT {
     public void updateNonExistingBankAccount() throws Exception {
         int databaseSizeBeforeUpdate = bankAccountRepository.findAll().size();
 
-        // Create the BankAccount
-
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
         restBankAccountMockMvc.perform(put("/api/bank-accounts")
             .contentType(MediaType.APPLICATION_JSON)
@@ -288,10 +286,12 @@ public class BankAccountResourceIT {
     @Test
     @Transactional
     public void searchBankAccount() throws Exception {
+        // Configure the mock search repository
         // Initialize the database
         bankAccountRepository.saveAndFlush(bankAccount);
         when(mockBankAccountSearchRepository.search(queryStringQuery("id:" + bankAccount.getId())))
             .thenReturn(Collections.singletonList(bankAccount));
+
         // Search the bankAccount
         restBankAccountMockMvc.perform(get("/api/_search/bank-accounts?query=id:" + bankAccount.getId()))
             .andExpect(status().isOk())

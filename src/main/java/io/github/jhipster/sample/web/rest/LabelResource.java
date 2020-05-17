@@ -123,6 +123,7 @@ public class LabelResource {
     @DeleteMapping("/labels/{id}")
     public ResponseEntity<Void> deleteLabel(@PathVariable Long id) {
         log.debug("REST request to delete Label : {}", id);
+
         labelRepository.deleteById(id);
         labelSearchRepository.deleteById(id);
         return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
@@ -140,6 +141,6 @@ public class LabelResource {
         log.debug("REST request to search Labels for query {}", query);
         return StreamSupport
             .stream(labelSearchRepository.search(queryStringQuery(query)).spliterator(), false)
-            .collect(Collectors.toList());
+        .collect(Collectors.toList());
     }
 }

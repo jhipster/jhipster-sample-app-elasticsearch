@@ -123,6 +123,7 @@ public class BankAccountResource {
     @DeleteMapping("/bank-accounts/{id}")
     public ResponseEntity<Void> deleteBankAccount(@PathVariable Long id) {
         log.debug("REST request to delete BankAccount : {}", id);
+
         bankAccountRepository.deleteById(id);
         bankAccountSearchRepository.deleteById(id);
         return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
@@ -140,6 +141,6 @@ public class BankAccountResource {
         log.debug("REST request to search BankAccounts for query {}", query);
         return StreamSupport
             .stream(bankAccountSearchRepository.search(queryStringQuery(query)).spliterator(), false)
-            .collect(Collectors.toList());
+        .collect(Collectors.toList());
     }
 }

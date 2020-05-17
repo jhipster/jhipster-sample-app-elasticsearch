@@ -18,7 +18,7 @@ describe('Component Tests', () => {
       TestBed.configureTestingModule({
         imports: [JhipsterElasticsearchSampleApplicationTestModule],
         declarations: [OperationUpdateComponent],
-        providers: [FormBuilder]
+        providers: [FormBuilder],
       })
         .overrideTemplate(OperationUpdateComponent, '')
         .compileComponents();

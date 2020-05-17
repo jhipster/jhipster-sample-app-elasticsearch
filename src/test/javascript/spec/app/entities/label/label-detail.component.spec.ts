@@ -16,7 +16,7 @@ describe('Component Tests', () => {
       TestBed.configureTestingModule({
         imports: [JhipsterElasticsearchSampleApplicationTestModule],
         declarations: [LabelDetailComponent],
-        providers: [{ provide: ActivatedRoute, useValue: route }]
+        providers: [{ provide: ActivatedRoute, useValue: route }],
       })
         .overrideTemplate(LabelDetailComponent, '')
         .compileComponents();

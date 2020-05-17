@@ -8,6 +8,6 @@ import { logsRoute } from './logs.route';
 
 @NgModule({
   imports: [JhipsterElasticsearchSampleApplicationSharedModule, RouterModule.forChild([logsRoute])],
-  declarations: [LogsComponent]
+  declarations: [LogsComponent],
 })
 export class LogsModule {}

@@ -38,14 +38,14 @@ public class ElasticsearchConfiguration {
 
     @Bean
     @Primary
-    public ElasticsearchOperations elasticsearchTemplate(final JestClient jestClient,
-                                                         final ElasticsearchConverter elasticsearchConverter,
-                                                         final SimpleElasticsearchMappingContext simpleElasticsearchMappingContext,
-                                                         EntityMapper mapper) {
+    public ElasticsearchOperations elasticsearchTemplate(JestClient jestClient,
+                                                         ElasticsearchConverter elasticsearchConverter,
+                                                         SimpleElasticsearchMappingContext mappingContext,
+                                                         EntityMapper entityMapper) {
         return new JestElasticsearchTemplate(
             jestClient,
             elasticsearchConverter,
-            new DefaultJestResultsMapper(simpleElasticsearchMappingContext, mapper));
+            new DefaultJestResultsMapper(mappingContext, entityMapper));
     }
 
     public class CustomEntityMapper implements EntityMapper {
@@ -81,7 +81,7 @@ public class ElasticsearchConfiguration {
         }
 
         @Override
-        public <T> T readObject (Map<String, Object> source, Class<T> targetType) {
+        public <T> T readObject(Map<String, Object> source, Class<T> targetType) {
             try {
                 return mapToObject(mapToString(source), targetType);
             } catch (IOException e) {

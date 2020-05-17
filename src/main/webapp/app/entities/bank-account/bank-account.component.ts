@@ -11,7 +11,7 @@ import { BankAccountDeleteDialogComponent } from './bank-account-delete-dialog.c
 
 @Component({
   selector: 'jhi-bank-account',
-  templateUrl: './bank-account.component.html'
+  templateUrl: './bank-account.component.html',
 })
 export class BankAccountComponent implements OnInit, OnDestroy {
   bankAccounts?: IBankAccount[];
@@ -34,7 +34,7 @@ export class BankAccountComponent implements OnInit, OnDestroy {
     if (this.currentSearch) {
       this.bankAccountService
         .search({
-          query: this.currentSearch
+          query: this.currentSearch,
         })
         .subscribe((res: HttpResponse<IBankAccount[]>) => (this.bankAccounts = res.body || []));
       return;

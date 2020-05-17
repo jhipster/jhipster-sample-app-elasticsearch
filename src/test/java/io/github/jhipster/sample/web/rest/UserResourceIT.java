@@ -245,7 +245,6 @@ public class UserResourceIT {
     public void getAllUsers() throws Exception {
         // Initialize the database
         userRepository.saveAndFlush(user);
-        mockUserSearchRepository.save(user);
 
         // Get all the users
         restUserMockMvc.perform(get("/api/users?sort=id,desc")
@@ -295,7 +294,6 @@ public class UserResourceIT {
     public void updateUser() throws Exception {
         // Initialize the database
         userRepository.saveAndFlush(user);
-        mockUserSearchRepository.save(user);
         int databaseSizeBeforeUpdate = userRepository.findAll().size();
 
         // Update the user
@@ -339,7 +337,6 @@ public class UserResourceIT {
     public void updateUserLogin() throws Exception {
         // Initialize the database
         userRepository.saveAndFlush(user);
-        mockUserSearchRepository.save(user);
         int databaseSizeBeforeUpdate = userRepository.findAll().size();
 
         // Update the user
@@ -472,7 +469,6 @@ public class UserResourceIT {
     public void deleteUser() throws Exception {
         // Initialize the database
         userRepository.saveAndFlush(user);
-        mockUserSearchRepository.save(user);
         int databaseSizeBeforeDelete = userRepository.findAll().size();
 
         // Delete the user
@@ -499,7 +495,6 @@ public class UserResourceIT {
     }
 
     @Test
-    @Transactional
     public void testUserEquals() throws Exception {
         TestUtil.equalsVerifier(User.class);
         User user1 = new User();

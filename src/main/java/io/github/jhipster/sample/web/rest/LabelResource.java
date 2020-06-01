@@ -123,7 +123,6 @@ public class LabelResource {
     @DeleteMapping("/labels/{id}")
     public ResponseEntity<Void> deleteLabel(@PathVariable Long id) {
         log.debug("REST request to delete Label : {}", id);
-
         labelRepository.deleteById(id);
         labelSearchRepository.deleteById(id);
         return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();

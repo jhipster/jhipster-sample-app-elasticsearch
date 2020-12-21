@@ -1,27 +1,6 @@
 package io.github.jhipster.sample.web.rest;
 
-import io.github.jhipster.sample.JhipsterElasticsearchSampleApplicationApp;
-import io.github.jhipster.sample.domain.BankAccount;
-import io.github.jhipster.sample.repository.BankAccountRepository;
-import io.github.jhipster.sample.repository.search.BankAccountSearchRepository;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
-import javax.persistence.EntityManager;
-import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.List;
-
+import static io.github.jhipster.sample.web.rest.TestUtil.sameNumber;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
 import static org.hamcrest.Matchers.hasItem;
@@ -29,14 +8,34 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import io.github.jhipster.sample.IntegrationTest;
+import io.github.jhipster.sample.domain.BankAccount;
+import io.github.jhipster.sample.repository.BankAccountRepository;
+import io.github.jhipster.sample.repository.search.BankAccountSearchRepository;
+import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.List;
+import javax.persistence.EntityManager;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
+
 /**
  * Integration tests for the {@link BankAccountResource} REST controller.
  */
-@SpringBootTest(classes = JhipsterElasticsearchSampleApplicationApp.class)
+@IntegrationTest
 @ExtendWith(MockitoExtension.class)
 @AutoConfigureMockMvc
 @WithMockUser
-public class BankAccountResourceIT {
+class BankAccountResourceIT {
 
     private static final String DEFAULT_NAME = "AAAAAAAAAA";
     private static final String UPDATED_NAME = "BBBBBBBBBB";
@@ -70,11 +69,10 @@ public class BankAccountResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static BankAccount createEntity(EntityManager em) {
-        BankAccount bankAccount = new BankAccount();
-        bankAccount.setName(DEFAULT_NAME);
-        bankAccount.setBalance(DEFAULT_BALANCE);
+        BankAccount bankAccount = new BankAccount().name(DEFAULT_NAME).balance(DEFAULT_BALANCE);
         return bankAccount;
     }
+
     /**
      * Create an updated entity for this test.
      *
@@ -82,9 +80,7 @@ public class BankAccountResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static BankAccount createUpdatedEntity(EntityManager em) {
-        BankAccount bankAccount = new BankAccount();
-        bankAccount.setName(UPDATED_NAME);
-        bankAccount.setBalance(UPDATED_BALANCE);
+        BankAccount bankAccount = new BankAccount().name(UPDATED_NAME).balance(UPDATED_BALANCE);
         return bankAccount;
     }
 
@@ -95,12 +91,13 @@ public class BankAccountResourceIT {
 
     @Test
     @Transactional
-    public void createBankAccount() throws Exception {
+    void createBankAccount() throws Exception {
         int databaseSizeBeforeCreate = bankAccountRepository.findAll().size();
         // Create the BankAccount
-        restBankAccountMockMvc.perform(post("/api/bank-accounts")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(bankAccount)))
+        restBankAccountMockMvc
+            .perform(
+                post("/api/bank-accounts").contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(bankAccount))
+            )
             .andExpect(status().isCreated());
 
         // Validate the BankAccount in the database
@@ -108,7 +105,7 @@ public class BankAccountResourceIT {
         assertThat(bankAccountList).hasSize(databaseSizeBeforeCreate + 1);
         BankAccount testBankAccount = bankAccountList.get(bankAccountList.size() - 1);
         assertThat(testBankAccount.getName()).isEqualTo(DEFAULT_NAME);
-        assertThat(testBankAccount.getBalance()).isEqualTo(DEFAULT_BALANCE);
+        assertThat(testBankAccount.getBalance()).isEqualByComparingTo(DEFAULT_BALANCE);
 
         // Validate the BankAccount in Elasticsearch
         verify(mockBankAccountSearchRepository, times(1)).save(testBankAccount);
@@ -116,16 +113,17 @@ public class BankAccountResourceIT {
 
     @Test
     @Transactional
-    public void createBankAccountWithExistingId() throws Exception {
-        int databaseSizeBeforeCreate = bankAccountRepository.findAll().size();
-
+    void createBankAccountWithExistingId() throws Exception {
         // Create the BankAccount with an existing ID
         bankAccount.setId(1L);
 
+        int databaseSizeBeforeCreate = bankAccountRepository.findAll().size();
+
         // An entity with an existing ID cannot be created, so this API call must fail
-        restBankAccountMockMvc.perform(post("/api/bank-accounts")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(bankAccount)))
+        restBankAccountMockMvc
+            .perform(
+                post("/api/bank-accounts").contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(bankAccount))
+            )
             .andExpect(status().isBadRequest());
 
         // Validate the BankAccount in the database
@@ -136,20 +134,19 @@ public class BankAccountResourceIT {
         verify(mockBankAccountSearchRepository, times(0)).save(bankAccount);
     }
 
-
     @Test
     @Transactional
-    public void checkNameIsRequired() throws Exception {
+    void checkNameIsRequired() throws Exception {
         int databaseSizeBeforeTest = bankAccountRepository.findAll().size();
         // set the field null
         bankAccount.setName(null);
 
         // Create the BankAccount, which fails.
 
-
-        restBankAccountMockMvc.perform(post("/api/bank-accounts")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(bankAccount)))
+        restBankAccountMockMvc
+            .perform(
+                post("/api/bank-accounts").contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(bankAccount))
+            )
             .andExpect(status().isBadRequest());
 
         List<BankAccount> bankAccountList = bankAccountRepository.findAll();
@@ -158,17 +155,17 @@ public class BankAccountResourceIT {
 
     @Test
     @Transactional
-    public void checkBalanceIsRequired() throws Exception {
+    void checkBalanceIsRequired() throws Exception {
         int databaseSizeBeforeTest = bankAccountRepository.findAll().size();
         // set the field null
         bankAccount.setBalance(null);
 
         // Create the BankAccount, which fails.
 
-
-        restBankAccountMockMvc.perform(post("/api/bank-accounts")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(bankAccount)))
+        restBankAccountMockMvc
+            .perform(
+                post("/api/bank-accounts").contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(bankAccount))
+            )
             .andExpect(status().isBadRequest());
 
         List<BankAccount> bankAccountList = bankAccountRepository.findAll();
@@ -177,44 +174,46 @@ public class BankAccountResourceIT {
 
     @Test
     @Transactional
-    public void getAllBankAccounts() throws Exception {
+    void getAllBankAccounts() throws Exception {
         // Initialize the database
         bankAccountRepository.saveAndFlush(bankAccount);
 
         // Get all the bankAccountList
-        restBankAccountMockMvc.perform(get("/api/bank-accounts?sort=id,desc"))
+        restBankAccountMockMvc
+            .perform(get("/api/bank-accounts?sort=id,desc"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(bankAccount.getId().intValue())))
             .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)))
-            .andExpect(jsonPath("$.[*].balance").value(hasItem(DEFAULT_BALANCE.intValue())));
+            .andExpect(jsonPath("$.[*].balance").value(hasItem(sameNumber(DEFAULT_BALANCE))));
     }
-    
+
     @Test
     @Transactional
-    public void getBankAccount() throws Exception {
+    void getBankAccount() throws Exception {
         // Initialize the database
         bankAccountRepository.saveAndFlush(bankAccount);
 
         // Get the bankAccount
-        restBankAccountMockMvc.perform(get("/api/bank-accounts/{id}", bankAccount.getId()))
+        restBankAccountMockMvc
+            .perform(get("/api/bank-accounts/{id}", bankAccount.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(bankAccount.getId().intValue()))
             .andExpect(jsonPath("$.name").value(DEFAULT_NAME))
-            .andExpect(jsonPath("$.balance").value(DEFAULT_BALANCE.intValue()));
-    }
-    @Test
-    @Transactional
-    public void getNonExistingBankAccount() throws Exception {
-        // Get the bankAccount
-        restBankAccountMockMvc.perform(get("/api/bank-accounts/{id}", Long.MAX_VALUE))
-            .andExpect(status().isNotFound());
+            .andExpect(jsonPath("$.balance").value(sameNumber(DEFAULT_BALANCE)));
     }
 
     @Test
     @Transactional
-    public void updateBankAccount() throws Exception {
+    void getNonExistingBankAccount() throws Exception {
+        // Get the bankAccount
+        restBankAccountMockMvc.perform(get("/api/bank-accounts/{id}", Long.MAX_VALUE)).andExpect(status().isNotFound());
+    }
+
+    @Test
+    @Transactional
+    void updateBankAccount() throws Exception {
         // Initialize the database
         bankAccountRepository.saveAndFlush(bankAccount);
 
@@ -224,12 +223,14 @@ public class BankAccountResourceIT {
         BankAccount updatedBankAccount = bankAccountRepository.findById(bankAccount.getId()).get();
         // Disconnect from session so that the updates on updatedBankAccount are not directly saved in db
         em.detach(updatedBankAccount);
-        updatedBankAccount.setName(UPDATED_NAME);
-        updatedBankAccount.setBalance(UPDATED_BALANCE);
+        updatedBankAccount.name(UPDATED_NAME).balance(UPDATED_BALANCE);
 
-        restBankAccountMockMvc.perform(put("/api/bank-accounts")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(updatedBankAccount)))
+        restBankAccountMockMvc
+            .perform(
+                put("/api/bank-accounts")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(updatedBankAccount))
+            )
             .andExpect(status().isOk());
 
         // Validate the BankAccount in the database
@@ -240,18 +241,19 @@ public class BankAccountResourceIT {
         assertThat(testBankAccount.getBalance()).isEqualTo(UPDATED_BALANCE);
 
         // Validate the BankAccount in Elasticsearch
-        verify(mockBankAccountSearchRepository, times(1)).save(testBankAccount);
+        verify(mockBankAccountSearchRepository).save(testBankAccount);
     }
 
     @Test
     @Transactional
-    public void updateNonExistingBankAccount() throws Exception {
+    void updateNonExistingBankAccount() throws Exception {
         int databaseSizeBeforeUpdate = bankAccountRepository.findAll().size();
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
-        restBankAccountMockMvc.perform(put("/api/bank-accounts")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(bankAccount)))
+        restBankAccountMockMvc
+            .perform(
+                put("/api/bank-accounts").contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(bankAccount))
+            )
             .andExpect(status().isBadRequest());
 
         // Validate the BankAccount in the database
@@ -264,15 +266,90 @@ public class BankAccountResourceIT {
 
     @Test
     @Transactional
-    public void deleteBankAccount() throws Exception {
+    void partialUpdateBankAccountWithPatch() throws Exception {
+        // Initialize the database
+        bankAccountRepository.saveAndFlush(bankAccount);
+
+        int databaseSizeBeforeUpdate = bankAccountRepository.findAll().size();
+
+        // Update the bankAccount using partial update
+        BankAccount partialUpdatedBankAccount = new BankAccount();
+        partialUpdatedBankAccount.setId(bankAccount.getId());
+
+        partialUpdatedBankAccount.balance(UPDATED_BALANCE);
+
+        restBankAccountMockMvc
+            .perform(
+                patch("/api/bank-accounts")
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(partialUpdatedBankAccount))
+            )
+            .andExpect(status().isOk());
+
+        // Validate the BankAccount in the database
+        List<BankAccount> bankAccountList = bankAccountRepository.findAll();
+        assertThat(bankAccountList).hasSize(databaseSizeBeforeUpdate);
+        BankAccount testBankAccount = bankAccountList.get(bankAccountList.size() - 1);
+        assertThat(testBankAccount.getName()).isEqualTo(DEFAULT_NAME);
+        assertThat(testBankAccount.getBalance()).isEqualByComparingTo(UPDATED_BALANCE);
+    }
+
+    @Test
+    @Transactional
+    void fullUpdateBankAccountWithPatch() throws Exception {
+        // Initialize the database
+        bankAccountRepository.saveAndFlush(bankAccount);
+
+        int databaseSizeBeforeUpdate = bankAccountRepository.findAll().size();
+
+        // Update the bankAccount using partial update
+        BankAccount partialUpdatedBankAccount = new BankAccount();
+        partialUpdatedBankAccount.setId(bankAccount.getId());
+
+        partialUpdatedBankAccount.name(UPDATED_NAME).balance(UPDATED_BALANCE);
+
+        restBankAccountMockMvc
+            .perform(
+                patch("/api/bank-accounts")
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(partialUpdatedBankAccount))
+            )
+            .andExpect(status().isOk());
+
+        // Validate the BankAccount in the database
+        List<BankAccount> bankAccountList = bankAccountRepository.findAll();
+        assertThat(bankAccountList).hasSize(databaseSizeBeforeUpdate);
+        BankAccount testBankAccount = bankAccountList.get(bankAccountList.size() - 1);
+        assertThat(testBankAccount.getName()).isEqualTo(UPDATED_NAME);
+        assertThat(testBankAccount.getBalance()).isEqualByComparingTo(UPDATED_BALANCE);
+    }
+
+    @Test
+    @Transactional
+    void partialUpdateBankAccountShouldThrown() throws Exception {
+        // Update the bankAccount without id should throw
+        BankAccount partialUpdatedBankAccount = new BankAccount();
+
+        restBankAccountMockMvc
+            .perform(
+                patch("/api/bank-accounts")
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(partialUpdatedBankAccount))
+            )
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Transactional
+    void deleteBankAccount() throws Exception {
         // Initialize the database
         bankAccountRepository.saveAndFlush(bankAccount);
 
         int databaseSizeBeforeDelete = bankAccountRepository.findAll().size();
 
         // Delete the bankAccount
-        restBankAccountMockMvc.perform(delete("/api/bank-accounts/{id}", bankAccount.getId())
-            .accept(MediaType.APPLICATION_JSON))
+        restBankAccountMockMvc
+            .perform(delete("/api/bank-accounts/{id}", bankAccount.getId()).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNoContent());
 
         // Validate the database contains one less item
@@ -285,7 +362,7 @@ public class BankAccountResourceIT {
 
     @Test
     @Transactional
-    public void searchBankAccount() throws Exception {
+    void searchBankAccount() throws Exception {
         // Configure the mock search repository
         // Initialize the database
         bankAccountRepository.saveAndFlush(bankAccount);
@@ -293,11 +370,12 @@ public class BankAccountResourceIT {
             .thenReturn(Collections.singletonList(bankAccount));
 
         // Search the bankAccount
-        restBankAccountMockMvc.perform(get("/api/_search/bank-accounts?query=id:" + bankAccount.getId()))
+        restBankAccountMockMvc
+            .perform(get("/api/_search/bank-accounts?query=id:" + bankAccount.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(bankAccount.getId().intValue())))
             .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)))
-            .andExpect(jsonPath("$.[*].balance").value(hasItem(DEFAULT_BALANCE.intValue())));
+            .andExpect(jsonPath("$.[*].balance").value(hasItem(sameNumber(DEFAULT_BALANCE))));
     }
 }

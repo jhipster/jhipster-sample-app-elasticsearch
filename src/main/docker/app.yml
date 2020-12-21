@@ -1,22 +1,41 @@
-version: '2'
+# This configuration is intended for development purpose, it's **your** responsibility to harden it for production
+version: '3.8'
 services:
   jhipsterelasticsearchsampleapplication-app:
     image: jhipsterelasticsearchsampleapplication
     environment:
       - _JAVA_OPTIONS=-Xmx512m -Xms256m
-      - SPRING_PROFILES_ACTIVE=prod,swagger
+      - SPRING_PROFILES_ACTIVE=prod,api-docs
       - MANAGEMENT_METRICS_EXPORT_PROMETHEUS_ENABLED=true
       - SPRING_DATASOURCE_URL=jdbc:mysql://jhipsterelasticsearchsampleapplication-mysql:3306/jhipsterelasticsearchsampleapplication?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true
       - JHIPSTER_SLEEP=30 # gives time for other services to boot before the application
-      - SPRING_DATA_JEST_URI=http://jhipsterelasticsearchsampleapplication-elasticsearch:9200
       - SPRING_ELASTICSEARCH_REST_URIS=http://jhipsterelasticsearchsampleapplication-elasticsearch:9200
+    # If you want to expose these ports outside your dev PC,
+    # remove the "127.0.0.1:" prefix
     ports:
-      - 8080:8080
+      - 127.0.0.1:8080:8080
   jhipsterelasticsearchsampleapplication-mysql:
-    extends:
-      file: mysql.yml
-      service: jhipsterelasticsearchsampleapplication-mysql
+    image: mysql:8.0.22
+    # volumes:
+    #     - ~/volumes/jhipster/jhipsterElasticsearchSampleApplication/mysql/:/var/lib/mysql/
+    environment:
+      - MYSQL_USER=root
+      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+      - MYSQL_DATABASE=jhipsterelasticsearchsampleapplication
+    # If you want to expose these ports outside your dev PC,
+    # remove the "127.0.0.1:" prefix
+    ports:
+      - 127.0.0.1:3306:3306
+    command: mysqld --lower_case_table_names=1 --skip-ssl --character_set_server=utf8mb4 --explicit_defaults_for_timestamp
   jhipsterelasticsearchsampleapplication-elasticsearch:
-    extends:
-      file: elasticsearch.yml
-      service: jhipsterelasticsearchsampleapplication-elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.6.2
+    # volumes:
+    #     - ~/volumes/jhipster/jhipsterElasticsearchSampleApplication/elasticsearch/:/usr/share/elasticsearch/data/
+    # If you want to expose these ports outside your dev PC,
+    # remove the "127.0.0.1:" prefix
+    ports:
+      - 127.0.0.1:9200:9200
+      - 127.0.0.1:9300:9300
+    environment:
+      - 'ES_JAVA_OPTS=-Xms1024m -Xmx1024m'
+      - 'discovery.type=single-node'

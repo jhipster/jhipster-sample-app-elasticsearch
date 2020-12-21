@@ -1,28 +1,27 @@
 package io.github.jhipster.sample.web.rest;
 
+import static org.elasticsearch.index.query.QueryBuilders.*;
+
 import io.github.jhipster.sample.domain.BankAccount;
 import io.github.jhipster.sample.repository.BankAccountRepository;
 import io.github.jhipster.sample.repository.search.BankAccountSearchRepository;
 import io.github.jhipster.sample.web.rest.errors.BadRequestAlertException;
-
-import io.github.jhipster.web.util.HeaderUtil;
-import io.github.jhipster.web.util.ResponseUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-
-import static org.elasticsearch.index.query.QueryBuilders.*;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.*;
+import tech.jhipster.web.util.HeaderUtil;
+import tech.jhipster.web.util.ResponseUtil;
 
 /**
  * REST controller for managing {@link io.github.jhipster.sample.domain.BankAccount}.
@@ -63,7 +62,8 @@ public class BankAccountResource {
         }
         BankAccount result = bankAccountRepository.save(bankAccount);
         bankAccountSearchRepository.save(result);
-        return ResponseEntity.created(new URI("/api/bank-accounts/" + result.getId()))
+        return ResponseEntity
+            .created(new URI("/api/bank-accounts/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
             .body(result);
     }
@@ -85,9 +85,57 @@ public class BankAccountResource {
         }
         BankAccount result = bankAccountRepository.save(bankAccount);
         bankAccountSearchRepository.save(result);
-        return ResponseEntity.ok()
+        return ResponseEntity
+            .ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, bankAccount.getId().toString()))
             .body(result);
+    }
+
+    /**
+     * {@code PATCH  /bank-accounts} : Updates given fields of an existing bankAccount.
+     *
+     * @param bankAccount the bankAccount to update.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated bankAccount,
+     * or with status {@code 400 (Bad Request)} if the bankAccount is not valid,
+     * or with status {@code 404 (Not Found)} if the bankAccount is not found,
+     * or with status {@code 500 (Internal Server Error)} if the bankAccount couldn't be updated.
+     * @throws URISyntaxException if the Location URI syntax is incorrect.
+     */
+    @PatchMapping(value = "/bank-accounts", consumes = "application/merge-patch+json")
+    public ResponseEntity<BankAccount> partialUpdateBankAccount(@NotNull @RequestBody BankAccount bankAccount) throws URISyntaxException {
+        log.debug("REST request to update BankAccount partially : {}", bankAccount);
+        if (bankAccount.getId() == null) {
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        }
+
+        Optional<BankAccount> result = bankAccountRepository
+            .findById(bankAccount.getId())
+            .map(
+                existingBankAccount -> {
+                    if (bankAccount.getName() != null) {
+                        existingBankAccount.setName(bankAccount.getName());
+                    }
+
+                    if (bankAccount.getBalance() != null) {
+                        existingBankAccount.setBalance(bankAccount.getBalance());
+                    }
+
+                    return existingBankAccount;
+                }
+            )
+            .map(bankAccountRepository::save)
+            .map(
+                savedBankAccount -> {
+                    bankAccountSearchRepository.save(savedBankAccount);
+
+                    return savedBankAccount;
+                }
+            );
+
+        return ResponseUtil.wrapOrNotFound(
+            result,
+            HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, bankAccount.getId().toString())
+        );
     }
 
     /**
@@ -125,7 +173,10 @@ public class BankAccountResource {
         log.debug("REST request to delete BankAccount : {}", id);
         bankAccountRepository.deleteById(id);
         bankAccountSearchRepository.deleteById(id);
-        return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
+        return ResponseEntity
+            .noContent()
+            .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
+            .build();
     }
 
     /**
@@ -140,6 +191,6 @@ public class BankAccountResource {
         log.debug("REST request to search BankAccounts for query {}", query);
         return StreamSupport
             .stream(bankAccountSearchRepository.search(queryStringQuery(query)).spliterator(), false)
-        .collect(Collectors.toList());
+            .collect(Collectors.toList());
     }
 }

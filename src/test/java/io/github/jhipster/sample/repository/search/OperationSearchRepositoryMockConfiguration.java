@@ -12,5 +12,4 @@ public class OperationSearchRepositoryMockConfiguration {
 
     @MockBean
     private OperationSearchRepository mockOperationSearchRepository;
-
 }

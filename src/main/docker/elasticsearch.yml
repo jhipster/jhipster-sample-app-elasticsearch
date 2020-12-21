@@ -1,12 +1,15 @@
-version: '2'
+# This configuration is intended for development purpose, it's **your** responsibility to harden it for production
+version: '3.8'
 services:
   jhipsterelasticsearchsampleapplication-elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:6.8.8
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.6.2
     # volumes:
     #     - ~/volumes/jhipster/jhipsterElasticsearchSampleApplication/elasticsearch/:/usr/share/elasticsearch/data/
+    # If you want to expose these ports outside your dev PC,
+    # remove the "127.0.0.1:" prefix
     ports:
-      - 9200:9200
-      - 9300:9300
+      - 127.0.0.1:9200:9200
+      - 127.0.0.1:9300:9300
     environment:
       - 'ES_JAVA_OPTS=-Xms1024m -Xmx1024m'
       - 'discovery.type=single-node'

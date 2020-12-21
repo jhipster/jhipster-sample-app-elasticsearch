@@ -3,6 +3,7 @@
     "label": {
       "home": {
         "title": "Labels",
+        "refreshListLabel": "Refresh list",
         "createLabel": "Create a new Label",
         "createOrEditLabel": "Create or edit a Label",
         "search": "Search for Label",
@@ -17,6 +18,7 @@
       "detail": {
         "title": "Label"
       },
+      "id": "ID",
       "label": "Label",
       "operation": "Operation"
     }

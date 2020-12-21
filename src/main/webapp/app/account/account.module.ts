@@ -1,9 +1,8 @@
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
-import { JhipsterElasticsearchSampleApplicationSharedModule } from 'app/shared/shared.module';
-
-import { PasswordStrengthBarComponent } from './password/password-strength-bar.component';
+import { SharedModule } from 'app/shared/shared.module';
+import { PasswordStrengthBarComponent } from './password/password-strength-bar/password-strength-bar.component';
 import { RegisterComponent } from './register/register.component';
 import { ActivateComponent } from './activate/activate.component';
 import { PasswordComponent } from './password/password.component';
@@ -13,7 +12,7 @@ import { SettingsComponent } from './settings/settings.component';
 import { accountState } from './account.route';
 
 @NgModule({
-  imports: [JhipsterElasticsearchSampleApplicationSharedModule, RouterModule.forChild(accountState)],
+  imports: [SharedModule, RouterModule.forChild(accountState)],
   declarations: [
     ActivateComponent,
     RegisterComponent,

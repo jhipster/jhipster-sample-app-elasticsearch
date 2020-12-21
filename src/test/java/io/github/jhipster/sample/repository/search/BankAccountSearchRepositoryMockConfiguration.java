@@ -12,5 +12,4 @@ public class BankAccountSearchRepositoryMockConfiguration {
 
     @MockBean
     private BankAccountSearchRepository mockBankAccountSearchRepository;
-
 }

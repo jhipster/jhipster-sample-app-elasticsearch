@@ -12,5 +12,4 @@ public class LabelSearchRepositoryMockConfiguration {
 
     @MockBean
     private LabelSearchRepository mockLabelSearchRepository;
-
 }

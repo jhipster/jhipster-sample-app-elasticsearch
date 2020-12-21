@@ -1,13 +1,19 @@
 package io.github.jhipster.sample.web.rest;
 
+import static org.elasticsearch.index.query.QueryBuilders.*;
+
 import io.github.jhipster.sample.domain.Operation;
 import io.github.jhipster.sample.repository.OperationRepository;
 import io.github.jhipster.sample.repository.search.OperationSearchRepository;
 import io.github.jhipster.sample.web.rest.errors.BadRequestAlertException;
-
-import io.github.jhipster.web.util.HeaderUtil;
-import io.github.jhipster.web.util.PaginationUtil;
-import io.github.jhipster.web.util.ResponseUtil;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,20 +21,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
-
-import static org.elasticsearch.index.query.QueryBuilders.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import tech.jhipster.web.util.HeaderUtil;
+import tech.jhipster.web.util.PaginationUtil;
+import tech.jhipster.web.util.ResponseUtil;
 
 /**
  * REST controller for managing {@link io.github.jhipster.sample.domain.Operation}.
@@ -69,7 +68,8 @@ public class OperationResource {
         }
         Operation result = operationRepository.save(operation);
         operationSearchRepository.save(result);
-        return ResponseEntity.created(new URI("/api/operations/" + result.getId()))
+        return ResponseEntity
+            .created(new URI("/api/operations/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
             .body(result);
     }
@@ -91,9 +91,61 @@ public class OperationResource {
         }
         Operation result = operationRepository.save(operation);
         operationSearchRepository.save(result);
-        return ResponseEntity.ok()
+        return ResponseEntity
+            .ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, operation.getId().toString()))
             .body(result);
+    }
+
+    /**
+     * {@code PATCH  /operations} : Updates given fields of an existing operation.
+     *
+     * @param operation the operation to update.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated operation,
+     * or with status {@code 400 (Bad Request)} if the operation is not valid,
+     * or with status {@code 404 (Not Found)} if the operation is not found,
+     * or with status {@code 500 (Internal Server Error)} if the operation couldn't be updated.
+     * @throws URISyntaxException if the Location URI syntax is incorrect.
+     */
+    @PatchMapping(value = "/operations", consumes = "application/merge-patch+json")
+    public ResponseEntity<Operation> partialUpdateOperation(@NotNull @RequestBody Operation operation) throws URISyntaxException {
+        log.debug("REST request to update Operation partially : {}", operation);
+        if (operation.getId() == null) {
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        }
+
+        Optional<Operation> result = operationRepository
+            .findById(operation.getId())
+            .map(
+                existingOperation -> {
+                    if (operation.getDate() != null) {
+                        existingOperation.setDate(operation.getDate());
+                    }
+
+                    if (operation.getDescription() != null) {
+                        existingOperation.setDescription(operation.getDescription());
+                    }
+
+                    if (operation.getAmount() != null) {
+                        existingOperation.setAmount(operation.getAmount());
+                    }
+
+                    return existingOperation;
+                }
+            )
+            .map(operationRepository::save)
+            .map(
+                savedOperation -> {
+                    operationSearchRepository.save(savedOperation);
+
+                    return savedOperation;
+                }
+            );
+
+        return ResponseUtil.wrapOrNotFound(
+            result,
+            HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, operation.getId().toString())
+        );
     }
 
     /**
@@ -104,7 +156,10 @@ public class OperationResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of operations in body.
      */
     @GetMapping("/operations")
-    public ResponseEntity<List<Operation>> getAllOperations(Pageable pageable, @RequestParam(required = false, defaultValue = "false") boolean eagerload) {
+    public ResponseEntity<List<Operation>> getAllOperations(
+        Pageable pageable,
+        @RequestParam(required = false, defaultValue = "false") boolean eagerload
+    ) {
         log.debug("REST request to get a page of Operations");
         Page<Operation> page;
         if (eagerload) {
@@ -140,7 +195,10 @@ public class OperationResource {
         log.debug("REST request to delete Operation : {}", id);
         operationRepository.deleteById(id);
         operationSearchRepository.deleteById(id);
-        return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
+        return ResponseEntity
+            .noContent()
+            .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
+            .build();
     }
 
     /**
@@ -157,5 +215,5 @@ public class OperationResource {
         Page<Operation> page = operationSearchRepository.search(queryStringQuery(query), pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
-        }
+    }
 }

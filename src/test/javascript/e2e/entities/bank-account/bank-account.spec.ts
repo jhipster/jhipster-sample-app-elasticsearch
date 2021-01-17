@@ -11,12 +11,14 @@ describe('BankAccount e2e test', () => {
   let bankAccountComponentsPage: BankAccountComponentsPage;
   let bankAccountUpdatePage: BankAccountUpdatePage;
   let bankAccountDeleteDialog: BankAccountDeleteDialog;
+  const username = process.env.E2E_USERNAME ?? 'admin';
+  const password = process.env.E2E_PASSWORD ?? 'admin';
 
   before(async () => {
     await browser.get('/');
     navBarPage = new NavBarPage();
     signInPage = await navBarPage.getSignInPage();
-    await signInPage.autoSignInUsing('admin', 'admin');
+    await signInPage.autoSignInUsing(username, password);
     await browser.wait(ec.visibilityOf(navBarPage.entityMenu), 5000);
   });
 
@@ -67,6 +69,7 @@ describe('BankAccount e2e test', () => {
     bankAccountDeleteDialog = new BankAccountDeleteDialog();
     expect(await bankAccountDeleteDialog.getDialogTitle()).to.eq('jhipsterElasticsearchSampleApplicationApp.bankAccount.delete.question');
     await bankAccountDeleteDialog.clickOnConfirmButton();
+    await browser.wait(ec.visibilityOf(bankAccountComponentsPage.title), 5000);
 
     expect(await bankAccountComponentsPage.countDeleteButtons()).to.eq(nbButtonsBeforeDelete - 1);
   });

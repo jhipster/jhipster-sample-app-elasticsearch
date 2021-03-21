@@ -9,6 +9,7 @@ import io.github.jhipster.sample.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -75,20 +76,32 @@ public class OperationResource {
     }
 
     /**
-     * {@code PUT  /operations} : Updates an existing operation.
+     * {@code PUT  /operations/:id} : Updates an existing operation.
      *
+     * @param id the id of the operation to save.
      * @param operation the operation to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated operation,
      * or with status {@code 400 (Bad Request)} if the operation is not valid,
      * or with status {@code 500 (Internal Server Error)} if the operation couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PutMapping("/operations")
-    public ResponseEntity<Operation> updateOperation(@Valid @RequestBody Operation operation) throws URISyntaxException {
-        log.debug("REST request to update Operation : {}", operation);
+    @PutMapping("/operations/{id}")
+    public ResponseEntity<Operation> updateOperation(
+        @PathVariable(value = "id", required = false) final Long id,
+        @Valid @RequestBody Operation operation
+    ) throws URISyntaxException {
+        log.debug("REST request to update Operation : {}, {}", id, operation);
         if (operation.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
+        if (!Objects.equals(id, operation.getId())) {
+            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+        }
+
+        if (!operationRepository.existsById(id)) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        }
+
         Operation result = operationRepository.save(operation);
         operationSearchRepository.save(result);
         return ResponseEntity
@@ -98,8 +111,9 @@ public class OperationResource {
     }
 
     /**
-     * {@code PATCH  /operations} : Updates given fields of an existing operation.
+     * {@code PATCH  /operations/:id} : Partial updates given fields of an existing operation, field will ignore if it is null
      *
+     * @param id the id of the operation to save.
      * @param operation the operation to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated operation,
      * or with status {@code 400 (Bad Request)} if the operation is not valid,
@@ -107,11 +121,21 @@ public class OperationResource {
      * or with status {@code 500 (Internal Server Error)} if the operation couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PatchMapping(value = "/operations", consumes = "application/merge-patch+json")
-    public ResponseEntity<Operation> partialUpdateOperation(@NotNull @RequestBody Operation operation) throws URISyntaxException {
-        log.debug("REST request to update Operation partially : {}", operation);
+    @PatchMapping(value = "/operations/{id}", consumes = "application/merge-patch+json")
+    public ResponseEntity<Operation> partialUpdateOperation(
+        @PathVariable(value = "id", required = false) final Long id,
+        @NotNull @RequestBody Operation operation
+    ) throws URISyntaxException {
+        log.debug("REST request to partial update Operation partially : {}, {}", id, operation);
         if (operation.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        }
+        if (!Objects.equals(id, operation.getId())) {
+            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+        }
+
+        if (!operationRepository.existsById(id)) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
         Optional<Operation> result = operationRepository
@@ -121,11 +145,9 @@ public class OperationResource {
                     if (operation.getDate() != null) {
                         existingOperation.setDate(operation.getDate());
                     }
-
                     if (operation.getDescription() != null) {
                         existingOperation.setDescription(operation.getDescription());
                     }
-
                     if (operation.getAmount() != null) {
                         existingOperation.setAmount(operation.getAmount());
                     }

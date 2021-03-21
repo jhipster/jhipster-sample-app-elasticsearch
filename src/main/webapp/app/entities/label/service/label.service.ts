@@ -2,27 +2,32 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-import { SERVER_API_URL } from 'app/app.constants';
+import { isPresent } from 'app/core/util/operators';
+import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
 import { Search } from 'app/core/request/request.model';
-import { ILabel } from '../label.model';
+import { ILabel, getLabelIdentifier } from '../label.model';
 
-type EntityResponseType = HttpResponse<ILabel>;
-type EntityArrayResponseType = HttpResponse<ILabel[]>;
+export type EntityResponseType = HttpResponse<ILabel>;
+export type EntityArrayResponseType = HttpResponse<ILabel[]>;
 
 @Injectable({ providedIn: 'root' })
 export class LabelService {
-  public resourceUrl = SERVER_API_URL + 'api/labels';
-  public resourceSearchUrl = SERVER_API_URL + 'api/_search/labels';
+  public resourceUrl = this.applicationConfigService.getEndpointFor('api/labels');
+  public resourceSearchUrl = this.applicationConfigService.getEndpointFor('api/_search/labels');
 
-  constructor(protected http: HttpClient) {}
+  constructor(protected http: HttpClient, private applicationConfigService: ApplicationConfigService) {}
 
   create(label: ILabel): Observable<EntityResponseType> {
     return this.http.post<ILabel>(this.resourceUrl, label, { observe: 'response' });
   }
 
   update(label: ILabel): Observable<EntityResponseType> {
-    return this.http.put<ILabel>(this.resourceUrl, label, { observe: 'response' });
+    return this.http.put<ILabel>(`${this.resourceUrl}/${getLabelIdentifier(label) as number}`, label, { observe: 'response' });
+  }
+
+  partialUpdate(label: ILabel): Observable<EntityResponseType> {
+    return this.http.patch<ILabel>(`${this.resourceUrl}/${getLabelIdentifier(label) as number}`, label, { observe: 'response' });
   }
 
   find(id: number): Observable<EntityResponseType> {
@@ -41,5 +46,22 @@ export class LabelService {
   search(req: Search): Observable<EntityArrayResponseType> {
     const options = createRequestOption(req);
     return this.http.get<ILabel[]>(this.resourceSearchUrl, { params: options, observe: 'response' });
+  }
+
+  addLabelToCollectionIfMissing(labelCollection: ILabel[], ...labelsToCheck: (ILabel | null | undefined)[]): ILabel[] {
+    const labels: ILabel[] = labelsToCheck.filter(isPresent);
+    if (labels.length > 0) {
+      const labelCollectionIdentifiers = labelCollection.map(labelItem => getLabelIdentifier(labelItem)!);
+      const labelsToAdd = labels.filter(labelItem => {
+        const labelIdentifier = getLabelIdentifier(labelItem);
+        if (labelIdentifier == null || labelCollectionIdentifiers.includes(labelIdentifier)) {
+          return false;
+        }
+        labelCollectionIdentifiers.push(labelIdentifier);
+        return true;
+      });
+      return [...labelsToAdd, ...labelCollection];
+    }
+    return labelCollection;
   }
 }

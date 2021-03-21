@@ -13,6 +13,8 @@ import io.github.jhipster.sample.repository.LabelRepository;
 import io.github.jhipster.sample.repository.search.LabelSearchRepository;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicLong;
 import javax.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,6 +39,13 @@ class LabelResourceIT {
 
     private static final String DEFAULT_LABEL = "AAAAAAAAAA";
     private static final String UPDATED_LABEL = "BBBBBBBBBB";
+
+    private static final String ENTITY_API_URL = "/api/labels";
+    private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
+    private static final String ENTITY_SEARCH_API_URL = "/api/_search/labels";
+
+    private static Random random = new Random();
+    private static AtomicLong count = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
 
     @Autowired
     private LabelRepository labelRepository;
@@ -90,7 +99,7 @@ class LabelResourceIT {
         int databaseSizeBeforeCreate = labelRepository.findAll().size();
         // Create the Label
         restLabelMockMvc
-            .perform(post("/api/labels").contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(label)))
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(label)))
             .andExpect(status().isCreated());
 
         // Validate the Label in the database
@@ -113,7 +122,7 @@ class LabelResourceIT {
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restLabelMockMvc
-            .perform(post("/api/labels").contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(label)))
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(label)))
             .andExpect(status().isBadRequest());
 
         // Validate the Label in the database
@@ -134,7 +143,7 @@ class LabelResourceIT {
         // Create the Label, which fails.
 
         restLabelMockMvc
-            .perform(post("/api/labels").contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(label)))
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(label)))
             .andExpect(status().isBadRequest());
 
         List<Label> labelList = labelRepository.findAll();
@@ -149,7 +158,7 @@ class LabelResourceIT {
 
         // Get all the labelList
         restLabelMockMvc
-            .perform(get("/api/labels?sort=id,desc"))
+            .perform(get(ENTITY_API_URL + "?sort=id,desc"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(label.getId().intValue())))
@@ -164,7 +173,7 @@ class LabelResourceIT {
 
         // Get the label
         restLabelMockMvc
-            .perform(get("/api/labels/{id}", label.getId()))
+            .perform(get(ENTITY_API_URL_ID, label.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(label.getId().intValue()))
@@ -175,12 +184,12 @@ class LabelResourceIT {
     @Transactional
     void getNonExistingLabel() throws Exception {
         // Get the label
-        restLabelMockMvc.perform(get("/api/labels/{id}", Long.MAX_VALUE)).andExpect(status().isNotFound());
+        restLabelMockMvc.perform(get(ENTITY_API_URL_ID, Long.MAX_VALUE)).andExpect(status().isNotFound());
     }
 
     @Test
     @Transactional
-    void updateLabel() throws Exception {
+    void putNewLabel() throws Exception {
         // Initialize the database
         labelRepository.saveAndFlush(label);
 
@@ -193,7 +202,11 @@ class LabelResourceIT {
         updatedLabel.label(UPDATED_LABEL);
 
         restLabelMockMvc
-            .perform(put("/api/labels").contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(updatedLabel)))
+            .perform(
+                put(ENTITY_API_URL_ID, updatedLabel.getId())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(updatedLabel))
+            )
             .andExpect(status().isOk());
 
         // Validate the Label in the database
@@ -208,13 +221,60 @@ class LabelResourceIT {
 
     @Test
     @Transactional
-    void updateNonExistingLabel() throws Exception {
+    void putNonExistingLabel() throws Exception {
         int databaseSizeBeforeUpdate = labelRepository.findAll().size();
+        label.setId(count.incrementAndGet());
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
         restLabelMockMvc
-            .perform(put("/api/labels").contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(label)))
+            .perform(
+                put(ENTITY_API_URL_ID, label.getId())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(label))
+            )
             .andExpect(status().isBadRequest());
+
+        // Validate the Label in the database
+        List<Label> labelList = labelRepository.findAll();
+        assertThat(labelList).hasSize(databaseSizeBeforeUpdate);
+
+        // Validate the Label in Elasticsearch
+        verify(mockLabelSearchRepository, times(0)).save(label);
+    }
+
+    @Test
+    @Transactional
+    void putWithIdMismatchLabel() throws Exception {
+        int databaseSizeBeforeUpdate = labelRepository.findAll().size();
+        label.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restLabelMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, count.incrementAndGet())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(label))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the Label in the database
+        List<Label> labelList = labelRepository.findAll();
+        assertThat(labelList).hasSize(databaseSizeBeforeUpdate);
+
+        // Validate the Label in Elasticsearch
+        verify(mockLabelSearchRepository, times(0)).save(label);
+    }
+
+    @Test
+    @Transactional
+    void putWithMissingIdPathParamLabel() throws Exception {
+        int databaseSizeBeforeUpdate = labelRepository.findAll().size();
+        label.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restLabelMockMvc
+            .perform(put(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(label)))
+            .andExpect(status().isMethodNotAllowed());
 
         // Validate the Label in the database
         List<Label> labelList = labelRepository.findAll();
@@ -238,7 +298,7 @@ class LabelResourceIT {
 
         restLabelMockMvc
             .perform(
-                patch("/api/labels")
+                patch(ENTITY_API_URL_ID, partialUpdatedLabel.getId())
                     .contentType("application/merge-patch+json")
                     .content(TestUtil.convertObjectToJsonBytes(partialUpdatedLabel))
             )
@@ -267,7 +327,7 @@ class LabelResourceIT {
 
         restLabelMockMvc
             .perform(
-                patch("/api/labels")
+                patch(ENTITY_API_URL_ID, partialUpdatedLabel.getId())
                     .contentType("application/merge-patch+json")
                     .content(TestUtil.convertObjectToJsonBytes(partialUpdatedLabel))
             )
@@ -282,17 +342,67 @@ class LabelResourceIT {
 
     @Test
     @Transactional
-    void partialUpdateLabelShouldThrown() throws Exception {
-        // Update the label without id should throw
-        Label partialUpdatedLabel = new Label();
+    void patchNonExistingLabel() throws Exception {
+        int databaseSizeBeforeUpdate = labelRepository.findAll().size();
+        label.setId(count.incrementAndGet());
 
+        // If the entity doesn't have an ID, it will throw BadRequestAlertException
         restLabelMockMvc
             .perform(
-                patch("/api/labels")
+                patch(ENTITY_API_URL_ID, label.getId())
                     .contentType("application/merge-patch+json")
-                    .content(TestUtil.convertObjectToJsonBytes(partialUpdatedLabel))
+                    .content(TestUtil.convertObjectToJsonBytes(label))
             )
             .andExpect(status().isBadRequest());
+
+        // Validate the Label in the database
+        List<Label> labelList = labelRepository.findAll();
+        assertThat(labelList).hasSize(databaseSizeBeforeUpdate);
+
+        // Validate the Label in Elasticsearch
+        verify(mockLabelSearchRepository, times(0)).save(label);
+    }
+
+    @Test
+    @Transactional
+    void patchWithIdMismatchLabel() throws Exception {
+        int databaseSizeBeforeUpdate = labelRepository.findAll().size();
+        label.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restLabelMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, count.incrementAndGet())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(label))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the Label in the database
+        List<Label> labelList = labelRepository.findAll();
+        assertThat(labelList).hasSize(databaseSizeBeforeUpdate);
+
+        // Validate the Label in Elasticsearch
+        verify(mockLabelSearchRepository, times(0)).save(label);
+    }
+
+    @Test
+    @Transactional
+    void patchWithMissingIdPathParamLabel() throws Exception {
+        int databaseSizeBeforeUpdate = labelRepository.findAll().size();
+        label.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restLabelMockMvc
+            .perform(patch(ENTITY_API_URL).contentType("application/merge-patch+json").content(TestUtil.convertObjectToJsonBytes(label)))
+            .andExpect(status().isMethodNotAllowed());
+
+        // Validate the Label in the database
+        List<Label> labelList = labelRepository.findAll();
+        assertThat(labelList).hasSize(databaseSizeBeforeUpdate);
+
+        // Validate the Label in Elasticsearch
+        verify(mockLabelSearchRepository, times(0)).save(label);
     }
 
     @Test
@@ -305,7 +415,7 @@ class LabelResourceIT {
 
         // Delete the label
         restLabelMockMvc
-            .perform(delete("/api/labels/{id}", label.getId()).accept(MediaType.APPLICATION_JSON))
+            .perform(delete(ENTITY_API_URL_ID, label.getId()).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNoContent());
 
         // Validate the database contains one less item
@@ -326,7 +436,7 @@ class LabelResourceIT {
 
         // Search the label
         restLabelMockMvc
-            .perform(get("/api/_search/labels?query=id:" + label.getId()))
+            .perform(get(ENTITY_SEARCH_API_URL + "?query=id:" + label.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(label.getId().intValue())))

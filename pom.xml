@@ -12,6 +12,13 @@
     <name>Jhipster Elasticsearch Sample Application</name>
 
     <repositories>
+        <repository>
+            <id>ossrh-snapshots</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
         <!-- jhipster-needle-maven-repository -->
     </repositories>
 
@@ -43,7 +50,7 @@
         <profile.tls />
 
         <!-- Dependency versions -->
-        <jhipster-dependencies.version>7.0.1</jhipster-dependencies.version>
+        <jhipster-dependencies.version>7.0.2-SNAPSHOT</jhipster-dependencies.version>
         <!-- The spring-boot version should match the one managed by
         https://mvnrepository.com/artifact/tech.jhipster/jhipster-dependencies/${jhipster-dependencies.version} -->
         <spring-boot.version>2.4.4</spring-boot.version>

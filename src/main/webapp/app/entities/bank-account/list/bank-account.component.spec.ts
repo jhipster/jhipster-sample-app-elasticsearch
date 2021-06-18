@@ -35,7 +35,7 @@ describe('Component Tests', () => {
       service = TestBed.inject(BankAccountService);
 
       const headers = new HttpHeaders().append('link', 'link;link');
-      spyOn(service, 'query').and.returnValue(
+      jest.spyOn(service, 'query').mockReturnValue(
         of(
           new HttpResponse({
             body: [{ id: 123 }],
@@ -51,7 +51,7 @@ describe('Component Tests', () => {
 
       // THEN
       expect(service.query).toHaveBeenCalled();
-      expect(comp.bankAccounts?.[0]).toEqual(jasmine.objectContaining({ id: 123 }));
+      expect(comp.bankAccounts?.[0]).toEqual(expect.objectContaining({ id: 123 }));
     });
   });
 });

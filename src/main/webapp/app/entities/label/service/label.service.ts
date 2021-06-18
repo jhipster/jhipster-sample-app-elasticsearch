@@ -13,10 +13,10 @@ export type EntityArrayResponseType = HttpResponse<ILabel[]>;
 
 @Injectable({ providedIn: 'root' })
 export class LabelService {
-  public resourceUrl = this.applicationConfigService.getEndpointFor('api/labels');
-  public resourceSearchUrl = this.applicationConfigService.getEndpointFor('api/_search/labels');
+  protected resourceUrl = this.applicationConfigService.getEndpointFor('api/labels');
+  protected resourceSearchUrl = this.applicationConfigService.getEndpointFor('api/_search/labels');
 
-  constructor(protected http: HttpClient, private applicationConfigService: ApplicationConfigService) {}
+  constructor(protected http: HttpClient, protected applicationConfigService: ApplicationConfigService) {}
 
   create(label: ILabel): Observable<EntityResponseType> {
     return this.http.post<ILabel>(this.resourceUrl, label, { observe: 'response' });

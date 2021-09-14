@@ -113,7 +113,7 @@ public class LabelResource {
      * or with status {@code 500 (Internal Server Error)} if the label couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PatchMapping(value = "/labels/{id}", consumes = "application/merge-patch+json")
+    @PatchMapping(value = "/labels/{id}", consumes = { "application/json", "application/merge-patch+json" })
     public ResponseEntity<Label> partialUpdateLabel(
         @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody Label label
@@ -132,23 +132,19 @@ public class LabelResource {
 
         Optional<Label> result = labelRepository
             .findById(label.getId())
-            .map(
-                existingLabel -> {
-                    if (label.getLabel() != null) {
-                        existingLabel.setLabel(label.getLabel());
-                    }
-
-                    return existingLabel;
+            .map(existingLabel -> {
+                if (label.getLabel() != null) {
+                    existingLabel.setLabel(label.getLabel());
                 }
-            )
+
+                return existingLabel;
+            })
             .map(labelRepository::save)
-            .map(
-                savedLabel -> {
-                    labelSearchRepository.save(savedLabel);
+            .map(savedLabel -> {
+                labelSearchRepository.save(savedLabel);
 
-                    return savedLabel;
-                }
-            );
+                return savedLabel;
+            });
 
         return ResponseUtil.wrapOrNotFound(
             result,
@@ -207,8 +203,6 @@ public class LabelResource {
     @GetMapping("/_search/labels")
     public List<Label> searchLabels(@RequestParam String query) {
         log.debug("REST request to search Labels for query {}", query);
-        return StreamSupport
-            .stream(labelSearchRepository.search(queryStringQuery(query)).spliterator(), false)
-            .collect(Collectors.toList());
+        return StreamSupport.stream(labelSearchRepository.search(query).spliterator(), false).collect(Collectors.toList());
     }
 }

@@ -32,10 +32,9 @@ public class PublicUserResource {
     private final Logger log = LoggerFactory.getLogger(PublicUserResource.class);
 
     private final UserService userService;
-
     private final UserSearchRepository userSearchRepository;
 
-    public PublicUserResource(UserService userService, UserSearchRepository userSearchRepository) {
+    public PublicUserResource(UserSearchRepository userSearchRepository, UserService userService) {
         this.userService = userService;
         this.userSearchRepository = userSearchRepository;
     }
@@ -79,9 +78,6 @@ public class PublicUserResource {
      */
     @GetMapping("/_search/users/{query}")
     public List<UserDTO> search(@PathVariable String query) {
-        return StreamSupport
-            .stream(userSearchRepository.search(queryStringQuery(query)).spliterator(), false)
-            .map(UserDTO::new)
-            .collect(Collectors.toList());
+        return StreamSupport.stream(userSearchRepository.search(query).spliterator(), false).map(UserDTO::new).collect(Collectors.toList());
     }
 }

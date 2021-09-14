@@ -121,7 +121,7 @@ public class OperationResource {
      * or with status {@code 500 (Internal Server Error)} if the operation couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PatchMapping(value = "/operations/{id}", consumes = "application/merge-patch+json")
+    @PatchMapping(value = "/operations/{id}", consumes = { "application/json", "application/merge-patch+json" })
     public ResponseEntity<Operation> partialUpdateOperation(
         @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody Operation operation
@@ -140,29 +140,25 @@ public class OperationResource {
 
         Optional<Operation> result = operationRepository
             .findById(operation.getId())
-            .map(
-                existingOperation -> {
-                    if (operation.getDate() != null) {
-                        existingOperation.setDate(operation.getDate());
-                    }
-                    if (operation.getDescription() != null) {
-                        existingOperation.setDescription(operation.getDescription());
-                    }
-                    if (operation.getAmount() != null) {
-                        existingOperation.setAmount(operation.getAmount());
-                    }
-
-                    return existingOperation;
+            .map(existingOperation -> {
+                if (operation.getDate() != null) {
+                    existingOperation.setDate(operation.getDate());
                 }
-            )
+                if (operation.getDescription() != null) {
+                    existingOperation.setDescription(operation.getDescription());
+                }
+                if (operation.getAmount() != null) {
+                    existingOperation.setAmount(operation.getAmount());
+                }
+
+                return existingOperation;
+            })
             .map(operationRepository::save)
-            .map(
-                savedOperation -> {
-                    operationSearchRepository.save(savedOperation);
+            .map(savedOperation -> {
+                operationSearchRepository.save(savedOperation);
 
-                    return savedOperation;
-                }
-            );
+                return savedOperation;
+            });
 
         return ResponseUtil.wrapOrNotFound(
             result,
@@ -234,7 +230,7 @@ public class OperationResource {
     @GetMapping("/_search/operations")
     public ResponseEntity<List<Operation>> searchOperations(@RequestParam String query, Pageable pageable) {
         log.debug("REST request to search for a page of Operations for query {}", query);
-        Page<Operation> page = operationSearchRepository.search(queryStringQuery(query), pageable);
+        Page<Operation> page = operationSearchRepository.search(query, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }

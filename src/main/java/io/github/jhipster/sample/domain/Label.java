@@ -8,7 +8,6 @@ import javax.persistence.*;
 import javax.validation.constraints.*;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.springframework.data.elasticsearch.annotations.FieldType;
 
 /**
  * A Label.
@@ -23,6 +22,7 @@ public class Label implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
     @NotNull
@@ -36,17 +36,18 @@ public class Label implements Serializable {
     private Set<Operation> operations = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
+
     public Long getId() {
-        return id;
+        return this.id;
+    }
+
+    public Label id(Long id) {
+        this.setId(id);
+        return this;
     }
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Label id(Long id) {
-        this.id = id;
-        return this;
     }
 
     public String getLabel() {
@@ -54,7 +55,7 @@ public class Label implements Serializable {
     }
 
     public Label label(String label) {
-        this.label = label;
+        this.setLabel(label);
         return this;
     }
 
@@ -64,6 +65,16 @@ public class Label implements Serializable {
 
     public Set<Operation> getOperations() {
         return this.operations;
+    }
+
+    public void setOperations(Set<Operation> operations) {
+        if (this.operations != null) {
+            this.operations.forEach(i -> i.removeLabel(this));
+        }
+        if (operations != null) {
+            operations.forEach(i -> i.addLabel(this));
+        }
+        this.operations = operations;
     }
 
     public Label operations(Set<Operation> operations) {
@@ -81,16 +92,6 @@ public class Label implements Serializable {
         this.operations.remove(operation);
         operation.getLabels().remove(this);
         return this;
-    }
-
-    public void setOperations(Set<Operation> operations) {
-        if (this.operations != null) {
-            this.operations.forEach(i -> i.removeLabel(this));
-        }
-        if (operations != null) {
-            operations.forEach(i -> i.addLabel(this));
-        }
-        this.operations = operations;
     }
 
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here

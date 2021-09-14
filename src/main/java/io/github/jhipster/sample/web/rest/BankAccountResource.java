@@ -115,7 +115,7 @@ public class BankAccountResource {
      * or with status {@code 500 (Internal Server Error)} if the bankAccount couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PatchMapping(value = "/bank-accounts/{id}", consumes = "application/merge-patch+json")
+    @PatchMapping(value = "/bank-accounts/{id}", consumes = { "application/json", "application/merge-patch+json" })
     public ResponseEntity<BankAccount> partialUpdateBankAccount(
         @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody BankAccount bankAccount
@@ -134,26 +134,22 @@ public class BankAccountResource {
 
         Optional<BankAccount> result = bankAccountRepository
             .findById(bankAccount.getId())
-            .map(
-                existingBankAccount -> {
-                    if (bankAccount.getName() != null) {
-                        existingBankAccount.setName(bankAccount.getName());
-                    }
-                    if (bankAccount.getBalance() != null) {
-                        existingBankAccount.setBalance(bankAccount.getBalance());
-                    }
-
-                    return existingBankAccount;
+            .map(existingBankAccount -> {
+                if (bankAccount.getName() != null) {
+                    existingBankAccount.setName(bankAccount.getName());
                 }
-            )
+                if (bankAccount.getBalance() != null) {
+                    existingBankAccount.setBalance(bankAccount.getBalance());
+                }
+
+                return existingBankAccount;
+            })
             .map(bankAccountRepository::save)
-            .map(
-                savedBankAccount -> {
-                    bankAccountSearchRepository.save(savedBankAccount);
+            .map(savedBankAccount -> {
+                bankAccountSearchRepository.save(savedBankAccount);
 
-                    return savedBankAccount;
-                }
-            );
+                return savedBankAccount;
+            });
 
         return ResponseUtil.wrapOrNotFound(
             result,
@@ -212,8 +208,6 @@ public class BankAccountResource {
     @GetMapping("/_search/bank-accounts")
     public List<BankAccount> searchBankAccounts(@RequestParam String query) {
         log.debug("REST request to search BankAccounts for query {}", query);
-        return StreamSupport
-            .stream(bankAccountSearchRepository.search(queryStringQuery(query)).spliterator(), false)
-            .collect(Collectors.toList());
+        return StreamSupport.stream(bankAccountSearchRepository.search(query).spliterator(), false).collect(Collectors.toList());
     }
 }

@@ -1,7 +1,6 @@
 package io.github.jhipster.sample.web.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
 import static org.hamcrest.Matchers.hasItem;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -15,6 +14,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Stream;
 import javax.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -432,7 +432,7 @@ class LabelResourceIT {
         // Configure the mock search repository
         // Initialize the database
         labelRepository.saveAndFlush(label);
-        when(mockLabelSearchRepository.search(queryStringQuery("id:" + label.getId()))).thenReturn(Collections.singletonList(label));
+        when(mockLabelSearchRepository.search("id:" + label.getId())).thenReturn(Stream.of(label));
 
         // Search the label
         restLabelMockMvc

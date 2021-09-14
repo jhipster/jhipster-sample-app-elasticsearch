@@ -97,10 +97,7 @@ export class OperationComponent implements OnInit {
       last: 0,
     };
     this.page = 0;
-    if (query) {
-      this.predicate = '_score';
-      this.ascending = false;
-    } else {
+    if (query && ['description'].includes(this.predicate)) {
       this.predicate = 'id';
       this.ascending = true;
     }

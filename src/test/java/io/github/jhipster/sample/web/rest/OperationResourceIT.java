@@ -2,7 +2,6 @@ package io.github.jhipster.sample.web.rest;
 
 import static io.github.jhipster.sample.web.rest.TestUtil.sameNumber;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
 import static org.hamcrest.Matchers.hasItem;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -497,7 +496,7 @@ class OperationResourceIT {
         // Configure the mock search repository
         // Initialize the database
         operationRepository.saveAndFlush(operation);
-        when(mockOperationSearchRepository.search(queryStringQuery("id:" + operation.getId()), PageRequest.of(0, 20)))
+        when(mockOperationSearchRepository.search("id:" + operation.getId(), PageRequest.of(0, 20)))
             .thenReturn(new PageImpl<>(Collections.singletonList(operation), PageRequest.of(0, 1), 1));
 
         // Search the operation

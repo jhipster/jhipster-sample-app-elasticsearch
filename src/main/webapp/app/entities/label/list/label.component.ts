@@ -27,27 +27,27 @@ export class LabelComponent implements OnInit {
         .search({
           query: this.currentSearch,
         })
-        .subscribe(
-          (res: HttpResponse<ILabel[]>) => {
+        .subscribe({
+          next: (res: HttpResponse<ILabel[]>) => {
             this.isLoading = false;
             this.labels = res.body ?? [];
           },
-          () => {
+          error: () => {
             this.isLoading = false;
-          }
-        );
+          },
+        });
       return;
     }
 
-    this.labelService.query().subscribe(
-      (res: HttpResponse<ILabel[]>) => {
+    this.labelService.query().subscribe({
+      next: (res: HttpResponse<ILabel[]>) => {
         this.isLoading = false;
         this.labels = res.body ?? [];
       },
-      () => {
+      error: () => {
         this.isLoading = false;
-      }
-    );
+      },
+    });
   }
 
   search(query: string): void {

@@ -31,27 +31,27 @@ export class BankAccountComponent implements OnInit {
         .search({
           query: this.currentSearch,
         })
-        .subscribe(
-          (res: HttpResponse<IBankAccount[]>) => {
+        .subscribe({
+          next: (res: HttpResponse<IBankAccount[]>) => {
             this.isLoading = false;
             this.bankAccounts = res.body ?? [];
           },
-          () => {
+          error: () => {
             this.isLoading = false;
-          }
-        );
+          },
+        });
       return;
     }
 
-    this.bankAccountService.query().subscribe(
-      (res: HttpResponse<IBankAccount[]>) => {
+    this.bankAccountService.query().subscribe({
+      next: (res: HttpResponse<IBankAccount[]>) => {
         this.isLoading = false;
         this.bankAccounts = res.body ?? [];
       },
-      () => {
+      error: () => {
         this.isLoading = false;
-      }
-    );
+      },
+    });
   }
 
   search(query: string): void {

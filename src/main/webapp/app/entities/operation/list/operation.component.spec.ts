@@ -1,9 +1,8 @@
-jest.mock('@angular/router');
-
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpHeaders, HttpResponse } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ActivatedRoute } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
 
 import { OperationService } from '../service/operation.service';
@@ -17,7 +16,7 @@ describe('Operation Management Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
+      imports: [RouterTestingModule.withRoutes([{ path: 'operation', component: OperationComponent }]), HttpClientTestingModule],
       declarations: [OperationComponent],
       providers: [
         {

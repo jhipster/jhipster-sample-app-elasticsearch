@@ -175,7 +175,7 @@ public class OperationResource {
      */
     @GetMapping("/operations")
     public ResponseEntity<List<Operation>> getAllOperations(
-        Pageable pageable,
+        @org.springdoc.api.annotations.ParameterObject Pageable pageable,
         @RequestParam(required = false, defaultValue = "false") boolean eagerload
     ) {
         log.debug("REST request to get a page of Operations");
@@ -228,7 +228,10 @@ public class OperationResource {
      * @return the result of the search.
      */
     @GetMapping("/_search/operations")
-    public ResponseEntity<List<Operation>> searchOperations(@RequestParam String query, Pageable pageable) {
+    public ResponseEntity<List<Operation>> searchOperations(
+        @RequestParam String query,
+        @org.springdoc.api.annotations.ParameterObject Pageable pageable
+    ) {
         log.debug("REST request to search for a page of Operations for query {}", query);
         Page<Operation> page = operationSearchRepository.search(query, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);

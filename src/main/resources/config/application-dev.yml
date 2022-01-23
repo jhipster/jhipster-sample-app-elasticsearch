@@ -50,8 +50,7 @@ spring:
   jpa:
     database-platform: tech.jhipster.domain.util.FixedH2Dialect
   elasticsearch:
-    rest:
-      uris: http://localhost:9200
+    uris: http://localhost:9200
   liquibase:
     # Remove 'faker' if you do not want the sample data to be loaded automatically
     contexts: dev, faker

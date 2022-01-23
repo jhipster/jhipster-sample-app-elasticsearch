@@ -239,7 +239,7 @@ class BankAccountResourceIT {
         assertThat(bankAccountList).hasSize(databaseSizeBeforeUpdate);
         BankAccount testBankAccount = bankAccountList.get(bankAccountList.size() - 1);
         assertThat(testBankAccount.getName()).isEqualTo(UPDATED_NAME);
-        assertThat(testBankAccount.getBalance()).isEqualTo(UPDATED_BALANCE);
+        assertThat(testBankAccount.getBalance()).isEqualByComparingTo(UPDATED_BALANCE);
 
         // Validate the BankAccount in Elasticsearch
         verify(mockBankAccountSearchRepository).save(testBankAccount);

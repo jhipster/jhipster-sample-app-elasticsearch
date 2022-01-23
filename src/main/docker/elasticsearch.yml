@@ -2,7 +2,7 @@
 version: '3.8'
 services:
   jhipsterelasticsearchsampleapplication-elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.13.3
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.15.2
     # volumes:
     #   - ~/volumes/jhipster/jhipsterElasticsearchSampleApplication/elasticsearch/:/usr/share/elasticsearch/data/
     # If you want to expose these ports outside your dev PC,

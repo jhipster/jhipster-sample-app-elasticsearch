@@ -160,12 +160,13 @@ public class BankAccountResource {
     /**
      * {@code GET  /bank-accounts} : get all the bankAccounts.
      *
+     * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of bankAccounts in body.
      */
     @GetMapping("/bank-accounts")
-    public List<BankAccount> getAllBankAccounts() {
+    public List<BankAccount> getAllBankAccounts(@RequestParam(required = false, defaultValue = "false") boolean eagerload) {
         log.debug("REST request to get all BankAccounts");
-        return bankAccountRepository.findAll();
+        return bankAccountRepository.findAllWithEagerRelationships();
     }
 
     /**
@@ -177,7 +178,7 @@ public class BankAccountResource {
     @GetMapping("/bank-accounts/{id}")
     public ResponseEntity<BankAccount> getBankAccount(@PathVariable Long id) {
         log.debug("REST request to get BankAccount : {}", id);
-        Optional<BankAccount> bankAccount = bankAccountRepository.findById(id);
+        Optional<BankAccount> bankAccount = bankAccountRepository.findOneWithEagerRelationships(id);
         return ResponseUtil.wrapOrNotFound(bankAccount);
     }
 

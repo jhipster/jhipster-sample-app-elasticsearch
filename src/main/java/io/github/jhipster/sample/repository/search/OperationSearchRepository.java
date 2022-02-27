@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.elasticsearch.search.sort.FieldSortBuilder;
+import org.elasticsearch.search.sort.SortBuilder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;

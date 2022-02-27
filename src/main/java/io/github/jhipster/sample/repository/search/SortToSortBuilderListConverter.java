@@ -3,15 +3,16 @@ package io.github.jhipster.sample.repository.search;
 import java.util.ArrayList;
 import java.util.List;
 import org.elasticsearch.search.sort.FieldSortBuilder;
+import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.domain.Sort;
 
-public class SortToFieldSortBuilderConverter implements Converter<Sort, List<FieldSortBuilder>> {
+public class SortToSortBuilderListConverter implements Converter<Sort, List<SortBuilder<?>>> {
 
     @Override
-    public List<FieldSortBuilder> convert(Sort sort) {
-        List<FieldSortBuilder> builders = new ArrayList<>();
+    public List<SortBuilder<?>> convert(Sort sort) {
+        List<SortBuilder<?>> builders = new ArrayList<>();
         sort
             .stream()
             .forEach(order -> {

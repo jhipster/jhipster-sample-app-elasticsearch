@@ -3,7 +3,7 @@
     <span jhiTranslate="jhipsterElasticsearchSampleApplicationApp.bankAccount.home.title">Bank Accounts</span>
 
     <div class="d-flex justify-content-end">
-      <button class="btn btn-info mr-2" (click)="loadAll()" [disabled]="isLoading">
+      <button class="btn btn-info me-2" (click)="loadAll()" [disabled]="isLoading">
         <fa-icon icon="sync" [spin]="isLoading"></fa-icon>
         <span jhiTranslate="jhipsterElasticsearchSampleApplicationApp.bankAccount.home.refreshListLabel">Refresh List</span>
       </button>
@@ -26,30 +26,31 @@
 
   <jhi-alert></jhi-alert>
 
-  <div class="row">
+  <form name="searchForm" class="row row-cols-sm-auto align-items-center">
     <div class="col-sm-12">
-      <form name="searchForm" class="form-inline">
-        <div class="input-group w-100 mt-3">
-          <input
-            type="text"
-            class="form-control"
-            [(ngModel)]="currentSearch"
-            id="currentSearch"
-            name="currentSearch"
-            placeholder="{{ 'jhipsterElasticsearchSampleApplicationApp.bankAccount.home.search' | translate }}"
-          />
+      <div class="input-group w-100 mt-3">
+        <label class="visually-hidden" for="currentSearch" jhiTranslate="jhipsterElasticsearchSampleApplicationApp.bankAccount.home.search"
+          >Query</label
+        >
+        <input
+          type="text"
+          class="form-control"
+          [(ngModel)]="currentSearch"
+          id="currentSearch"
+          name="currentSearch"
+          placeholder="{{ 'jhipsterElasticsearchSampleApplicationApp.bankAccount.home.search' | translate }}"
+        />
 
-          <button class="input-group-append btn btn-info" (click)="search(currentSearch)">
-            <fa-icon icon="search"></fa-icon>
-          </button>
+        <button class="btn btn-info" (click)="search(currentSearch)">
+          <fa-icon icon="search"></fa-icon>
+        </button>
 
-          <button class="input-group-append btn btn-danger" (click)="search('')" *ngIf="currentSearch">
-            <fa-icon icon="trash-alt"></fa-icon>
-          </button>
-        </div>
-      </form>
+        <button class="btn btn-danger" (click)="search('')" *ngIf="currentSearch">
+          <fa-icon icon="trash-alt"></fa-icon>
+        </button>
+      </div>
     </div>
-  </div>
+  </form>
 
   <div class="alert alert-warning" id="no-result" *ngIf="bankAccounts?.length === 0">
     <span jhiTranslate="jhipsterElasticsearchSampleApplicationApp.bankAccount.home.notFound">No bankAccounts found</span>
@@ -76,7 +77,7 @@
           <td>
             {{ bankAccount.user?.login }}
           </td>
-          <td class="text-right">
+          <td class="text-end">
             <div class="btn-group">
               <button
                 type="submit"

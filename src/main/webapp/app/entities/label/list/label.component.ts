@@ -59,7 +59,7 @@ export class LabelComponent implements OnInit {
     this.loadAll();
   }
 
-  trackId(index: number, item: ILabel): number {
+  trackId(_index: number, item: ILabel): number {
     return item.id!;
   }
 

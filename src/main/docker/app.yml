@@ -16,9 +16,11 @@ services:
     ports:
       - 127.0.0.1:8080:8080
   jhipsterelasticsearchsampleapplication-mysql:
-    image: mysql:8.0.28
+    image: mysql:8.0.29
     # volumes:
     #   - ~/volumes/jhipster/jhipsterElasticsearchSampleApplication/mysql/:/var/lib/mysql/
+    volumes:
+      - ./config/mysql:/etc/mysql/conf.d
     environment:
       - MYSQL_ALLOW_EMPTY_PASSWORD=yes
       - MYSQL_DATABASE=jhipsterelasticsearchsampleapplication
@@ -28,7 +30,7 @@ services:
       - 127.0.0.1:3306:3306
     command: mysqld --lower_case_table_names=1 --skip-ssl --character_set_server=utf8mb4 --explicit_defaults_for_timestamp
   jhipsterelasticsearchsampleapplication-elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.15.2
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.4
     # volumes:
     #   - ~/volumes/jhipster/jhipsterElasticsearchSampleApplication/elasticsearch/:/usr/share/elasticsearch/data/
     # If you want to expose these ports outside your dev PC,
@@ -37,5 +39,5 @@ services:
       - 127.0.0.1:9200:9200
       - 127.0.0.1:9300:9300
     environment:
-      - 'ES_JAVA_OPTS=-Xms1024m -Xmx1024m'
+      - 'ES_JAVA_OPTS=-Xms256m -Xmx256m'
       - 'discovery.type=single-node'

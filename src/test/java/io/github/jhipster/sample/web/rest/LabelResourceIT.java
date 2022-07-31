@@ -1,6 +1,7 @@
 package io.github.jhipster.sample.web.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.hasItem;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -13,14 +14,14 @@ import io.github.jhipster.sample.repository.search.LabelSearchRepository;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 import javax.persistence.EntityManager;
+import org.apache.commons.collections4.IterableUtils;
+import org.assertj.core.util.IterableUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
@@ -32,7 +33,6 @@ import org.springframework.transaction.annotation.Transactional;
  * Integration tests for the {@link LabelResource} REST controller.
  */
 @IntegrationTest
-@ExtendWith(MockitoExtension.class)
 @AutoConfigureMockMvc
 @WithMockUser
 class LabelResourceIT {
@@ -50,13 +50,8 @@ class LabelResourceIT {
     @Autowired
     private LabelRepository labelRepository;
 
-    /**
-     * This repository is mocked in the io.github.jhipster.sample.repository.search test package.
-     *
-     * @see io.github.jhipster.sample.repository.search.LabelSearchRepositoryMockConfiguration
-     */
     @Autowired
-    private LabelSearchRepository mockLabelSearchRepository;
+    private LabelSearchRepository labelSearchRepository;
 
     @Autowired
     private EntityManager em;
@@ -90,6 +85,7 @@ class LabelResourceIT {
 
     @BeforeEach
     public void initTest() {
+        labelSearchRepository.deleteAll();
         label = createEntity(em);
     }
 
@@ -97,6 +93,7 @@ class LabelResourceIT {
     @Transactional
     void createLabel() throws Exception {
         int databaseSizeBeforeCreate = labelRepository.findAll().size();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(labelSearchRepository.findAll());
         // Create the Label
         restLabelMockMvc
             .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(label)))
@@ -105,11 +102,14 @@ class LabelResourceIT {
         // Validate the Label in the database
         List<Label> labelList = labelRepository.findAll();
         assertThat(labelList).hasSize(databaseSizeBeforeCreate + 1);
+        await()
+            .atMost(5, TimeUnit.SECONDS)
+            .untilAsserted(() -> {
+                int searchDatabaseSizeAfter = IterableUtil.sizeOf(labelSearchRepository.findAll());
+                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore + 1);
+            });
         Label testLabel = labelList.get(labelList.size() - 1);
         assertThat(testLabel.getLabel()).isEqualTo(DEFAULT_LABEL);
-
-        // Validate the Label in Elasticsearch
-        verify(mockLabelSearchRepository, times(1)).save(testLabel);
     }
 
     @Test
@@ -119,6 +119,7 @@ class LabelResourceIT {
         label.setId(1L);
 
         int databaseSizeBeforeCreate = labelRepository.findAll().size();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(labelSearchRepository.findAll());
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restLabelMockMvc
@@ -128,15 +129,15 @@ class LabelResourceIT {
         // Validate the Label in the database
         List<Label> labelList = labelRepository.findAll();
         assertThat(labelList).hasSize(databaseSizeBeforeCreate);
-
-        // Validate the Label in Elasticsearch
-        verify(mockLabelSearchRepository, times(0)).save(label);
+        int searchDatabaseSizeAfter = IterableUtil.sizeOf(labelSearchRepository.findAll());
+        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkLabelIsRequired() throws Exception {
         int databaseSizeBeforeTest = labelRepository.findAll().size();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(labelSearchRepository.findAll());
         // set the field null
         label.setLabel(null);
 
@@ -148,6 +149,8 @@ class LabelResourceIT {
 
         List<Label> labelList = labelRepository.findAll();
         assertThat(labelList).hasSize(databaseSizeBeforeTest);
+        int searchDatabaseSizeAfter = IterableUtil.sizeOf(labelSearchRepository.findAll());
+        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -194,6 +197,8 @@ class LabelResourceIT {
         labelRepository.saveAndFlush(label);
 
         int databaseSizeBeforeUpdate = labelRepository.findAll().size();
+        labelSearchRepository.save(label);
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(labelSearchRepository.findAll());
 
         // Update the label
         Label updatedLabel = labelRepository.findById(label.getId()).get();
@@ -214,15 +219,22 @@ class LabelResourceIT {
         assertThat(labelList).hasSize(databaseSizeBeforeUpdate);
         Label testLabel = labelList.get(labelList.size() - 1);
         assertThat(testLabel.getLabel()).isEqualTo(UPDATED_LABEL);
-
-        // Validate the Label in Elasticsearch
-        verify(mockLabelSearchRepository).save(testLabel);
+        await()
+            .atMost(5, TimeUnit.SECONDS)
+            .untilAsserted(() -> {
+                int searchDatabaseSizeAfter = IterableUtil.sizeOf(labelSearchRepository.findAll());
+                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
+                List<Label> labelSearchList = IterableUtils.toList(labelSearchRepository.findAll());
+                Label testLabelSearch = labelSearchList.get(searchDatabaseSizeAfter - 1);
+                assertThat(testLabelSearch.getLabel()).isEqualTo(UPDATED_LABEL);
+            });
     }
 
     @Test
     @Transactional
     void putNonExistingLabel() throws Exception {
         int databaseSizeBeforeUpdate = labelRepository.findAll().size();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(labelSearchRepository.findAll());
         label.setId(count.incrementAndGet());
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
@@ -237,15 +249,15 @@ class LabelResourceIT {
         // Validate the Label in the database
         List<Label> labelList = labelRepository.findAll();
         assertThat(labelList).hasSize(databaseSizeBeforeUpdate);
-
-        // Validate the Label in Elasticsearch
-        verify(mockLabelSearchRepository, times(0)).save(label);
+        int searchDatabaseSizeAfter = IterableUtil.sizeOf(labelSearchRepository.findAll());
+        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithIdMismatchLabel() throws Exception {
         int databaseSizeBeforeUpdate = labelRepository.findAll().size();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(labelSearchRepository.findAll());
         label.setId(count.incrementAndGet());
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
@@ -260,15 +272,15 @@ class LabelResourceIT {
         // Validate the Label in the database
         List<Label> labelList = labelRepository.findAll();
         assertThat(labelList).hasSize(databaseSizeBeforeUpdate);
-
-        // Validate the Label in Elasticsearch
-        verify(mockLabelSearchRepository, times(0)).save(label);
+        int searchDatabaseSizeAfter = IterableUtil.sizeOf(labelSearchRepository.findAll());
+        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithMissingIdPathParamLabel() throws Exception {
         int databaseSizeBeforeUpdate = labelRepository.findAll().size();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(labelSearchRepository.findAll());
         label.setId(count.incrementAndGet());
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
@@ -279,9 +291,8 @@ class LabelResourceIT {
         // Validate the Label in the database
         List<Label> labelList = labelRepository.findAll();
         assertThat(labelList).hasSize(databaseSizeBeforeUpdate);
-
-        // Validate the Label in Elasticsearch
-        verify(mockLabelSearchRepository, times(0)).save(label);
+        int searchDatabaseSizeAfter = IterableUtil.sizeOf(labelSearchRepository.findAll());
+        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -344,6 +355,7 @@ class LabelResourceIT {
     @Transactional
     void patchNonExistingLabel() throws Exception {
         int databaseSizeBeforeUpdate = labelRepository.findAll().size();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(labelSearchRepository.findAll());
         label.setId(count.incrementAndGet());
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
@@ -358,15 +370,15 @@ class LabelResourceIT {
         // Validate the Label in the database
         List<Label> labelList = labelRepository.findAll();
         assertThat(labelList).hasSize(databaseSizeBeforeUpdate);
-
-        // Validate the Label in Elasticsearch
-        verify(mockLabelSearchRepository, times(0)).save(label);
+        int searchDatabaseSizeAfter = IterableUtil.sizeOf(labelSearchRepository.findAll());
+        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithIdMismatchLabel() throws Exception {
         int databaseSizeBeforeUpdate = labelRepository.findAll().size();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(labelSearchRepository.findAll());
         label.setId(count.incrementAndGet());
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
@@ -381,15 +393,15 @@ class LabelResourceIT {
         // Validate the Label in the database
         List<Label> labelList = labelRepository.findAll();
         assertThat(labelList).hasSize(databaseSizeBeforeUpdate);
-
-        // Validate the Label in Elasticsearch
-        verify(mockLabelSearchRepository, times(0)).save(label);
+        int searchDatabaseSizeAfter = IterableUtil.sizeOf(labelSearchRepository.findAll());
+        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithMissingIdPathParamLabel() throws Exception {
         int databaseSizeBeforeUpdate = labelRepository.findAll().size();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(labelSearchRepository.findAll());
         label.setId(count.incrementAndGet());
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
@@ -400,9 +412,8 @@ class LabelResourceIT {
         // Validate the Label in the database
         List<Label> labelList = labelRepository.findAll();
         assertThat(labelList).hasSize(databaseSizeBeforeUpdate);
-
-        // Validate the Label in Elasticsearch
-        verify(mockLabelSearchRepository, times(0)).save(label);
+        int searchDatabaseSizeAfter = IterableUtil.sizeOf(labelSearchRepository.findAll());
+        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -410,8 +421,12 @@ class LabelResourceIT {
     void deleteLabel() throws Exception {
         // Initialize the database
         labelRepository.saveAndFlush(label);
+        labelRepository.save(label);
+        labelSearchRepository.save(label);
 
         int databaseSizeBeforeDelete = labelRepository.findAll().size();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(labelSearchRepository.findAll());
+        assertThat(searchDatabaseSizeBefore).isEqualTo(databaseSizeBeforeDelete);
 
         // Delete the label
         restLabelMockMvc
@@ -421,18 +436,16 @@ class LabelResourceIT {
         // Validate the database contains one less item
         List<Label> labelList = labelRepository.findAll();
         assertThat(labelList).hasSize(databaseSizeBeforeDelete - 1);
-
-        // Validate the Label in Elasticsearch
-        verify(mockLabelSearchRepository, times(1)).deleteById(label.getId());
+        int searchDatabaseSizeAfter = IterableUtil.sizeOf(labelSearchRepository.findAll());
+        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore - 1);
     }
 
     @Test
     @Transactional
     void searchLabel() throws Exception {
-        // Configure the mock search repository
         // Initialize the database
-        labelRepository.saveAndFlush(label);
-        when(mockLabelSearchRepository.search("id:" + label.getId())).thenReturn(Stream.of(label));
+        label = labelRepository.saveAndFlush(label);
+        labelSearchRepository.save(label);
 
         // Search the label
         restLabelMockMvc

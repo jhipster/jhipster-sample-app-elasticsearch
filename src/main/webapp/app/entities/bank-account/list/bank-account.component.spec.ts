@@ -21,7 +21,19 @@ describe('BankAccount Management Component', () => {
       providers: [
         {
           provide: ActivatedRoute,
-          useValue: { snapshot: { queryParams: {} } },
+          useValue: {
+            data: of({
+              defaultSort: 'id,asc',
+            }),
+            queryParamMap: of(
+              jest.requireActual('@angular/router').convertToParamMap({
+                page: '1',
+                size: '1',
+                sort: 'id,desc',
+              })
+            ),
+            snapshot: { queryParams: {} },
+          },
         },
       ],
     })
@@ -50,5 +62,15 @@ describe('BankAccount Management Component', () => {
     // THEN
     expect(service.query).toHaveBeenCalled();
     expect(comp.bankAccounts?.[0]).toEqual(expect.objectContaining({ id: 123 }));
+  });
+
+  describe('trackId', () => {
+    it('Should forward to bankAccountService', () => {
+      const entity = { id: 123 };
+      jest.spyOn(service, 'getBankAccountIdentifier');
+      const id = comp.trackId(0, entity);
+      expect(service.getBankAccountIdentifier).toHaveBeenCalledWith(entity);
+      expect(id).toBe(entity.id);
+    });
   });
 });

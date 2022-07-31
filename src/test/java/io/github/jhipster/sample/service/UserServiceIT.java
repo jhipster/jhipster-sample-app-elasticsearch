@@ -22,6 +22,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.auditing.AuditingHandler;
 import org.springframework.data.auditing.DateTimeProvider;
 import org.springframework.data.domain.Page;
@@ -59,8 +60,8 @@ class UserServiceIT {
      *
      * @see io.github.jhipster.sample.repository.search.UserSearchRepositoryMockConfiguration
      */
-    @Autowired
-    private UserSearchRepository mockUserSearchRepository;
+    @SpyBean
+    private UserSearchRepository spiedUserSearchRepository;
 
     @Autowired
     private AuditingHandler auditingHandler;
@@ -74,7 +75,7 @@ class UserServiceIT {
     public void init() {
         user = new User();
         user.setLogin(DEFAULT_LOGIN);
-        user.setPassword(RandomStringUtils.random(60));
+        user.setPassword(RandomStringUtils.randomAlphanumeric(60));
         user.setActivated(true);
         user.setEmail(DEFAULT_EMAIL);
         user.setFirstName(DEFAULT_FIRSTNAME);
@@ -178,7 +179,7 @@ class UserServiceIT {
         assertThat(users).isEmpty();
 
         // Verify Elasticsearch mock
-        verify(mockUserSearchRepository, times(1)).delete(user);
+        verify(spiedUserSearchRepository, times(1)).delete(user);
     }
 
     @Test
@@ -198,6 +199,6 @@ class UserServiceIT {
         assertThat(maybeDbUser).contains(dbUser);
 
         // Verify Elasticsearch mock
-        verify(mockUserSearchRepository, never()).delete(user);
+        verify(spiedUserSearchRepository, never()).delete(user);
     }
 }

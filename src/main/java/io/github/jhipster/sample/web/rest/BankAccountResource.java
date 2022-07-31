@@ -62,7 +62,7 @@ public class BankAccountResource {
             throw new BadRequestAlertException("A new bankAccount cannot already have an ID", ENTITY_NAME, "idexists");
         }
         BankAccount result = bankAccountRepository.save(bankAccount);
-        bankAccountSearchRepository.save(result);
+        bankAccountSearchRepository.index(result);
         return ResponseEntity
             .created(new URI("/api/bank-accounts/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
@@ -97,7 +97,7 @@ public class BankAccountResource {
         }
 
         BankAccount result = bankAccountRepository.save(bankAccount);
-        bankAccountSearchRepository.save(result);
+        bankAccountSearchRepository.index(result);
         return ResponseEntity
             .ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, bankAccount.getId().toString()))
@@ -166,7 +166,11 @@ public class BankAccountResource {
     @GetMapping("/bank-accounts")
     public List<BankAccount> getAllBankAccounts(@RequestParam(required = false, defaultValue = "false") boolean eagerload) {
         log.debug("REST request to get all BankAccounts");
-        return bankAccountRepository.findAllWithEagerRelationships();
+        if (eagerload) {
+            return bankAccountRepository.findAllWithEagerRelationships();
+        } else {
+            return bankAccountRepository.findAll();
+        }
     }
 
     /**

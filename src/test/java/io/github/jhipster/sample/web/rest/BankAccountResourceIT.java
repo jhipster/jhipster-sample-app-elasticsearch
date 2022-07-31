@@ -2,6 +2,7 @@ package io.github.jhipster.sample.web.rest;
 
 import static io.github.jhipster.sample.web.rest.TestUtil.sameNumber;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.hasItem;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -16,9 +17,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 import javax.persistence.EntityManager;
+import org.apache.commons.collections4.IterableUtils;
+import org.assertj.core.util.IterableUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,6 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -61,13 +66,8 @@ class BankAccountResourceIT {
     @Mock
     private BankAccountRepository bankAccountRepositoryMock;
 
-    /**
-     * This repository is mocked in the io.github.jhipster.sample.repository.search test package.
-     *
-     * @see io.github.jhipster.sample.repository.search.BankAccountSearchRepositoryMockConfiguration
-     */
     @Autowired
-    private BankAccountSearchRepository mockBankAccountSearchRepository;
+    private BankAccountSearchRepository bankAccountSearchRepository;
 
     @Autowired
     private EntityManager em;
@@ -101,6 +101,7 @@ class BankAccountResourceIT {
 
     @BeforeEach
     public void initTest() {
+        bankAccountSearchRepository.deleteAll();
         bankAccount = createEntity(em);
     }
 
@@ -108,6 +109,7 @@ class BankAccountResourceIT {
     @Transactional
     void createBankAccount() throws Exception {
         int databaseSizeBeforeCreate = bankAccountRepository.findAll().size();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(bankAccountSearchRepository.findAll());
         // Create the BankAccount
         restBankAccountMockMvc
             .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(bankAccount)))
@@ -116,12 +118,15 @@ class BankAccountResourceIT {
         // Validate the BankAccount in the database
         List<BankAccount> bankAccountList = bankAccountRepository.findAll();
         assertThat(bankAccountList).hasSize(databaseSizeBeforeCreate + 1);
+        await()
+            .atMost(5, TimeUnit.SECONDS)
+            .untilAsserted(() -> {
+                int searchDatabaseSizeAfter = IterableUtil.sizeOf(bankAccountSearchRepository.findAll());
+                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore + 1);
+            });
         BankAccount testBankAccount = bankAccountList.get(bankAccountList.size() - 1);
         assertThat(testBankAccount.getName()).isEqualTo(DEFAULT_NAME);
         assertThat(testBankAccount.getBalance()).isEqualByComparingTo(DEFAULT_BALANCE);
-
-        // Validate the BankAccount in Elasticsearch
-        verify(mockBankAccountSearchRepository, times(1)).save(testBankAccount);
     }
 
     @Test
@@ -131,6 +136,7 @@ class BankAccountResourceIT {
         bankAccount.setId(1L);
 
         int databaseSizeBeforeCreate = bankAccountRepository.findAll().size();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(bankAccountSearchRepository.findAll());
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restBankAccountMockMvc
@@ -140,15 +146,15 @@ class BankAccountResourceIT {
         // Validate the BankAccount in the database
         List<BankAccount> bankAccountList = bankAccountRepository.findAll();
         assertThat(bankAccountList).hasSize(databaseSizeBeforeCreate);
-
-        // Validate the BankAccount in Elasticsearch
-        verify(mockBankAccountSearchRepository, times(0)).save(bankAccount);
+        int searchDatabaseSizeAfter = IterableUtil.sizeOf(bankAccountSearchRepository.findAll());
+        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkNameIsRequired() throws Exception {
         int databaseSizeBeforeTest = bankAccountRepository.findAll().size();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(bankAccountSearchRepository.findAll());
         // set the field null
         bankAccount.setName(null);
 
@@ -160,12 +166,15 @@ class BankAccountResourceIT {
 
         List<BankAccount> bankAccountList = bankAccountRepository.findAll();
         assertThat(bankAccountList).hasSize(databaseSizeBeforeTest);
+        int searchDatabaseSizeAfter = IterableUtil.sizeOf(bankAccountSearchRepository.findAll());
+        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkBalanceIsRequired() throws Exception {
         int databaseSizeBeforeTest = bankAccountRepository.findAll().size();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(bankAccountSearchRepository.findAll());
         // set the field null
         bankAccount.setBalance(null);
 
@@ -177,6 +186,8 @@ class BankAccountResourceIT {
 
         List<BankAccount> bankAccountList = bankAccountRepository.findAll();
         assertThat(bankAccountList).hasSize(databaseSizeBeforeTest);
+        int searchDatabaseSizeAfter = IterableUtil.sizeOf(bankAccountSearchRepository.findAll());
+        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -208,9 +219,8 @@ class BankAccountResourceIT {
     void getAllBankAccountsWithEagerRelationshipsIsNotEnabled() throws Exception {
         when(bankAccountRepositoryMock.findAllWithEagerRelationships(any())).thenReturn(new PageImpl(new ArrayList<>()));
 
-        restBankAccountMockMvc.perform(get(ENTITY_API_URL + "?eagerload=true")).andExpect(status().isOk());
-
-        verify(bankAccountRepositoryMock, times(1)).findAllWithEagerRelationships(any());
+        restBankAccountMockMvc.perform(get(ENTITY_API_URL + "?eagerload=false")).andExpect(status().isOk());
+        verify(bankAccountRepositoryMock, times(1)).findAll(any(Pageable.class));
     }
 
     @Test
@@ -243,6 +253,8 @@ class BankAccountResourceIT {
         bankAccountRepository.saveAndFlush(bankAccount);
 
         int databaseSizeBeforeUpdate = bankAccountRepository.findAll().size();
+        bankAccountSearchRepository.save(bankAccount);
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(bankAccountSearchRepository.findAll());
 
         // Update the bankAccount
         BankAccount updatedBankAccount = bankAccountRepository.findById(bankAccount.getId()).get();
@@ -264,15 +276,23 @@ class BankAccountResourceIT {
         BankAccount testBankAccount = bankAccountList.get(bankAccountList.size() - 1);
         assertThat(testBankAccount.getName()).isEqualTo(UPDATED_NAME);
         assertThat(testBankAccount.getBalance()).isEqualByComparingTo(UPDATED_BALANCE);
-
-        // Validate the BankAccount in Elasticsearch
-        verify(mockBankAccountSearchRepository).save(testBankAccount);
+        await()
+            .atMost(5, TimeUnit.SECONDS)
+            .untilAsserted(() -> {
+                int searchDatabaseSizeAfter = IterableUtil.sizeOf(bankAccountSearchRepository.findAll());
+                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
+                List<BankAccount> bankAccountSearchList = IterableUtils.toList(bankAccountSearchRepository.findAll());
+                BankAccount testBankAccountSearch = bankAccountSearchList.get(searchDatabaseSizeAfter - 1);
+                assertThat(testBankAccountSearch.getName()).isEqualTo(UPDATED_NAME);
+                assertThat(testBankAccountSearch.getBalance()).isEqualByComparingTo(UPDATED_BALANCE);
+            });
     }
 
     @Test
     @Transactional
     void putNonExistingBankAccount() throws Exception {
         int databaseSizeBeforeUpdate = bankAccountRepository.findAll().size();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(bankAccountSearchRepository.findAll());
         bankAccount.setId(count.incrementAndGet());
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
@@ -287,15 +307,15 @@ class BankAccountResourceIT {
         // Validate the BankAccount in the database
         List<BankAccount> bankAccountList = bankAccountRepository.findAll();
         assertThat(bankAccountList).hasSize(databaseSizeBeforeUpdate);
-
-        // Validate the BankAccount in Elasticsearch
-        verify(mockBankAccountSearchRepository, times(0)).save(bankAccount);
+        int searchDatabaseSizeAfter = IterableUtil.sizeOf(bankAccountSearchRepository.findAll());
+        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithIdMismatchBankAccount() throws Exception {
         int databaseSizeBeforeUpdate = bankAccountRepository.findAll().size();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(bankAccountSearchRepository.findAll());
         bankAccount.setId(count.incrementAndGet());
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
@@ -310,15 +330,15 @@ class BankAccountResourceIT {
         // Validate the BankAccount in the database
         List<BankAccount> bankAccountList = bankAccountRepository.findAll();
         assertThat(bankAccountList).hasSize(databaseSizeBeforeUpdate);
-
-        // Validate the BankAccount in Elasticsearch
-        verify(mockBankAccountSearchRepository, times(0)).save(bankAccount);
+        int searchDatabaseSizeAfter = IterableUtil.sizeOf(bankAccountSearchRepository.findAll());
+        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithMissingIdPathParamBankAccount() throws Exception {
         int databaseSizeBeforeUpdate = bankAccountRepository.findAll().size();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(bankAccountSearchRepository.findAll());
         bankAccount.setId(count.incrementAndGet());
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
@@ -329,9 +349,8 @@ class BankAccountResourceIT {
         // Validate the BankAccount in the database
         List<BankAccount> bankAccountList = bankAccountRepository.findAll();
         assertThat(bankAccountList).hasSize(databaseSizeBeforeUpdate);
-
-        // Validate the BankAccount in Elasticsearch
-        verify(mockBankAccountSearchRepository, times(0)).save(bankAccount);
+        int searchDatabaseSizeAfter = IterableUtil.sizeOf(bankAccountSearchRepository.findAll());
+        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -398,6 +417,7 @@ class BankAccountResourceIT {
     @Transactional
     void patchNonExistingBankAccount() throws Exception {
         int databaseSizeBeforeUpdate = bankAccountRepository.findAll().size();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(bankAccountSearchRepository.findAll());
         bankAccount.setId(count.incrementAndGet());
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
@@ -412,15 +432,15 @@ class BankAccountResourceIT {
         // Validate the BankAccount in the database
         List<BankAccount> bankAccountList = bankAccountRepository.findAll();
         assertThat(bankAccountList).hasSize(databaseSizeBeforeUpdate);
-
-        // Validate the BankAccount in Elasticsearch
-        verify(mockBankAccountSearchRepository, times(0)).save(bankAccount);
+        int searchDatabaseSizeAfter = IterableUtil.sizeOf(bankAccountSearchRepository.findAll());
+        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithIdMismatchBankAccount() throws Exception {
         int databaseSizeBeforeUpdate = bankAccountRepository.findAll().size();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(bankAccountSearchRepository.findAll());
         bankAccount.setId(count.incrementAndGet());
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
@@ -435,15 +455,15 @@ class BankAccountResourceIT {
         // Validate the BankAccount in the database
         List<BankAccount> bankAccountList = bankAccountRepository.findAll();
         assertThat(bankAccountList).hasSize(databaseSizeBeforeUpdate);
-
-        // Validate the BankAccount in Elasticsearch
-        verify(mockBankAccountSearchRepository, times(0)).save(bankAccount);
+        int searchDatabaseSizeAfter = IterableUtil.sizeOf(bankAccountSearchRepository.findAll());
+        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithMissingIdPathParamBankAccount() throws Exception {
         int databaseSizeBeforeUpdate = bankAccountRepository.findAll().size();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(bankAccountSearchRepository.findAll());
         bankAccount.setId(count.incrementAndGet());
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
@@ -456,9 +476,8 @@ class BankAccountResourceIT {
         // Validate the BankAccount in the database
         List<BankAccount> bankAccountList = bankAccountRepository.findAll();
         assertThat(bankAccountList).hasSize(databaseSizeBeforeUpdate);
-
-        // Validate the BankAccount in Elasticsearch
-        verify(mockBankAccountSearchRepository, times(0)).save(bankAccount);
+        int searchDatabaseSizeAfter = IterableUtil.sizeOf(bankAccountSearchRepository.findAll());
+        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -466,8 +485,12 @@ class BankAccountResourceIT {
     void deleteBankAccount() throws Exception {
         // Initialize the database
         bankAccountRepository.saveAndFlush(bankAccount);
+        bankAccountRepository.save(bankAccount);
+        bankAccountSearchRepository.save(bankAccount);
 
         int databaseSizeBeforeDelete = bankAccountRepository.findAll().size();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(bankAccountSearchRepository.findAll());
+        assertThat(searchDatabaseSizeBefore).isEqualTo(databaseSizeBeforeDelete);
 
         // Delete the bankAccount
         restBankAccountMockMvc
@@ -477,18 +500,16 @@ class BankAccountResourceIT {
         // Validate the database contains one less item
         List<BankAccount> bankAccountList = bankAccountRepository.findAll();
         assertThat(bankAccountList).hasSize(databaseSizeBeforeDelete - 1);
-
-        // Validate the BankAccount in Elasticsearch
-        verify(mockBankAccountSearchRepository, times(1)).deleteById(bankAccount.getId());
+        int searchDatabaseSizeAfter = IterableUtil.sizeOf(bankAccountSearchRepository.findAll());
+        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore - 1);
     }
 
     @Test
     @Transactional
     void searchBankAccount() throws Exception {
-        // Configure the mock search repository
         // Initialize the database
-        bankAccountRepository.saveAndFlush(bankAccount);
-        when(mockBankAccountSearchRepository.search("id:" + bankAccount.getId())).thenReturn(Stream.of(bankAccount));
+        bankAccount = bankAccountRepository.saveAndFlush(bankAccount);
+        bankAccountSearchRepository.save(bankAccount);
 
         // Search the bankAccount
         restBankAccountMockMvc

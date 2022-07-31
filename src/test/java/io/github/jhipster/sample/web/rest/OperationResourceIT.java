@@ -2,6 +2,7 @@ package io.github.jhipster.sample.web.rest;
 
 import static io.github.jhipster.sample.web.rest.TestUtil.sameNumber;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.hasItem;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -18,8 +19,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import javax.persistence.EntityManager;
+import org.apache.commons.collections4.IterableUtils;
+import org.assertj.core.util.IterableUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -65,13 +70,8 @@ class OperationResourceIT {
     @Mock
     private OperationRepository operationRepositoryMock;
 
-    /**
-     * This repository is mocked in the io.github.jhipster.sample.repository.search test package.
-     *
-     * @see io.github.jhipster.sample.repository.search.OperationSearchRepositoryMockConfiguration
-     */
     @Autowired
-    private OperationSearchRepository mockOperationSearchRepository;
+    private OperationSearchRepository operationSearchRepository;
 
     @Autowired
     private EntityManager em;
@@ -105,6 +105,7 @@ class OperationResourceIT {
 
     @BeforeEach
     public void initTest() {
+        operationSearchRepository.deleteAll();
         operation = createEntity(em);
     }
 
@@ -112,6 +113,7 @@ class OperationResourceIT {
     @Transactional
     void createOperation() throws Exception {
         int databaseSizeBeforeCreate = operationRepository.findAll().size();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(operationSearchRepository.findAll());
         // Create the Operation
         restOperationMockMvc
             .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(operation)))
@@ -120,13 +122,16 @@ class OperationResourceIT {
         // Validate the Operation in the database
         List<Operation> operationList = operationRepository.findAll();
         assertThat(operationList).hasSize(databaseSizeBeforeCreate + 1);
+        await()
+            .atMost(5, TimeUnit.SECONDS)
+            .untilAsserted(() -> {
+                int searchDatabaseSizeAfter = IterableUtil.sizeOf(operationSearchRepository.findAll());
+                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore + 1);
+            });
         Operation testOperation = operationList.get(operationList.size() - 1);
         assertThat(testOperation.getDate()).isEqualTo(DEFAULT_DATE);
         assertThat(testOperation.getDescription()).isEqualTo(DEFAULT_DESCRIPTION);
         assertThat(testOperation.getAmount()).isEqualByComparingTo(DEFAULT_AMOUNT);
-
-        // Validate the Operation in Elasticsearch
-        verify(mockOperationSearchRepository, times(1)).save(testOperation);
     }
 
     @Test
@@ -136,6 +141,7 @@ class OperationResourceIT {
         operation.setId(1L);
 
         int databaseSizeBeforeCreate = operationRepository.findAll().size();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(operationSearchRepository.findAll());
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restOperationMockMvc
@@ -145,15 +151,15 @@ class OperationResourceIT {
         // Validate the Operation in the database
         List<Operation> operationList = operationRepository.findAll();
         assertThat(operationList).hasSize(databaseSizeBeforeCreate);
-
-        // Validate the Operation in Elasticsearch
-        verify(mockOperationSearchRepository, times(0)).save(operation);
+        int searchDatabaseSizeAfter = IterableUtil.sizeOf(operationSearchRepository.findAll());
+        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkDateIsRequired() throws Exception {
         int databaseSizeBeforeTest = operationRepository.findAll().size();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(operationSearchRepository.findAll());
         // set the field null
         operation.setDate(null);
 
@@ -165,12 +171,15 @@ class OperationResourceIT {
 
         List<Operation> operationList = operationRepository.findAll();
         assertThat(operationList).hasSize(databaseSizeBeforeTest);
+        int searchDatabaseSizeAfter = IterableUtil.sizeOf(operationSearchRepository.findAll());
+        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkAmountIsRequired() throws Exception {
         int databaseSizeBeforeTest = operationRepository.findAll().size();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(operationSearchRepository.findAll());
         // set the field null
         operation.setAmount(null);
 
@@ -182,6 +191,8 @@ class OperationResourceIT {
 
         List<Operation> operationList = operationRepository.findAll();
         assertThat(operationList).hasSize(databaseSizeBeforeTest);
+        int searchDatabaseSizeAfter = IterableUtil.sizeOf(operationSearchRepository.findAll());
+        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -214,9 +225,8 @@ class OperationResourceIT {
     void getAllOperationsWithEagerRelationshipsIsNotEnabled() throws Exception {
         when(operationRepositoryMock.findAllWithEagerRelationships(any())).thenReturn(new PageImpl(new ArrayList<>()));
 
-        restOperationMockMvc.perform(get(ENTITY_API_URL + "?eagerload=true")).andExpect(status().isOk());
-
-        verify(operationRepositoryMock, times(1)).findAllWithEagerRelationships(any());
+        restOperationMockMvc.perform(get(ENTITY_API_URL + "?eagerload=false")).andExpect(status().isOk());
+        verify(operationRepositoryMock, times(1)).findAll(any(Pageable.class));
     }
 
     @Test
@@ -250,6 +260,8 @@ class OperationResourceIT {
         operationRepository.saveAndFlush(operation);
 
         int databaseSizeBeforeUpdate = operationRepository.findAll().size();
+        operationSearchRepository.save(operation);
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(operationSearchRepository.findAll());
 
         // Update the operation
         Operation updatedOperation = operationRepository.findById(operation.getId()).get();
@@ -272,15 +284,24 @@ class OperationResourceIT {
         assertThat(testOperation.getDate()).isEqualTo(UPDATED_DATE);
         assertThat(testOperation.getDescription()).isEqualTo(UPDATED_DESCRIPTION);
         assertThat(testOperation.getAmount()).isEqualByComparingTo(UPDATED_AMOUNT);
-
-        // Validate the Operation in Elasticsearch
-        verify(mockOperationSearchRepository).save(testOperation);
+        await()
+            .atMost(5, TimeUnit.SECONDS)
+            .untilAsserted(() -> {
+                int searchDatabaseSizeAfter = IterableUtil.sizeOf(operationSearchRepository.findAll());
+                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
+                List<Operation> operationSearchList = IterableUtils.toList(operationSearchRepository.findAll());
+                Operation testOperationSearch = operationSearchList.get(searchDatabaseSizeAfter - 1);
+                assertThat(testOperationSearch.getDate()).isEqualTo(UPDATED_DATE);
+                assertThat(testOperationSearch.getDescription()).isEqualTo(UPDATED_DESCRIPTION);
+                assertThat(testOperationSearch.getAmount()).isEqualByComparingTo(UPDATED_AMOUNT);
+            });
     }
 
     @Test
     @Transactional
     void putNonExistingOperation() throws Exception {
         int databaseSizeBeforeUpdate = operationRepository.findAll().size();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(operationSearchRepository.findAll());
         operation.setId(count.incrementAndGet());
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
@@ -295,15 +316,15 @@ class OperationResourceIT {
         // Validate the Operation in the database
         List<Operation> operationList = operationRepository.findAll();
         assertThat(operationList).hasSize(databaseSizeBeforeUpdate);
-
-        // Validate the Operation in Elasticsearch
-        verify(mockOperationSearchRepository, times(0)).save(operation);
+        int searchDatabaseSizeAfter = IterableUtil.sizeOf(operationSearchRepository.findAll());
+        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithIdMismatchOperation() throws Exception {
         int databaseSizeBeforeUpdate = operationRepository.findAll().size();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(operationSearchRepository.findAll());
         operation.setId(count.incrementAndGet());
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
@@ -318,15 +339,15 @@ class OperationResourceIT {
         // Validate the Operation in the database
         List<Operation> operationList = operationRepository.findAll();
         assertThat(operationList).hasSize(databaseSizeBeforeUpdate);
-
-        // Validate the Operation in Elasticsearch
-        verify(mockOperationSearchRepository, times(0)).save(operation);
+        int searchDatabaseSizeAfter = IterableUtil.sizeOf(operationSearchRepository.findAll());
+        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithMissingIdPathParamOperation() throws Exception {
         int databaseSizeBeforeUpdate = operationRepository.findAll().size();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(operationSearchRepository.findAll());
         operation.setId(count.incrementAndGet());
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
@@ -337,9 +358,8 @@ class OperationResourceIT {
         // Validate the Operation in the database
         List<Operation> operationList = operationRepository.findAll();
         assertThat(operationList).hasSize(databaseSizeBeforeUpdate);
-
-        // Validate the Operation in Elasticsearch
-        verify(mockOperationSearchRepository, times(0)).save(operation);
+        int searchDatabaseSizeAfter = IterableUtil.sizeOf(operationSearchRepository.findAll());
+        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -406,6 +426,7 @@ class OperationResourceIT {
     @Transactional
     void patchNonExistingOperation() throws Exception {
         int databaseSizeBeforeUpdate = operationRepository.findAll().size();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(operationSearchRepository.findAll());
         operation.setId(count.incrementAndGet());
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
@@ -420,15 +441,15 @@ class OperationResourceIT {
         // Validate the Operation in the database
         List<Operation> operationList = operationRepository.findAll();
         assertThat(operationList).hasSize(databaseSizeBeforeUpdate);
-
-        // Validate the Operation in Elasticsearch
-        verify(mockOperationSearchRepository, times(0)).save(operation);
+        int searchDatabaseSizeAfter = IterableUtil.sizeOf(operationSearchRepository.findAll());
+        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithIdMismatchOperation() throws Exception {
         int databaseSizeBeforeUpdate = operationRepository.findAll().size();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(operationSearchRepository.findAll());
         operation.setId(count.incrementAndGet());
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
@@ -443,15 +464,15 @@ class OperationResourceIT {
         // Validate the Operation in the database
         List<Operation> operationList = operationRepository.findAll();
         assertThat(operationList).hasSize(databaseSizeBeforeUpdate);
-
-        // Validate the Operation in Elasticsearch
-        verify(mockOperationSearchRepository, times(0)).save(operation);
+        int searchDatabaseSizeAfter = IterableUtil.sizeOf(operationSearchRepository.findAll());
+        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithMissingIdPathParamOperation() throws Exception {
         int databaseSizeBeforeUpdate = operationRepository.findAll().size();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(operationSearchRepository.findAll());
         operation.setId(count.incrementAndGet());
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
@@ -464,9 +485,8 @@ class OperationResourceIT {
         // Validate the Operation in the database
         List<Operation> operationList = operationRepository.findAll();
         assertThat(operationList).hasSize(databaseSizeBeforeUpdate);
-
-        // Validate the Operation in Elasticsearch
-        verify(mockOperationSearchRepository, times(0)).save(operation);
+        int searchDatabaseSizeAfter = IterableUtil.sizeOf(operationSearchRepository.findAll());
+        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -474,8 +494,12 @@ class OperationResourceIT {
     void deleteOperation() throws Exception {
         // Initialize the database
         operationRepository.saveAndFlush(operation);
+        operationRepository.save(operation);
+        operationSearchRepository.save(operation);
 
         int databaseSizeBeforeDelete = operationRepository.findAll().size();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(operationSearchRepository.findAll());
+        assertThat(searchDatabaseSizeBefore).isEqualTo(databaseSizeBeforeDelete);
 
         // Delete the operation
         restOperationMockMvc
@@ -485,19 +509,16 @@ class OperationResourceIT {
         // Validate the database contains one less item
         List<Operation> operationList = operationRepository.findAll();
         assertThat(operationList).hasSize(databaseSizeBeforeDelete - 1);
-
-        // Validate the Operation in Elasticsearch
-        verify(mockOperationSearchRepository, times(1)).deleteById(operation.getId());
+        int searchDatabaseSizeAfter = IterableUtil.sizeOf(operationSearchRepository.findAll());
+        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore - 1);
     }
 
     @Test
     @Transactional
     void searchOperation() throws Exception {
-        // Configure the mock search repository
         // Initialize the database
-        operationRepository.saveAndFlush(operation);
-        when(mockOperationSearchRepository.search("id:" + operation.getId(), PageRequest.of(0, 20)))
-            .thenReturn(new PageImpl<>(Collections.singletonList(operation), PageRequest.of(0, 1), 1));
+        operation = operationRepository.saveAndFlush(operation);
+        operationSearchRepository.save(operation);
 
         // Search the operation
         restOperationMockMvc

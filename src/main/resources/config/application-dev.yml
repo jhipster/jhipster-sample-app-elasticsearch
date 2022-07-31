@@ -48,7 +48,6 @@ spring:
       # disable spring boot built-in h2-console since we start it manually with correct configuration
       enabled: false
   jpa:
-    database-platform: tech.jhipster.domain.util.FixedH2Dialect
   elasticsearch:
     uris: http://localhost:9200
   liquibase:

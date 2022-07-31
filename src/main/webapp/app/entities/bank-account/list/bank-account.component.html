@@ -3,9 +3,9 @@
     <span jhiTranslate="jhipsterElasticsearchSampleApplicationApp.bankAccount.home.title">Bank Accounts</span>
 
     <div class="d-flex justify-content-end">
-      <button class="btn btn-info me-2" (click)="loadAll()" [disabled]="isLoading">
+      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
         <fa-icon icon="sync" [spin]="isLoading"></fa-icon>
-        <span jhiTranslate="jhipsterElasticsearchSampleApplicationApp.bankAccount.home.refreshListLabel">Refresh List</span>
+        <span jhiTranslate="jhipsterElasticsearchSampleApplicationApp.bankAccount.home.refreshListLabel">Refresh list</span>
       </button>
 
       <button
@@ -30,7 +30,7 @@
     <div class="col-sm-12">
       <div class="input-group w-100 mt-3">
         <label class="visually-hidden" for="currentSearch" jhiTranslate="jhipsterElasticsearchSampleApplicationApp.bankAccount.home.search"
-          >Query</label
+          >Search for Bank Account</label
         >
         <input
           type="text"
@@ -53,17 +53,25 @@
   </form>
 
   <div class="alert alert-warning" id="no-result" *ngIf="bankAccounts?.length === 0">
-    <span jhiTranslate="jhipsterElasticsearchSampleApplicationApp.bankAccount.home.notFound">No bankAccounts found</span>
+    <span jhiTranslate="jhipsterElasticsearchSampleApplicationApp.bankAccount.home.notFound">No Bank Accounts found</span>
   </div>
 
   <div class="table-responsive" id="entities" *ngIf="bankAccounts && bankAccounts.length > 0">
     <table class="table table-striped" aria-describedby="page-heading">
       <thead>
-        <tr>
-          <th scope="col"><span jhiTranslate="global.field.id">ID</span></th>
-          <th scope="col"><span jhiTranslate="jhipsterElasticsearchSampleApplicationApp.bankAccount.name">Name</span></th>
-          <th scope="col"><span jhiTranslate="jhipsterElasticsearchSampleApplicationApp.bankAccount.balance">Balance</span></th>
-          <th scope="col"><span jhiTranslate="jhipsterElasticsearchSampleApplicationApp.bankAccount.user">User</span></th>
+        <tr jhiSort [(predicate)]="predicate" [(ascending)]="ascending" (sortChange)="navigateToWithComponentValues()">
+          <th scope="col" jhiSortBy="id"><span jhiTranslate="global.field.id">ID</span> <fa-icon icon="sort"></fa-icon></th>
+          <th scope="col" jhiSortBy="name">
+            <span jhiTranslate="jhipsterElasticsearchSampleApplicationApp.bankAccount.name">Name</span>
+            <fa-icon *ngIf="!currentSearch" icon="sort"></fa-icon>
+          </th>
+          <th scope="col" jhiSortBy="balance">
+            <span jhiTranslate="jhipsterElasticsearchSampleApplicationApp.bankAccount.balance">Balance</span>
+            <fa-icon icon="sort"></fa-icon>
+          </th>
+          <th scope="col" jhiSortBy="user.login">
+            <span jhiTranslate="jhipsterElasticsearchSampleApplicationApp.bankAccount.user">User</span> <fa-icon icon="sort"></fa-icon>
+          </th>
           <th scope="col"></th>
         </tr>
       </thead>

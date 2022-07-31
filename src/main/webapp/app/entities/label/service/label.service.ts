@@ -6,7 +6,9 @@ import { isPresent } from 'app/core/util/operators';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
 import { Search } from 'app/core/request/request.model';
-import { ILabel, getLabelIdentifier } from '../label.model';
+import { ILabel, NewLabel } from '../label.model';
+
+export type PartialUpdateLabel = Partial<ILabel> & Pick<ILabel, 'id'>;
 
 export type EntityResponseType = HttpResponse<ILabel>;
 export type EntityArrayResponseType = HttpResponse<ILabel[]>;
@@ -18,16 +20,16 @@ export class LabelService {
 
   constructor(protected http: HttpClient, protected applicationConfigService: ApplicationConfigService) {}
 
-  create(label: ILabel): Observable<EntityResponseType> {
+  create(label: NewLabel): Observable<EntityResponseType> {
     return this.http.post<ILabel>(this.resourceUrl, label, { observe: 'response' });
   }
 
   update(label: ILabel): Observable<EntityResponseType> {
-    return this.http.put<ILabel>(`${this.resourceUrl}/${getLabelIdentifier(label) as number}`, label, { observe: 'response' });
+    return this.http.put<ILabel>(`${this.resourceUrl}/${this.getLabelIdentifier(label)}`, label, { observe: 'response' });
   }
 
-  partialUpdate(label: ILabel): Observable<EntityResponseType> {
-    return this.http.patch<ILabel>(`${this.resourceUrl}/${getLabelIdentifier(label) as number}`, label, { observe: 'response' });
+  partialUpdate(label: PartialUpdateLabel): Observable<EntityResponseType> {
+    return this.http.patch<ILabel>(`${this.resourceUrl}/${this.getLabelIdentifier(label)}`, label, { observe: 'response' });
   }
 
   find(id: number): Observable<EntityResponseType> {
@@ -48,13 +50,24 @@ export class LabelService {
     return this.http.get<ILabel[]>(this.resourceSearchUrl, { params: options, observe: 'response' });
   }
 
-  addLabelToCollectionIfMissing(labelCollection: ILabel[], ...labelsToCheck: (ILabel | null | undefined)[]): ILabel[] {
-    const labels: ILabel[] = labelsToCheck.filter(isPresent);
+  getLabelIdentifier(label: Pick<ILabel, 'id'>): number {
+    return label.id;
+  }
+
+  compareLabel(o1: Pick<ILabel, 'id'> | null, o2: Pick<ILabel, 'id'> | null): boolean {
+    return o1 && o2 ? this.getLabelIdentifier(o1) === this.getLabelIdentifier(o2) : o1 === o2;
+  }
+
+  addLabelToCollectionIfMissing<Type extends Pick<ILabel, 'id'>>(
+    labelCollection: Type[],
+    ...labelsToCheck: (Type | null | undefined)[]
+  ): Type[] {
+    const labels: Type[] = labelsToCheck.filter(isPresent);
     if (labels.length > 0) {
-      const labelCollectionIdentifiers = labelCollection.map(labelItem => getLabelIdentifier(labelItem)!);
+      const labelCollectionIdentifiers = labelCollection.map(labelItem => this.getLabelIdentifier(labelItem)!);
       const labelsToAdd = labels.filter(labelItem => {
-        const labelIdentifier = getLabelIdentifier(labelItem);
-        if (labelIdentifier == null || labelCollectionIdentifiers.includes(labelIdentifier)) {
+        const labelIdentifier = this.getLabelIdentifier(labelItem);
+        if (labelCollectionIdentifiers.includes(labelIdentifier)) {
           return false;
         }
         labelCollectionIdentifiers.push(labelIdentifier);

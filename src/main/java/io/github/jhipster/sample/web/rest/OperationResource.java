@@ -68,7 +68,7 @@ public class OperationResource {
             throw new BadRequestAlertException("A new operation cannot already have an ID", ENTITY_NAME, "idexists");
         }
         Operation result = operationRepository.save(operation);
-        operationSearchRepository.save(result);
+        operationSearchRepository.index(result);
         return ResponseEntity
             .created(new URI("/api/operations/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
@@ -103,7 +103,7 @@ public class OperationResource {
         }
 
         Operation result = operationRepository.save(operation);
-        operationSearchRepository.save(result);
+        operationSearchRepository.index(result);
         return ResponseEntity
             .ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, operation.getId().toString()))
@@ -176,7 +176,7 @@ public class OperationResource {
     @GetMapping("/operations")
     public ResponseEntity<List<Operation>> getAllOperations(
         @org.springdoc.api.annotations.ParameterObject Pageable pageable,
-        @RequestParam(required = false, defaultValue = "true") boolean eagerload
+        @RequestParam(required = false, defaultValue = "false") boolean eagerload
     ) {
         log.debug("REST request to get a page of Operations");
         Page<Operation> page;

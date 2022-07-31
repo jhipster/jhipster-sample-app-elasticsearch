@@ -32,6 +32,7 @@ public class Label implements Serializable {
 
     @ManyToMany(mappedBy = "labels")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    @org.springframework.data.annotation.Transient
     @JsonIgnoreProperties(value = { "bankAccount", "labels" }, allowSetters = true)
     private Set<Operation> operations = new HashSet<>();
 

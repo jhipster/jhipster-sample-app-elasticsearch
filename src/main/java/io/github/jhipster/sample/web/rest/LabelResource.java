@@ -62,7 +62,7 @@ public class LabelResource {
             throw new BadRequestAlertException("A new label cannot already have an ID", ENTITY_NAME, "idexists");
         }
         Label result = labelRepository.save(label);
-        labelSearchRepository.save(result);
+        labelSearchRepository.index(result);
         return ResponseEntity
             .created(new URI("/api/labels/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
@@ -95,7 +95,7 @@ public class LabelResource {
         }
 
         Label result = labelRepository.save(label);
-        labelSearchRepository.save(result);
+        labelSearchRepository.index(result);
         return ResponseEntity
             .ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, label.getId().toString()))

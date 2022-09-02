@@ -16,6 +16,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Table(name = "label")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @org.springframework.data.elasticsearch.annotations.Document(indexName = "label")
+@SuppressWarnings("common-java:DuplicatedBlocks")
 public class Label implements Serializable {
 
     private static final long serialVersionUID = 1L;

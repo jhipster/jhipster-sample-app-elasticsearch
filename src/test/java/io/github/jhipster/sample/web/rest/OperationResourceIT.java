@@ -24,6 +24,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import javax.persistence.EntityManager;
 import org.apache.commons.collections4.IterableUtils;
 import org.assertj.core.util.IterableUtil;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -103,9 +104,14 @@ class OperationResourceIT {
         return operation;
     }
 
+    @AfterEach
+    public void cleanupElasticSearchRepository() {
+        operationSearchRepository.deleteAll();
+        assertThat(operationSearchRepository.count()).isEqualTo(0);
+    }
+
     @BeforeEach
     public void initTest() {
-        operationSearchRepository.deleteAll();
         operation = createEntity(em);
     }
 
@@ -255,7 +261,7 @@ class OperationResourceIT {
 
     @Test
     @Transactional
-    void putNewOperation() throws Exception {
+    void putExistingOperation() throws Exception {
         // Initialize the database
         operationRepository.saveAndFlush(operation);
 

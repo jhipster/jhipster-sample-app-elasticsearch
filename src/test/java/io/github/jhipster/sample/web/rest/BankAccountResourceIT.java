@@ -23,6 +23,7 @@ import java.util.stream.Stream;
 import javax.persistence.EntityManager;
 import org.apache.commons.collections4.IterableUtils;
 import org.assertj.core.util.IterableUtil;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -99,9 +100,14 @@ class BankAccountResourceIT {
         return bankAccount;
     }
 
+    @AfterEach
+    public void cleanupElasticSearchRepository() {
+        bankAccountSearchRepository.deleteAll();
+        assertThat(bankAccountSearchRepository.count()).isEqualTo(0);
+    }
+
     @BeforeEach
     public void initTest() {
-        bankAccountSearchRepository.deleteAll();
         bankAccount = createEntity(em);
     }
 
@@ -248,7 +254,7 @@ class BankAccountResourceIT {
 
     @Test
     @Transactional
-    void putNewBankAccount() throws Exception {
+    void putExistingBankAccount() throws Exception {
         // Initialize the database
         bankAccountRepository.saveAndFlush(bankAccount);
 

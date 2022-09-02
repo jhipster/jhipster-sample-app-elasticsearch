@@ -20,6 +20,7 @@ import java.util.stream.Stream;
 import javax.persistence.EntityManager;
 import org.apache.commons.collections4.IterableUtils;
 import org.assertj.core.util.IterableUtil;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,9 +84,14 @@ class LabelResourceIT {
         return label;
     }
 
+    @AfterEach
+    public void cleanupElasticSearchRepository() {
+        labelSearchRepository.deleteAll();
+        assertThat(labelSearchRepository.count()).isEqualTo(0);
+    }
+
     @BeforeEach
     public void initTest() {
-        labelSearchRepository.deleteAll();
         label = createEntity(em);
     }
 
@@ -192,7 +198,7 @@ class LabelResourceIT {
 
     @Test
     @Transactional
-    void putNewLabel() throws Exception {
+    void putExistingLabel() throws Exception {
         // Initialize the database
         labelRepository.saveAndFlush(label);
 

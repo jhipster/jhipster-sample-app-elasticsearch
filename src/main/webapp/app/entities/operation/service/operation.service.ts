@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, asapScheduler, scheduled } from 'rxjs';
+
+import { catchError, map } from 'rxjs/operators';
+
 import dayjs from 'dayjs/esm';
 
 import { isPresent } from 'app/core/util/operators';
@@ -72,9 +74,10 @@ export class OperationService {
 
   search(req: SearchWithPagination): Observable<EntityArrayResponseType> {
     const options = createRequestOption(req);
-    return this.http
-      .get<RestOperation[]>(this.resourceSearchUrl, { params: options, observe: 'response' })
-      .pipe(map(res => this.convertResponseArrayFromServer(res)));
+    return this.http.get<RestOperation[]>(this.resourceSearchUrl, { params: options, observe: 'response' }).pipe(
+      map(res => this.convertResponseArrayFromServer(res)),
+      catchError(() => scheduled([new HttpResponse<IOperation[]>()], asapScheduler))
+    );
   }
 
   getOperationIdentifier(operation: Pick<IOperation, 'id'>): number {

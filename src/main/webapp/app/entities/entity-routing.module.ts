@@ -7,17 +7,17 @@ import { RouterModule } from '@angular/router';
       {
         path: 'bank-account',
         data: { pageTitle: 'jhipsterElasticsearchSampleApplicationApp.bankAccount.home.title' },
-        loadChildren: () => import('./bank-account/bank-account.module').then(m => m.BankAccountModule),
+        loadChildren: () => import('./bank-account/bank-account.routes'),
       },
       {
         path: 'label',
         data: { pageTitle: 'jhipsterElasticsearchSampleApplicationApp.label.home.title' },
-        loadChildren: () => import('./label/label.module').then(m => m.LabelModule),
+        loadChildren: () => import('./label/label.routes'),
       },
       {
         path: 'operation',
         data: { pageTitle: 'jhipsterElasticsearchSampleApplicationApp.operation.home.title' },
-        loadChildren: () => import('./operation/operation.module').then(m => m.OperationModule),
+        loadChildren: () => import('./operation/operation.routes'),
       },
       /* jhipster-needle-add-entity-route - JHipster will add entity modules routes here */
     ]),

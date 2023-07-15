@@ -1,43 +1,36 @@
 # This configuration is intended for development purpose, it's **your** responsibility to harden it for production
-version: '3.8'
+name: jhipsterelasticsearchsampleapplication
 services:
-  jhipsterelasticsearchsampleapplication-app:
+  app:
     image: jhipsterelasticsearchsampleapplication
     environment:
       - _JAVA_OPTIONS=-Xmx512m -Xms256m
       - SPRING_PROFILES_ACTIVE=prod,api-docs
-      - MANAGEMENT_METRICS_EXPORT_PROMETHEUS_ENABLED=true
-      - SPRING_DATASOURCE_URL=jdbc:mysql://jhipsterelasticsearchsampleapplication-mysql:3306/jhipsterelasticsearchsampleapplication?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true
-      - SPRING_LIQUIBASE_URL=jdbc:mysql://jhipsterelasticsearchsampleapplication-mysql:3306/jhipsterelasticsearchsampleapplication?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true
-      - JHIPSTER_SLEEP=30 # gives time for other services to boot before the application
-      - SPRING_ELASTICSEARCH_URIS=http://jhipsterelasticsearchsampleapplication-elasticsearch:9200
-    # If you want to expose these ports outside your dev PC,
-    # remove the "127.0.0.1:" prefix
+      - MANAGEMENT_PROMETHEUS_METRICS_EXPORT_ENABLED=true
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/jhipsterelasticsearchsampleapplication?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true
+      - SPRING_LIQUIBASE_URL=jdbc:mysql://mysql:3306/jhipsterelasticsearchsampleapplication?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true
+      - SPRING_ELASTICSEARCH_URIS=http://elasticsearch:9200
     ports:
       - 127.0.0.1:8080:8080
-  jhipsterelasticsearchsampleapplication-mysql:
-    image: mysql:8.0.30
-    # volumes:
-    #   - ~/volumes/jhipster/jhipsterElasticsearchSampleApplication/mysql/:/var/lib/mysql/
-    volumes:
-      - ./config/mysql:/etc/mysql/conf.d
-    environment:
-      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
-      - MYSQL_DATABASE=jhipsterelasticsearchsampleapplication
-    # If you want to expose these ports outside your dev PC,
-    # remove the "127.0.0.1:" prefix
-    ports:
-      - 127.0.0.1:3306:3306
-    command: mysqld --lower_case_table_names=1 --skip-ssl --character_set_server=utf8mb4 --explicit_defaults_for_timestamp
-  jhipsterelasticsearchsampleapplication-elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.4
-    # volumes:
-    #   - ~/volumes/jhipster/jhipsterElasticsearchSampleApplication/elasticsearch/:/usr/share/elasticsearch/data/
-    # If you want to expose these ports outside your dev PC,
-    # remove the "127.0.0.1:" prefix
-    ports:
-      - 127.0.0.1:9200:9200
-      - 127.0.0.1:9300:9300
-    environment:
-      - 'ES_JAVA_OPTS=-Xms256m -Xmx256m'
-      - 'discovery.type=single-node'
+    healthcheck:
+      test:
+        - CMD
+        - curl
+        - -f
+        - http://localhost:8080/management/health
+      interval: 5s
+      timeout: 5s
+      retries: 40
+    depends_on:
+      mysql:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
+  mysql:
+    extends:
+      file: ./mysql.yml
+      service: mysql
+  elasticsearch:
+    extends:
+      file: ./elasticsearch.yml
+      service: elasticsearch

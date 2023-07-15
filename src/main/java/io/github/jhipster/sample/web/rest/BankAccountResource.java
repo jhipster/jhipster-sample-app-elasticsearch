@@ -1,11 +1,14 @@
 package io.github.jhipster.sample.web.rest;
 
-import static org.elasticsearch.index.query.QueryBuilders.*;
+import static org.springframework.data.elasticsearch.client.elc.QueryBuilders.*;
 
 import io.github.jhipster.sample.domain.BankAccount;
 import io.github.jhipster.sample.repository.BankAccountRepository;
 import io.github.jhipster.sample.repository.search.BankAccountSearchRepository;
 import io.github.jhipster.sample.web.rest.errors.BadRequestAlertException;
+import io.github.jhipster.sample.web.rest.errors.ElasticsearchExceptionMapper;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -13,8 +16,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -146,8 +147,7 @@ public class BankAccountResource {
             })
             .map(bankAccountRepository::save)
             .map(savedBankAccount -> {
-                bankAccountSearchRepository.save(savedBankAccount);
-
+                bankAccountSearchRepository.index(savedBankAccount);
                 return savedBankAccount;
             });
 
@@ -196,7 +196,7 @@ public class BankAccountResource {
     public ResponseEntity<Void> deleteBankAccount(@PathVariable Long id) {
         log.debug("REST request to delete BankAccount : {}", id);
         bankAccountRepository.deleteById(id);
-        bankAccountSearchRepository.deleteById(id);
+        bankAccountSearchRepository.deleteFromIndexById(id);
         return ResponseEntity
             .noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
@@ -213,6 +213,10 @@ public class BankAccountResource {
     @GetMapping("/_search/bank-accounts")
     public List<BankAccount> searchBankAccounts(@RequestParam String query) {
         log.debug("REST request to search BankAccounts for query {}", query);
-        return StreamSupport.stream(bankAccountSearchRepository.search(query).spliterator(), false).collect(Collectors.toList());
+        try {
+            return StreamSupport.stream(bankAccountSearchRepository.search(query).spliterator(), false).toList();
+        } catch (RuntimeException e) {
+            throw ElasticsearchExceptionMapper.mapException(e);
+        }
     }
 }

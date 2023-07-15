@@ -12,6 +12,7 @@ import io.github.jhipster.sample.IntegrationTest;
 import io.github.jhipster.sample.domain.Operation;
 import io.github.jhipster.sample.repository.OperationRepository;
 import io.github.jhipster.sample.repository.search.OperationSearchRepository;
+import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -21,7 +22,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
-import javax.persistence.EntityManager;
 import org.apache.commons.collections4.IterableUtils;
 import org.assertj.core.util.IterableUtil;
 import org.junit.jupiter.api.AfterEach;
@@ -380,6 +380,8 @@ class OperationResourceIT {
         Operation partialUpdatedOperation = new Operation();
         partialUpdatedOperation.setId(operation.getId());
 
+        partialUpdatedOperation.description(UPDATED_DESCRIPTION).amount(UPDATED_AMOUNT);
+
         restOperationMockMvc
             .perform(
                 patch(ENTITY_API_URL_ID, partialUpdatedOperation.getId())
@@ -393,8 +395,8 @@ class OperationResourceIT {
         assertThat(operationList).hasSize(databaseSizeBeforeUpdate);
         Operation testOperation = operationList.get(operationList.size() - 1);
         assertThat(testOperation.getDate()).isEqualTo(DEFAULT_DATE);
-        assertThat(testOperation.getDescription()).isEqualTo(DEFAULT_DESCRIPTION);
-        assertThat(testOperation.getAmount()).isEqualByComparingTo(DEFAULT_AMOUNT);
+        assertThat(testOperation.getDescription()).isEqualTo(UPDATED_DESCRIPTION);
+        assertThat(testOperation.getAmount()).isEqualByComparingTo(UPDATED_AMOUNT);
     }
 
     @Test

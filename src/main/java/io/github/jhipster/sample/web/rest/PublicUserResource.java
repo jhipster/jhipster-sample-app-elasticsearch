@@ -1,13 +1,12 @@
 package io.github.jhipster.sample.web.rest;
 
-import static org.elasticsearch.index.query.QueryBuilders.*;
+import static org.springframework.data.elasticsearch.client.elc.QueryBuilders.*;
 
 import io.github.jhipster.sample.repository.search.UserSearchRepository;
 import io.github.jhipster.sample.service.UserService;
 import io.github.jhipster.sample.service.dto.UserDTO;
 import java.util.*;
 import java.util.Collections;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +45,7 @@ public class PublicUserResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body all users.
      */
     @GetMapping("/users")
-    public ResponseEntity<List<UserDTO>> getAllPublicUsers(@org.springdoc.api.annotations.ParameterObject Pageable pageable) {
+    public ResponseEntity<List<UserDTO>> getAllPublicUsers(@org.springdoc.core.annotations.ParameterObject Pageable pageable) {
         log.debug("REST request to get all public User names");
         if (!onlyContainsAllowedProperties(pageable)) {
             return ResponseEntity.badRequest().build();
@@ -78,6 +77,6 @@ public class PublicUserResource {
      */
     @GetMapping("/_search/users/{query}")
     public List<UserDTO> search(@PathVariable String query) {
-        return StreamSupport.stream(userSearchRepository.search(query).spliterator(), false).map(UserDTO::new).collect(Collectors.toList());
+        return StreamSupport.stream(userSearchRepository.search(query).spliterator(), false).map(UserDTO::new).toList();
     }
 }

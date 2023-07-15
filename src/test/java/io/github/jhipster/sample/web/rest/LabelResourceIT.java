@@ -11,13 +11,13 @@ import io.github.jhipster.sample.IntegrationTest;
 import io.github.jhipster.sample.domain.Label;
 import io.github.jhipster.sample.repository.LabelRepository;
 import io.github.jhipster.sample.repository.search.LabelSearchRepository;
+import jakarta.persistence.EntityManager;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
-import javax.persistence.EntityManager;
 import org.apache.commons.collections4.IterableUtils;
 import org.assertj.core.util.IterableUtil;
 import org.junit.jupiter.api.AfterEach;
@@ -313,6 +313,8 @@ class LabelResourceIT {
         Label partialUpdatedLabel = new Label();
         partialUpdatedLabel.setId(label.getId());
 
+        partialUpdatedLabel.label(UPDATED_LABEL);
+
         restLabelMockMvc
             .perform(
                 patch(ENTITY_API_URL_ID, partialUpdatedLabel.getId())
@@ -325,7 +327,7 @@ class LabelResourceIT {
         List<Label> labelList = labelRepository.findAll();
         assertThat(labelList).hasSize(databaseSizeBeforeUpdate);
         Label testLabel = labelList.get(labelList.size() - 1);
-        assertThat(testLabel.getLabel()).isEqualTo(DEFAULT_LABEL);
+        assertThat(testLabel.getLabel()).isEqualTo(UPDATED_LABEL);
     }
 
     @Test

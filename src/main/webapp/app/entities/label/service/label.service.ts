@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, asapScheduler, scheduled } from 'rxjs';
+
+import { catchError } from 'rxjs/operators';
 
 import { isPresent } from 'app/core/util/operators';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
@@ -47,7 +49,9 @@ export class LabelService {
 
   search(req: Search): Observable<EntityArrayResponseType> {
     const options = createRequestOption(req);
-    return this.http.get<ILabel[]>(this.resourceSearchUrl, { params: options, observe: 'response' });
+    return this.http
+      .get<ILabel[]>(this.resourceSearchUrl, { params: options, observe: 'response' })
+      .pipe(catchError(() => scheduled([new HttpResponse<ILabel[]>()], asapScheduler)));
   }
 
   getLabelIdentifier(label: Pick<ILabel, 'id'>): number {

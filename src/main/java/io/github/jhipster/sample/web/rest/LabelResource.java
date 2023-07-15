@@ -1,11 +1,14 @@
 package io.github.jhipster.sample.web.rest;
 
-import static org.elasticsearch.index.query.QueryBuilders.*;
+import static org.springframework.data.elasticsearch.client.elc.QueryBuilders.*;
 
 import io.github.jhipster.sample.domain.Label;
 import io.github.jhipster.sample.repository.LabelRepository;
 import io.github.jhipster.sample.repository.search.LabelSearchRepository;
 import io.github.jhipster.sample.web.rest.errors.BadRequestAlertException;
+import io.github.jhipster.sample.web.rest.errors.ElasticsearchExceptionMapper;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -13,8 +16,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -141,8 +142,7 @@ public class LabelResource {
             })
             .map(labelRepository::save)
             .map(savedLabel -> {
-                labelSearchRepository.save(savedLabel);
-
+                labelSearchRepository.index(savedLabel);
                 return savedLabel;
             });
 
@@ -186,7 +186,7 @@ public class LabelResource {
     public ResponseEntity<Void> deleteLabel(@PathVariable Long id) {
         log.debug("REST request to delete Label : {}", id);
         labelRepository.deleteById(id);
-        labelSearchRepository.deleteById(id);
+        labelSearchRepository.deleteFromIndexById(id);
         return ResponseEntity
             .noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
@@ -203,6 +203,10 @@ public class LabelResource {
     @GetMapping("/_search/labels")
     public List<Label> searchLabels(@RequestParam String query) {
         log.debug("REST request to search Labels for query {}", query);
-        return StreamSupport.stream(labelSearchRepository.search(query).spliterator(), false).collect(Collectors.toList());
+        try {
+            return StreamSupport.stream(labelSearchRepository.search(query).spliterator(), false).toList();
+        } catch (RuntimeException e) {
+            throw ElasticsearchExceptionMapper.mapException(e);
+        }
     }
 }

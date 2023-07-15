@@ -96,6 +96,20 @@ describe('Label Service', () => {
       expect(expectedResult).toBe(expected);
     });
 
+    it('should handle exceptions for searching a Label', () => {
+      const queryObject: any = {
+        page: 0,
+        size: 20,
+        query: '',
+        sort: [],
+      };
+      service.search(queryObject).subscribe(() => expectedResult);
+
+      const req = httpMock.expectOne({ method: 'GET' });
+      req.flush(null, { status: 500, statusText: 'Internal Server Error' });
+      expect(expectedResult).toBe(null);
+    });
+
     describe('addLabelToCollectionIfMissing', () => {
       it('should add a Label to an empty array', () => {
         const label: ILabel = sampleWithRequiredData;

@@ -1,11 +1,14 @@
 package io.github.jhipster.sample.web.rest;
 
-import static org.elasticsearch.index.query.QueryBuilders.*;
+import static org.springframework.data.elasticsearch.client.elc.QueryBuilders.*;
 
 import io.github.jhipster.sample.domain.Operation;
 import io.github.jhipster.sample.repository.OperationRepository;
 import io.github.jhipster.sample.repository.search.OperationSearchRepository;
 import io.github.jhipster.sample.web.rest.errors.BadRequestAlertException;
+import io.github.jhipster.sample.web.rest.errors.ElasticsearchExceptionMapper;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -13,8 +16,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -155,8 +156,7 @@ public class OperationResource {
             })
             .map(operationRepository::save)
             .map(savedOperation -> {
-                operationSearchRepository.save(savedOperation);
-
+                operationSearchRepository.index(savedOperation);
                 return savedOperation;
             });
 
@@ -175,7 +175,7 @@ public class OperationResource {
      */
     @GetMapping("/operations")
     public ResponseEntity<List<Operation>> getAllOperations(
-        @org.springdoc.api.annotations.ParameterObject Pageable pageable,
+        @org.springdoc.core.annotations.ParameterObject Pageable pageable,
         @RequestParam(required = false, defaultValue = "false") boolean eagerload
     ) {
         log.debug("REST request to get a page of Operations");
@@ -212,7 +212,7 @@ public class OperationResource {
     public ResponseEntity<Void> deleteOperation(@PathVariable Long id) {
         log.debug("REST request to delete Operation : {}", id);
         operationRepository.deleteById(id);
-        operationSearchRepository.deleteById(id);
+        operationSearchRepository.deleteFromIndexById(id);
         return ResponseEntity
             .noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
@@ -230,11 +230,15 @@ public class OperationResource {
     @GetMapping("/_search/operations")
     public ResponseEntity<List<Operation>> searchOperations(
         @RequestParam String query,
-        @org.springdoc.api.annotations.ParameterObject Pageable pageable
+        @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
         log.debug("REST request to search for a page of Operations for query {}", query);
-        Page<Operation> page = operationSearchRepository.search(query, pageable);
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
-        return ResponseEntity.ok().headers(headers).body(page.getContent());
+        try {
+            Page<Operation> page = operationSearchRepository.search(query, pageable);
+            HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+            return ResponseEntity.ok().headers(headers).body(page.getContent());
+        } catch (RuntimeException e) {
+            throw ElasticsearchExceptionMapper.mapException(e);
+        }
     }
 }

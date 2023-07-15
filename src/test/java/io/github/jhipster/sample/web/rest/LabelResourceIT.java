@@ -207,7 +207,7 @@ class LabelResourceIT {
         int searchDatabaseSizeBefore = IterableUtil.sizeOf(labelSearchRepository.findAll());
 
         // Update the label
-        Label updatedLabel = labelRepository.findById(label.getId()).get();
+        Label updatedLabel = labelRepository.findById(label.getId()).orElseThrow();
         // Disconnect from session so that the updates on updatedLabel are not directly saved in db
         em.detach(updatedLabel);
         updatedLabel.label(UPDATED_LABEL);
@@ -313,8 +313,6 @@ class LabelResourceIT {
         Label partialUpdatedLabel = new Label();
         partialUpdatedLabel.setId(label.getId());
 
-        partialUpdatedLabel.label(UPDATED_LABEL);
-
         restLabelMockMvc
             .perform(
                 patch(ENTITY_API_URL_ID, partialUpdatedLabel.getId())
@@ -327,7 +325,7 @@ class LabelResourceIT {
         List<Label> labelList = labelRepository.findAll();
         assertThat(labelList).hasSize(databaseSizeBeforeUpdate);
         Label testLabel = labelList.get(labelList.size() - 1);
-        assertThat(testLabel.getLabel()).isEqualTo(UPDATED_LABEL);
+        assertThat(testLabel.getLabel()).isEqualTo(DEFAULT_LABEL);
     }
 
     @Test

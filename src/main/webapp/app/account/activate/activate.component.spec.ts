@@ -37,7 +37,7 @@ describe('ActivateComponent', () => {
       tick();
 
       expect(service.get).toHaveBeenCalledWith('ABC123');
-    })
+    }),
   ));
 
   it('should set set success to true upon successful activation', inject(
@@ -50,7 +50,7 @@ describe('ActivateComponent', () => {
 
       expect(comp.error).toBe(false);
       expect(comp.success).toBe(true);
-    })
+    }),
   ));
 
   it('should set set error to true upon activation failure', inject(
@@ -63,6 +63,6 @@ describe('ActivateComponent', () => {
 
       expect(comp.error).toBe(true);
       expect(comp.success).toBe(false);
-    })
+    }),
   ));
 });

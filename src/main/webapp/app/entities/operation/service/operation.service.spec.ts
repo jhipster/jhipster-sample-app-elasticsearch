@@ -38,7 +38,6 @@ describe('Operation Service', () => {
     });
 
     it('should create a Operation', () => {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const operation = { ...sampleWithNewData };
       const returnedFromService = { ...requireRestSample };
       const expected = { ...sampleWithRequiredData };

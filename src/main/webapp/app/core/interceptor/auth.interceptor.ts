@@ -7,7 +7,10 @@ import { ApplicationConfigService } from '../config/application-config.service';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-  constructor(private stateStorageService: StateStorageService, private applicationConfigService: ApplicationConfigService) {}
+  constructor(
+    private stateStorageService: StateStorageService,
+    private applicationConfigService: ApplicationConfigService,
+  ) {}
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const serverApiUrl = this.applicationConfigService.getEndpointFor('');

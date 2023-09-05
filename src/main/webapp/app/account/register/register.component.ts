@@ -5,9 +5,9 @@ import { FormGroup, FormControl, Validators, FormsModule, ReactiveFormsModule } 
 import { TranslateService } from '@ngx-translate/core';
 
 import { EMAIL_ALREADY_USED_TYPE, LOGIN_ALREADY_USED_TYPE } from 'app/config/error.constants';
-import { RegisterService } from './register.service';
 import SharedModule from 'app/shared/shared.module';
 import PasswordStrengthBarComponent from '../password/password-strength-bar/password-strength-bar.component';
+import { RegisterService } from './register.service';
 
 @Component({
   selector: 'jhi-register',
@@ -49,7 +49,10 @@ export default class RegisterComponent implements AfterViewInit {
     }),
   });
 
-  constructor(private translateService: TranslateService, private registerService: RegisterService) {}
+  constructor(
+    private translateService: TranslateService,
+    private registerService: RegisterService,
+  ) {}
 
   ngAfterViewInit(): void {
     if (this.login) {

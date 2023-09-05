@@ -23,7 +23,7 @@ describe('BankAccount Form Service', () => {
             name: expect.any(Object),
             balance: expect.any(Object),
             user: expect.any(Object),
-          })
+          }),
         );
       });
 
@@ -36,14 +36,13 @@ describe('BankAccount Form Service', () => {
             name: expect.any(Object),
             balance: expect.any(Object),
             user: expect.any(Object),
-          })
+          }),
         );
       });
     });
 
     describe('getBankAccount', () => {
       it('should return NewBankAccount for default BankAccount initial value', () => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const formGroup = service.createBankAccountFormGroup(sampleWithNewData);
 
         const bankAccount = service.getBankAccount(formGroup) as any;

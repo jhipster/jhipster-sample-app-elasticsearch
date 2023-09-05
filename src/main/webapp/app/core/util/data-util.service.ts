@@ -1,7 +1,7 @@
+import { Buffer } from 'buffer';
 import { Injectable } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { Observable, Observer } from 'rxjs';
-import { Buffer } from 'buffer';
 
 export type FileLoadErrorType = 'not.image' | 'could.not.extract';
 

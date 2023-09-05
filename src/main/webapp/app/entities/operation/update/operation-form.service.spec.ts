@@ -25,7 +25,7 @@ describe('Operation Form Service', () => {
             amount: expect.any(Object),
             bankAccount: expect.any(Object),
             labels: expect.any(Object),
-          })
+          }),
         );
       });
 
@@ -40,14 +40,13 @@ describe('Operation Form Service', () => {
             amount: expect.any(Object),
             bankAccount: expect.any(Object),
             labels: expect.any(Object),
-          })
+          }),
         );
       });
     });
 
     describe('getOperation', () => {
       it('should return NewOperation for default Operation initial value', () => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const formGroup = service.createOperationFormGroup(sampleWithNewData);
 
         const operation = service.getOperation(formGroup) as any;

@@ -32,7 +32,10 @@ export class OperationService {
   protected resourceUrl = this.applicationConfigService.getEndpointFor('api/operations');
   protected resourceSearchUrl = this.applicationConfigService.getEndpointFor('api/_search/operations');
 
-  constructor(protected http: HttpClient, protected applicationConfigService: ApplicationConfigService) {}
+  constructor(
+    protected http: HttpClient,
+    protected applicationConfigService: ApplicationConfigService,
+  ) {}
 
   create(operation: NewOperation): Observable<EntityResponseType> {
     const copy = this.convertDateFromClient(operation);
@@ -76,7 +79,7 @@ export class OperationService {
     const options = createRequestOption(req);
     return this.http.get<RestOperation[]>(this.resourceSearchUrl, { params: options, observe: 'response' }).pipe(
       map(res => this.convertResponseArrayFromServer(res)),
-      catchError(() => scheduled([new HttpResponse<IOperation[]>()], asapScheduler))
+      catchError(() => scheduled([new HttpResponse<IOperation[]>()], asapScheduler)),
     );
   }
 

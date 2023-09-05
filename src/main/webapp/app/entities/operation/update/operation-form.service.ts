@@ -53,7 +53,7 @@ export class OperationFormService {
         {
           nonNullable: true,
           validators: [Validators.required],
-        }
+        },
       ),
       date: new FormControl(operationRawValue.date, {
         validators: [Validators.required],
@@ -77,7 +77,7 @@ export class OperationFormService {
       {
         ...operationRawValue,
         id: { value: operationRawValue.id, disabled: true },
-      } as any /* cast to workaround https://github.com/angular/angular/issues/46458 */
+      } as any /* cast to workaround https://github.com/angular/angular/issues/46458 */,
     );
   }
 
@@ -99,7 +99,7 @@ export class OperationFormService {
   }
 
   private convertOperationToOperationRawValue(
-    operation: IOperation | (Partial<NewOperation> & OperationFormDefaults)
+    operation: IOperation | (Partial<NewOperation> & OperationFormDefaults),
   ): OperationFormRawValue | PartialWithRequiredKeyOf<NewOperationFormRawValue> {
     return {
       ...operation,

@@ -20,7 +20,7 @@ class TechnicalStructureTest {
         .layer("Web").definedBy("..web..")
         .optionalLayer("Service").definedBy("..service..")
         .layer("Security").definedBy("..security..")
-        .layer("Persistence").definedBy("..repository..")
+        .optionalLayer("Persistence").definedBy("..repository..")
         .layer("Domain").definedBy("..domain..")
 
         .whereLayer("Config").mayNotBeAccessedByAnyLayer()

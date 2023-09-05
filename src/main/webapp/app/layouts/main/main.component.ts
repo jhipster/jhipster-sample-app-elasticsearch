@@ -19,7 +19,7 @@ export default class MainComponent implements OnInit {
     private appPageTitleStrategy: AppPageTitleStrategy,
     private accountService: AccountService,
     private translateService: TranslateService,
-    rootRenderer: RendererFactory2
+    rootRenderer: RendererFactory2,
   ) {
     this.renderer = rootRenderer.createRenderer(document.querySelector('html'), null);
   }

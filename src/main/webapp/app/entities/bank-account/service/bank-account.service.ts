@@ -20,7 +20,10 @@ export class BankAccountService {
   protected resourceUrl = this.applicationConfigService.getEndpointFor('api/bank-accounts');
   protected resourceSearchUrl = this.applicationConfigService.getEndpointFor('api/_search/bank-accounts');
 
-  constructor(protected http: HttpClient, protected applicationConfigService: ApplicationConfigService) {}
+  constructor(
+    protected http: HttpClient,
+    protected applicationConfigService: ApplicationConfigService,
+  ) {}
 
   create(bankAccount: NewBankAccount): Observable<EntityResponseType> {
     return this.http.post<IBankAccount>(this.resourceUrl, bankAccount, { observe: 'response' });
@@ -73,7 +76,7 @@ export class BankAccountService {
     const bankAccounts: Type[] = bankAccountsToCheck.filter(isPresent);
     if (bankAccounts.length > 0) {
       const bankAccountCollectionIdentifiers = bankAccountCollection.map(
-        bankAccountItem => this.getBankAccountIdentifier(bankAccountItem)!
+        bankAccountItem => this.getBankAccountIdentifier(bankAccountItem)!,
       );
       const bankAccountsToAdd = bankAccounts.filter(bankAccountItem => {
         const bankAccountIdentifier = this.getBankAccountIdentifier(bankAccountItem);

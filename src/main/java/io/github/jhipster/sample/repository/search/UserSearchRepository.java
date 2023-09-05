@@ -1,7 +1,5 @@
 package io.github.jhipster.sample.repository.search;
 
-import static org.springframework.data.elasticsearch.client.elc.QueryBuilders.queryStringQuery;
-
 import co.elastic.clients.elasticsearch._types.query_dsl.QueryStringQuery;
 import io.github.jhipster.sample.domain.User;
 import io.github.jhipster.sample.repository.UserRepository;

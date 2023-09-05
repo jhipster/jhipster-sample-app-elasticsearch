@@ -20,7 +20,7 @@ export const bankAccountResolve = (route: ActivatedRouteSnapshot): Observable<nu
             inject(Router).navigate(['404']);
             return EMPTY;
           }
-        })
+        }),
       );
   }
   return of(null);

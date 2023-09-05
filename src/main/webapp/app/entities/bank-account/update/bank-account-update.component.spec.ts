@@ -6,12 +6,12 @@ import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of, Subject, from } from 'rxjs';
 
-import { BankAccountFormService } from './bank-account-form.service';
+import { IUser } from 'app/entities/user/user.model';
+import { UserService } from 'app/entities/user/user.service';
 import { BankAccountService } from '../service/bank-account.service';
 import { IBankAccount } from '../bank-account.model';
 
-import { IUser } from 'app/entities/user/user.model';
-import { UserService } from 'app/entities/user/user.service';
+import { BankAccountFormService } from './bank-account-form.service';
 
 import { BankAccountUpdateComponent } from './bank-account-update.component';
 
@@ -66,7 +66,7 @@ describe('BankAccount Management Update Component', () => {
       expect(userService.query).toHaveBeenCalled();
       expect(userService.addUserToCollectionIfMissing).toHaveBeenCalledWith(
         userCollection,
-        ...additionalUsers.map(expect.objectContaining)
+        ...additionalUsers.map(expect.objectContaining),
       );
       expect(comp.usersSharedCollection).toEqual(expectedCollection);
     });

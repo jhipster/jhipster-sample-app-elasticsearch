@@ -37,7 +37,6 @@ describe('Label Service', () => {
     });
 
     it('should create a Label', () => {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const label = { ...sampleWithNewData };
       const returnedFromService = { ...requireRestSample };
       const expected = { ...sampleWithRequiredData };

@@ -7,11 +7,11 @@ import SharedModule from 'app/shared/shared.module';
 import { SortDirective, SortByDirective } from 'app/shared/sort';
 import { DurationPipe, FormatMediumDatetimePipe, FormatMediumDatePipe } from 'app/shared/date';
 import { FormsModule } from '@angular/forms';
-import { ILabel } from '../label.model';
 import { ASC, DESC, SORT, ITEM_DELETED_EVENT, DEFAULT_SORT_DATA } from 'app/config/navigation.constants';
+import { SortService } from 'app/shared/sort/sort.service';
+import { ILabel } from '../label.model';
 import { EntityArrayResponseType, LabelService } from '../service/label.service';
 import { LabelDeleteDialogComponent } from '../delete/label-delete-dialog.component';
-import { SortService } from 'app/shared/sort/sort.service';
 
 @Component({
   standalone: true,
@@ -43,7 +43,7 @@ export class LabelComponent implements OnInit {
     protected activatedRoute: ActivatedRoute,
     public router: Router,
     protected sortService: SortService,
-    protected modalService: NgbModal
+    protected modalService: NgbModal,
   ) {}
 
   trackId = (_index: number, item: ILabel): number => this.labelService.getLabelIdentifier(item);
@@ -68,7 +68,7 @@ export class LabelComponent implements OnInit {
     modalRef.closed
       .pipe(
         filter(reason => reason === ITEM_DELETED_EVENT),
-        switchMap(() => this.loadFromBackendWithRouteInformations())
+        switchMap(() => this.loadFromBackendWithRouteInformations()),
       )
       .subscribe({
         next: (res: EntityArrayResponseType) => {
@@ -92,7 +92,7 @@ export class LabelComponent implements OnInit {
   protected loadFromBackendWithRouteInformations(): Observable<EntityArrayResponseType> {
     return combineLatest([this.activatedRoute.queryParamMap, this.activatedRoute.data]).pipe(
       tap(([params, data]) => this.fillComponentAttributeFromRoute(params, data)),
-      switchMap(() => this.queryBackend(this.predicate, this.ascending, this.currentSearch))
+      switchMap(() => this.queryBackend(this.predicate, this.ascending, this.currentSearch)),
     );
   }
 

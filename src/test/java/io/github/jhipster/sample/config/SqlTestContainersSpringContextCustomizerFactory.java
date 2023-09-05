@@ -5,8 +5,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
-import org.springframework.beans.factory.support.DefaultSingletonBeanRegistry;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.test.context.ContextConfigurationAttributes;
@@ -48,7 +46,7 @@ public class SqlTestContainersSpringContextCustomizerFactory implements ContextC
                     testValues.and(
                         "spring.datasource.url=" +
                         prodTestContainer.getTestContainer().getJdbcUrl() +
-                        "?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true"
+                        "?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&createDatabaseIfNotExist=true"
                     );
                 testValues = testValues.and("spring.datasource.username=" + prodTestContainer.getTestContainer().getUsername());
                 testValues = testValues.and("spring.datasource.password=" + prodTestContainer.getTestContainer().getPassword());

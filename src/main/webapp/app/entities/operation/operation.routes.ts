@@ -1,11 +1,11 @@
 import { Routes } from '@angular/router';
 
 import { UserRouteAccessService } from 'app/core/auth/user-route-access.service';
+import { ASC } from 'app/config/navigation.constants';
 import { OperationComponent } from './list/operation.component';
 import { OperationDetailComponent } from './detail/operation-detail.component';
 import { OperationUpdateComponent } from './update/operation-update.component';
 import OperationResolve from './route/operation-routing-resolve.service';
-import { ASC } from 'app/config/navigation.constants';
 
 const operationRoute: Routes = [
   {

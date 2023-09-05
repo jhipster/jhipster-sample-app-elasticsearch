@@ -12,11 +12,11 @@ import { NgbDateAdapter, NgbDatepickerConfig } from '@ng-bootstrap/ng-bootstrap'
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import './config/dayjs';
 import { TranslationModule } from 'app/shared/language/translation.module';
+import { httpInterceptorProviders } from 'app/core/interceptor/index';
 import { AppRoutingModule } from './app-routing.module';
 // jhipster-needle-angular-add-module-import JHipster will add new module here
 import { NgbDateDayjsAdapter } from './config/datepicker-adapter';
 import { fontAwesomeIcons } from './config/font-awesome-icons';
-import { httpInterceptorProviders } from 'app/core/interceptor/index';
 import MainComponent from './layouts/main/main.component';
 import MainModule from './layouts/main/main.module';
 import { AppPageTitleStrategy } from './app-page-title-strategy';

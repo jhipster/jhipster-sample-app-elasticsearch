@@ -111,6 +111,7 @@ spring:
     open-in-view: false
     properties:
       hibernate.jdbc.time_zone: UTC
+      hibernate.timezone.default_storage: NORMALIZE
       hibernate.type.preferred_instant_jdbc_type: TIMESTAMP
       hibernate.id.new_generator_mappings: true
       hibernate.connection.provider_disables_autocommit: true
@@ -186,8 +187,8 @@ jhipster:
   mail:
     from: jhipsterElasticsearchSampleApplication@localhost
   api-docs:
-    default-include-pattern: ${server.servlet.context-path:}/api/**
-    management-include-pattern: ${server.servlet.context-path:}/management/**
+    default-include-pattern: /api/**
+    management-include-pattern: /management/**
     title: Jhipster Elasticsearch Sample Application API
     description: Jhipster Elasticsearch Sample Application API documentation
     version: 0.0.1

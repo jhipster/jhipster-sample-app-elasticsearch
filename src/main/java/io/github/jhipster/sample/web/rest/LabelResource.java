@@ -1,7 +1,5 @@
 package io.github.jhipster.sample.web.rest;
 
-import static org.springframework.data.elasticsearch.client.elc.QueryBuilders.*;
-
 import io.github.jhipster.sample.domain.Label;
 import io.github.jhipster.sample.repository.LabelRepository;
 import io.github.jhipster.sample.repository.search.LabelSearchRepository;
@@ -14,7 +12,6 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

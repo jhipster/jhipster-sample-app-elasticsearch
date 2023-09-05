@@ -20,7 +20,7 @@ export const labelResolve = (route: ActivatedRouteSnapshot): Observable<null | I
             inject(Router).navigate(['404']);
             return EMPTY;
           }
-        })
+        }),
       );
   }
   return of(null);

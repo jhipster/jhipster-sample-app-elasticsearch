@@ -7,9 +7,9 @@ import { finalize } from 'rxjs/operators';
 import SharedModule from 'app/shared/shared.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
-import { LabelFormService, LabelFormGroup } from './label-form.service';
 import { ILabel } from '../label.model';
 import { LabelService } from '../service/label.service';
+import { LabelFormService, LabelFormGroup } from './label-form.service';
 
 @Component({
   standalone: true,
@@ -26,7 +26,7 @@ export class LabelUpdateComponent implements OnInit {
   constructor(
     protected labelService: LabelService,
     protected labelFormService: LabelFormService,
-    protected activatedRoute: ActivatedRoute
+    protected activatedRoute: ActivatedRoute,
   ) {}
 
   ngOnInit(): void {

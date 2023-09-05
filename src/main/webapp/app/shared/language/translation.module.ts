@@ -20,7 +20,10 @@ import { StateStorageService } from 'app/core/auth/state-storage.service';
   ],
 })
 export class TranslationModule {
-  constructor(private translateService: TranslateService, private stateStorageService: StateStorageService) {
+  constructor(
+    private translateService: TranslateService,
+    private stateStorageService: StateStorageService,
+  ) {
     this.translateService.setDefaultLang('en');
     // if user have changed language and navigates away from the application and back to the application then use previously choosed language
     const langKey = this.stateStorageService.getLocale() ?? 'en';

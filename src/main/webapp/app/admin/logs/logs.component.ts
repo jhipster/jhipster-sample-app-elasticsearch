@@ -33,7 +33,7 @@ export default class LogsComponent implements OnInit {
 
   filterAndSort(): void {
     this.filteredAndOrderedLoggers = this.loggers!.filter(
-      logger => !this.filter || logger.name.toLowerCase().includes(this.filter.toLowerCase())
+      logger => !this.filter || logger.name.toLowerCase().includes(this.filter.toLowerCase()),
     ).sort((a, b) => {
       if (a[this.orderProp] < b[this.orderProp]) {
         return this.ascending ? -1 : 1;
@@ -54,7 +54,7 @@ export default class LogsComponent implements OnInit {
         finalize(() => {
           this.filterAndSort();
           this.isLoading = false;
-        })
+        }),
       )
       .subscribe({
         next: (response: LoggersResponse) =>

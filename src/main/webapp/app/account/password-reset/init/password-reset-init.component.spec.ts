@@ -49,7 +49,7 @@ describe('PasswordResetInitComponent', () => {
       throwError({
         status: 503,
         data: 'something else',
-      })
+      }),
     );
     comp.resetRequestForm.patchValue({
       email: 'user@domain.com',

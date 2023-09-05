@@ -1,15 +1,14 @@
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
-import { errorRoute } from './layouts/error/error.route';
 import { DEBUG_INFO_ENABLED } from 'app/app.constants';
 import { Authority } from 'app/config/authority.constants';
+import { UserRouteAccessService } from 'app/core/auth/user-route-access.service';
+import { errorRoute } from './layouts/error/error.route';
 
 import HomeComponent from './home/home.component';
 import NavbarComponent from './layouts/navbar/navbar.component';
 import LoginComponent from './login/login.component';
-
-import { UserRouteAccessService } from 'app/core/auth/user-route-access.service';
 
 @NgModule({
   imports: [
@@ -48,7 +47,7 @@ import { UserRouteAccessService } from 'app/core/auth/user-route-access.service'
         },
         ...errorRoute,
       ],
-      { enableTracing: DEBUG_INFO_ENABLED, bindToComponentInputs: true }
+      { enableTracing: DEBUG_INFO_ENABLED, bindToComponentInputs: true },
     ),
   ],
   exports: [RouterModule],

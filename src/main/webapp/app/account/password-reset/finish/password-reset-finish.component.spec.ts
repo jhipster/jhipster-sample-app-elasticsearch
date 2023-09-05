@@ -74,7 +74,7 @@ describe('PasswordResetFinishComponent', () => {
 
       expect(service.save).toHaveBeenCalledWith('XYZPDQ', 'password');
       expect(comp.success).toBe(true);
-    })
+    }),
   ));
 
   it('should notify of generic error', inject(
@@ -92,6 +92,6 @@ describe('PasswordResetFinishComponent', () => {
       expect(service.save).toHaveBeenCalledWith('XYZPDQ', 'password');
       expect(comp.success).toBe(false);
       expect(comp.error).toBe(true);
-    })
+    }),
   ));
 });

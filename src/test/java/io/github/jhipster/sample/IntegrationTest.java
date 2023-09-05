@@ -1,6 +1,5 @@
 package io.github.jhipster.sample;
 
-import io.github.jhipster.sample.JhipsterElasticsearchSampleApplicationApp;
 import io.github.jhipster.sample.config.AsyncSyncConfiguration;
 import io.github.jhipster.sample.config.EmbeddedElasticsearch;
 import io.github.jhipster.sample.config.EmbeddedSQL;

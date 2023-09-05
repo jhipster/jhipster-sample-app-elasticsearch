@@ -15,7 +15,10 @@ import { UserManagementService } from '../service/user-management.service';
 export default class UserManagementDeleteDialogComponent {
   user?: User;
 
-  constructor(private userService: UserManagementService, private activeModal: NgbActiveModal) {}
+  constructor(
+    private userService: UserManagementService,
+    private activeModal: NgbActiveModal,
+  ) {}
 
   cancel(): void {
     this.activeModal.dismiss();

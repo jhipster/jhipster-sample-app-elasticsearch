@@ -4,8 +4,8 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { Login } from 'app/login/login.model';
-import { StateStorageService } from './state-storage.service';
 import { ApplicationConfigService } from '../config/application-config.service';
+import { StateStorageService } from './state-storage.service';
 
 type JwtToken = {
   id_token: string;
@@ -16,7 +16,7 @@ export class AuthServerProvider {
   constructor(
     private http: HttpClient,
     private stateStorageService: StateStorageService,
-    private applicationConfigService: ApplicationConfigService
+    private applicationConfigService: ApplicationConfigService,
   ) {}
 
   getToken(): string {

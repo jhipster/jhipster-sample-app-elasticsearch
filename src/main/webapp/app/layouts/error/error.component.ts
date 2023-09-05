@@ -15,7 +15,10 @@ export default class ErrorComponent implements OnInit, OnDestroy {
   errorKey?: string;
   langChangeSubscription?: Subscription;
 
-  constructor(private translateService: TranslateService, private route: ActivatedRoute) {}
+  constructor(
+    private translateService: TranslateService,
+    private route: ActivatedRoute,
+  ) {}
 
   ngOnInit(): void {
     this.route.data.subscribe(routeData => {

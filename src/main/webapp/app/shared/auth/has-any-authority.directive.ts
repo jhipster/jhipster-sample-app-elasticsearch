@@ -24,7 +24,11 @@ export default class HasAnyAuthorityDirective implements OnDestroy {
 
   private readonly destroy$ = new Subject<void>();
 
-  constructor(private accountService: AccountService, private templateRef: TemplateRef<any>, private viewContainerRef: ViewContainerRef) {}
+  constructor(
+    private accountService: AccountService,
+    private templateRef: TemplateRef<any>,
+    private viewContainerRef: ViewContainerRef,
+  ) {}
 
   @Input()
   set jhiHasAnyAuthority(value: string | string[]) {

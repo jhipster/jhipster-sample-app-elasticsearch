@@ -18,7 +18,7 @@ describe('Operation Management Detail Component', () => {
               resolve: { operation: () => of({ id: 123 }) },
             },
           ],
-          withComponentInputBinding()
+          withComponentInputBinding(),
         ),
       ],
     })

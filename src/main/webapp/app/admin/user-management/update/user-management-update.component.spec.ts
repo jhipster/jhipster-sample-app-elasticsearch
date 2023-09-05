@@ -51,7 +51,7 @@ describe('User Management Update Component', () => {
         // THEN
         expect(service.authorities).toHaveBeenCalled();
         expect(comp.authorities).toEqual(['USER']);
-      })
+      }),
     ));
   });
 
@@ -70,7 +70,7 @@ describe('User Management Update Component', () => {
         // THEN
         expect(service.update).toHaveBeenCalledWith(expect.objectContaining(entity));
         expect(comp.isSaving).toEqual(false);
-      })
+      }),
     ));
 
     it('Should call create service on save for new user', inject(
@@ -88,7 +88,7 @@ describe('User Management Update Component', () => {
         expect(comp.editForm.getRawValue().id).toBeNull();
         expect(service.create).toHaveBeenCalledWith(expect.objectContaining(entity));
         expect(comp.isSaving).toEqual(false);
-      })
+      }),
     ));
   });
 });

@@ -37,7 +37,6 @@ describe('BankAccount Service', () => {
     });
 
     it('should create a BankAccount', () => {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const bankAccount = { ...sampleWithNewData };
       const returnedFromService = { ...requireRestSample };
       const expected = { ...sampleWithRequiredData };

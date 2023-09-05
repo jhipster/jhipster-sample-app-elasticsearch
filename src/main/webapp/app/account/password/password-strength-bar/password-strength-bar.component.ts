@@ -12,7 +12,10 @@ import SharedModule from 'app/shared/shared.module';
 export default class PasswordStrengthBarComponent {
   colors = ['#F00', '#F90', '#FF0', '#9F0', '#0F0'];
 
-  constructor(private renderer: Renderer2, private elementRef: ElementRef) {}
+  constructor(
+    private renderer: Renderer2,
+    private elementRef: ElementRef,
+  ) {}
 
   measureStrength(p: string): number {
     let force = 0;

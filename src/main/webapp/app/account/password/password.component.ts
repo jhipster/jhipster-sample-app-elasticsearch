@@ -31,7 +31,10 @@ export default class PasswordComponent implements OnInit {
     }),
   });
 
-  constructor(private passwordService: PasswordService, private accountService: AccountService) {}
+  constructor(
+    private passwordService: PasswordService,
+    private accountService: AccountService,
+  ) {}
 
   ngOnInit(): void {
     this.account$ = this.accountService.identity();

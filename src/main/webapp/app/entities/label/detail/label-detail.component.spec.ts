@@ -18,7 +18,7 @@ describe('Label Management Detail Component', () => {
               resolve: { label: () => of({ id: 123 }) },
             },
           ],
-          withComponentInputBinding()
+          withComponentInputBinding(),
         ),
       ],
     })

@@ -20,7 +20,10 @@ export class LabelService {
   protected resourceUrl = this.applicationConfigService.getEndpointFor('api/labels');
   protected resourceSearchUrl = this.applicationConfigService.getEndpointFor('api/_search/labels');
 
-  constructor(protected http: HttpClient, protected applicationConfigService: ApplicationConfigService) {}
+  constructor(
+    protected http: HttpClient,
+    protected applicationConfigService: ApplicationConfigService,
+  ) {}
 
   create(label: NewLabel): Observable<EntityResponseType> {
     return this.http.post<ILabel>(this.resourceUrl, label, { observe: 'response' });

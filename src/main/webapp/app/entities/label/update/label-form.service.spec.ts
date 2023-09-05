@@ -22,7 +22,7 @@ describe('Label Form Service', () => {
             id: expect.any(Object),
             label: expect.any(Object),
             operations: expect.any(Object),
-          })
+          }),
         );
       });
 
@@ -34,14 +34,13 @@ describe('Label Form Service', () => {
             id: expect.any(Object),
             label: expect.any(Object),
             operations: expect.any(Object),
-          })
+          }),
         );
       });
     });
 
     describe('getLabel', () => {
       it('should return NewLabel for default Label initial value', () => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const formGroup = service.createLabelFormGroup(sampleWithNewData);
 
         const label = service.getLabel(formGroup) as any;

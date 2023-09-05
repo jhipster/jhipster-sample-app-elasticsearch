@@ -37,7 +37,7 @@ export class LabelFormService {
         {
           nonNullable: true,
           validators: [Validators.required],
-        }
+        },
       ),
       label: new FormControl(labelRawValue.label, {
         validators: [Validators.required, Validators.minLength(3)],
@@ -56,7 +56,7 @@ export class LabelFormService {
       {
         ...labelRawValue,
         id: { value: labelRawValue.id, disabled: true },
-      } as any /* cast to workaround https://github.com/angular/angular/issues/46458 */
+      } as any /* cast to workaround https://github.com/angular/angular/issues/46458 */,
     );
   }
 

@@ -6,9 +6,9 @@ import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of, Subject, from } from 'rxjs';
 
-import { LabelFormService } from './label-form.service';
 import { LabelService } from '../service/label.service';
 import { ILabel } from '../label.model';
+import { LabelFormService } from './label-form.service';
 
 import { LabelUpdateComponent } from './label-update.component';
 

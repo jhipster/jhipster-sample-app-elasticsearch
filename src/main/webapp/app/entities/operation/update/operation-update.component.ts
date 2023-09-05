@@ -7,13 +7,13 @@ import { finalize, map } from 'rxjs/operators';
 import SharedModule from 'app/shared/shared.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
-import { OperationFormService, OperationFormGroup } from './operation-form.service';
-import { IOperation } from '../operation.model';
-import { OperationService } from '../service/operation.service';
 import { IBankAccount } from 'app/entities/bank-account/bank-account.model';
 import { BankAccountService } from 'app/entities/bank-account/service/bank-account.service';
 import { ILabel } from 'app/entities/label/label.model';
 import { LabelService } from 'app/entities/label/service/label.service';
+import { OperationService } from '../service/operation.service';
+import { IOperation } from '../operation.model';
+import { OperationFormService, OperationFormGroup } from './operation-form.service';
 
 @Component({
   standalone: true,
@@ -35,7 +35,7 @@ export class OperationUpdateComponent implements OnInit {
     protected operationFormService: OperationFormService,
     protected bankAccountService: BankAccountService,
     protected labelService: LabelService,
-    protected activatedRoute: ActivatedRoute
+    protected activatedRoute: ActivatedRoute,
   ) {}
 
   compareBankAccount = (o1: IBankAccount | null, o2: IBankAccount | null): boolean => this.bankAccountService.compareBankAccount(o1, o2);
@@ -92,11 +92,11 @@ export class OperationUpdateComponent implements OnInit {
 
     this.bankAccountsSharedCollection = this.bankAccountService.addBankAccountToCollectionIfMissing<IBankAccount>(
       this.bankAccountsSharedCollection,
-      operation.bankAccount
+      operation.bankAccount,
     );
     this.labelsSharedCollection = this.labelService.addLabelToCollectionIfMissing<ILabel>(
       this.labelsSharedCollection,
-      ...(operation.labels ?? [])
+      ...(operation.labels ?? []),
     );
   }
 
@@ -106,8 +106,8 @@ export class OperationUpdateComponent implements OnInit {
       .pipe(map((res: HttpResponse<IBankAccount[]>) => res.body ?? []))
       .pipe(
         map((bankAccounts: IBankAccount[]) =>
-          this.bankAccountService.addBankAccountToCollectionIfMissing<IBankAccount>(bankAccounts, this.operation?.bankAccount)
-        )
+          this.bankAccountService.addBankAccountToCollectionIfMissing<IBankAccount>(bankAccounts, this.operation?.bankAccount),
+        ),
       )
       .subscribe((bankAccounts: IBankAccount[]) => (this.bankAccountsSharedCollection = bankAccounts));
 

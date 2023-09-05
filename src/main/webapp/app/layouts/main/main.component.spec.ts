@@ -11,8 +11,8 @@ import { TranslateModule, TranslateService, LangChangeEvent } from '@ngx-transla
 
 import { AccountService } from 'app/core/auth/account.service';
 
-import MainComponent from './main.component';
 import { AppPageTitleStrategy } from 'app/app-page-title-strategy';
+import MainComponent from './main.component';
 
 describe('MainComponent', () => {
   let comp: MainComponent;

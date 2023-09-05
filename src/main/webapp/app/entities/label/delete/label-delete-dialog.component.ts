@@ -3,9 +3,9 @@ import { FormsModule } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 import SharedModule from 'app/shared/shared.module';
+import { ITEM_DELETED_EVENT } from 'app/config/navigation.constants';
 import { ILabel } from '../label.model';
 import { LabelService } from '../service/label.service';
-import { ITEM_DELETED_EVENT } from 'app/config/navigation.constants';
 
 @Component({
   standalone: true,
@@ -15,7 +15,10 @@ import { ITEM_DELETED_EVENT } from 'app/config/navigation.constants';
 export class LabelDeleteDialogComponent {
   label?: ILabel;
 
-  constructor(protected labelService: LabelService, protected activeModal: NgbActiveModal) {}
+  constructor(
+    protected labelService: LabelService,
+    protected activeModal: NgbActiveModal,
+  ) {}
 
   cancel(): void {
     this.activeModal.dismiss();

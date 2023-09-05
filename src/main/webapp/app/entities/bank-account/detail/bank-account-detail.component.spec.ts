@@ -18,7 +18,7 @@ describe('BankAccount Management Detail Component', () => {
               resolve: { bankAccount: () => of({ id: 123 }) },
             },
           ],
-          withComponentInputBinding()
+          withComponentInputBinding(),
         ),
       ],
     })

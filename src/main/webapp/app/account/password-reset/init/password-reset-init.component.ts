@@ -19,7 +19,10 @@ export default class PasswordResetInitComponent implements AfterViewInit {
     email: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(254), Validators.email]],
   });
 
-  constructor(private passwordResetInitService: PasswordResetInitService, private fb: FormBuilder) {}
+  constructor(
+    private passwordResetInitService: PasswordResetInitService,
+    private fb: FormBuilder,
+  ) {}
 
   ngAfterViewInit(): void {
     if (this.email) {

@@ -45,7 +45,7 @@ describe('User Management Delete Component', () => {
         // THEN
         expect(service.delete).toHaveBeenCalledWith('user');
         expect(mockActiveModal.close).toHaveBeenCalledWith('deleted');
-      })
+      }),
     ));
   });
 });

@@ -1,7 +1,5 @@
 package io.github.jhipster.sample.web.rest;
 
-import static org.springframework.data.elasticsearch.client.elc.QueryBuilders.*;
-
 import io.github.jhipster.sample.repository.search.UserSearchRepository;
 import io.github.jhipster.sample.service.UserService;
 import io.github.jhipster.sample.service.dto.UserDTO;
@@ -39,7 +37,7 @@ public class PublicUserResource {
     }
 
     /**
-     * {@code GET /users} : get all users with only the public informations - calling this are allowed for anyone.
+     * {@code GET /users} : get all users with only public information - calling this method is allowed for anyone.
      *
      * @param pageable the pagination information.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body all users.
@@ -70,12 +68,12 @@ public class PublicUserResource {
     }
 
     /**
-     * {@code SEARCH /_search/users/:query} : search for the User corresponding to the query.
+     * {@code SEARCH /users/_search/:query} : search for the User corresponding to the query.
      *
      * @param query the query to search.
      * @return the result of the search.
      */
-    @GetMapping("/_search/users/{query}")
+    @GetMapping("/users/_search/{query}")
     public List<UserDTO> search(@PathVariable String query) {
         return StreamSupport.stream(userSearchRepository.search(query).spliterator(), false).map(UserDTO::new).toList();
     }

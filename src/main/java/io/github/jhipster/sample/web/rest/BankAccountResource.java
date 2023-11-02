@@ -26,7 +26,7 @@ import tech.jhipster.web.util.ResponseUtil;
  * REST controller for managing {@link io.github.jhipster.sample.domain.BankAccount}.
  */
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/bank-accounts")
 @Transactional
 public class BankAccountResource {
 
@@ -53,7 +53,7 @@ public class BankAccountResource {
      * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new bankAccount, or with status {@code 400 (Bad Request)} if the bankAccount has already an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PostMapping("/bank-accounts")
+    @PostMapping("")
     public ResponseEntity<BankAccount> createBankAccount(@Valid @RequestBody BankAccount bankAccount) throws URISyntaxException {
         log.debug("REST request to save BankAccount : {}", bankAccount);
         if (bankAccount.getId() != null) {
@@ -77,7 +77,7 @@ public class BankAccountResource {
      * or with status {@code 500 (Internal Server Error)} if the bankAccount couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PutMapping("/bank-accounts/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<BankAccount> updateBankAccount(
         @PathVariable(value = "id", required = false) final Long id,
         @Valid @RequestBody BankAccount bankAccount
@@ -113,7 +113,7 @@ public class BankAccountResource {
      * or with status {@code 500 (Internal Server Error)} if the bankAccount couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PatchMapping(value = "/bank-accounts/{id}", consumes = { "application/json", "application/merge-patch+json" })
+    @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
     public ResponseEntity<BankAccount> partialUpdateBankAccount(
         @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody BankAccount bankAccount
@@ -160,8 +160,8 @@ public class BankAccountResource {
      * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of bankAccounts in body.
      */
-    @GetMapping("/bank-accounts")
-    public List<BankAccount> getAllBankAccounts(@RequestParam(required = false, defaultValue = "false") boolean eagerload) {
+    @GetMapping("")
+    public List<BankAccount> getAllBankAccounts(@RequestParam(required = false, defaultValue = "true") boolean eagerload) {
         log.debug("REST request to get all BankAccounts");
         if (eagerload) {
             return bankAccountRepository.findAllWithEagerRelationships();
@@ -176,7 +176,7 @@ public class BankAccountResource {
      * @param id the id of the bankAccount to retrieve.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the bankAccount, or with status {@code 404 (Not Found)}.
      */
-    @GetMapping("/bank-accounts/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<BankAccount> getBankAccount(@PathVariable Long id) {
         log.debug("REST request to get BankAccount : {}", id);
         Optional<BankAccount> bankAccount = bankAccountRepository.findOneWithEagerRelationships(id);
@@ -189,7 +189,7 @@ public class BankAccountResource {
      * @param id the id of the bankAccount to delete.
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
-    @DeleteMapping("/bank-accounts/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteBankAccount(@PathVariable Long id) {
         log.debug("REST request to delete BankAccount : {}", id);
         bankAccountRepository.deleteById(id);
@@ -201,13 +201,13 @@ public class BankAccountResource {
     }
 
     /**
-     * {@code SEARCH  /_search/bank-accounts?query=:query} : search for the bankAccount corresponding
+     * {@code SEARCH  /bank-accounts/_search?query=:query} : search for the bankAccount corresponding
      * to the query.
      *
      * @param query the query of the bankAccount search.
      * @return the result of the search.
      */
-    @GetMapping("/_search/bank-accounts")
+    @GetMapping("/_search")
     public List<BankAccount> searchBankAccounts(@RequestParam String query) {
         log.debug("REST request to search BankAccounts for query {}", query);
         try {

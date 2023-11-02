@@ -4,7 +4,6 @@ import co.elastic.clients.elasticsearch._types.query_dsl.QueryStringQuery;
 import io.github.jhipster.sample.domain.Operation;
 import io.github.jhipster.sample.repository.OperationRepository;
 import java.util.List;
-import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;

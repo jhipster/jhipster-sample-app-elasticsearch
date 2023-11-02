@@ -1,7 +1,5 @@
 package io.github.jhipster.sample.web.rest;
 
-import static org.springframework.data.elasticsearch.client.elc.QueryBuilders.*;
-
 import io.github.jhipster.sample.config.Constants;
 import io.github.jhipster.sample.domain.User;
 import io.github.jhipster.sample.repository.UserRepository;

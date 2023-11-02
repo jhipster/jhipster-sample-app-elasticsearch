@@ -18,7 +18,7 @@ export type EntityArrayResponseType = HttpResponse<IBankAccount[]>;
 @Injectable({ providedIn: 'root' })
 export class BankAccountService {
   protected resourceUrl = this.applicationConfigService.getEndpointFor('api/bank-accounts');
-  protected resourceSearchUrl = this.applicationConfigService.getEndpointFor('api/_search/bank-accounts');
+  protected resourceSearchUrl = this.applicationConfigService.getEndpointFor('api/bank-accounts/_search');
 
   constructor(
     protected http: HttpClient,

@@ -58,10 +58,10 @@ class OperationResourceIT {
 
     private static final String ENTITY_API_URL = "/api/operations";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
-    private static final String ENTITY_SEARCH_API_URL = "/api/_search/operations";
+    private static final String ENTITY_SEARCH_API_URL = "/api/operations/_search";
 
     private static Random random = new Random();
-    private static AtomicLong count = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
+    private static AtomicLong longCount = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
 
     @Autowired
     private OperationRepository operationRepository;
@@ -306,7 +306,7 @@ class OperationResourceIT {
     void putNonExistingOperation() throws Exception {
         int databaseSizeBeforeUpdate = operationRepository.findAll().size();
         int searchDatabaseSizeBefore = IterableUtil.sizeOf(operationSearchRepository.findAll());
-        operation.setId(count.incrementAndGet());
+        operation.setId(longCount.incrementAndGet());
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
         restOperationMockMvc
@@ -329,12 +329,12 @@ class OperationResourceIT {
     void putWithIdMismatchOperation() throws Exception {
         int databaseSizeBeforeUpdate = operationRepository.findAll().size();
         int searchDatabaseSizeBefore = IterableUtil.sizeOf(operationSearchRepository.findAll());
-        operation.setId(count.incrementAndGet());
+        operation.setId(longCount.incrementAndGet());
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restOperationMockMvc
             .perform(
-                put(ENTITY_API_URL_ID, count.incrementAndGet())
+                put(ENTITY_API_URL_ID, longCount.incrementAndGet())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(TestUtil.convertObjectToJsonBytes(operation))
             )
@@ -352,7 +352,7 @@ class OperationResourceIT {
     void putWithMissingIdPathParamOperation() throws Exception {
         int databaseSizeBeforeUpdate = operationRepository.findAll().size();
         int searchDatabaseSizeBefore = IterableUtil.sizeOf(operationSearchRepository.findAll());
-        operation.setId(count.incrementAndGet());
+        operation.setId(longCount.incrementAndGet());
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restOperationMockMvc
@@ -433,7 +433,7 @@ class OperationResourceIT {
     void patchNonExistingOperation() throws Exception {
         int databaseSizeBeforeUpdate = operationRepository.findAll().size();
         int searchDatabaseSizeBefore = IterableUtil.sizeOf(operationSearchRepository.findAll());
-        operation.setId(count.incrementAndGet());
+        operation.setId(longCount.incrementAndGet());
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
         restOperationMockMvc
@@ -456,12 +456,12 @@ class OperationResourceIT {
     void patchWithIdMismatchOperation() throws Exception {
         int databaseSizeBeforeUpdate = operationRepository.findAll().size();
         int searchDatabaseSizeBefore = IterableUtil.sizeOf(operationSearchRepository.findAll());
-        operation.setId(count.incrementAndGet());
+        operation.setId(longCount.incrementAndGet());
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restOperationMockMvc
             .perform(
-                patch(ENTITY_API_URL_ID, count.incrementAndGet())
+                patch(ENTITY_API_URL_ID, longCount.incrementAndGet())
                     .contentType("application/merge-patch+json")
                     .content(TestUtil.convertObjectToJsonBytes(operation))
             )
@@ -479,7 +479,7 @@ class OperationResourceIT {
     void patchWithMissingIdPathParamOperation() throws Exception {
         int databaseSizeBeforeUpdate = operationRepository.findAll().size();
         int searchDatabaseSizeBefore = IterableUtil.sizeOf(operationSearchRepository.findAll());
-        operation.setId(count.incrementAndGet());
+        operation.setId(longCount.incrementAndGet());
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restOperationMockMvc

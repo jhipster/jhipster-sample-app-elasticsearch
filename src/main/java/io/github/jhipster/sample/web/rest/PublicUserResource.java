@@ -74,7 +74,7 @@ public class PublicUserResource {
      * @return the result of the search.
      */
     @GetMapping("/users/_search/{query}")
-    public List<UserDTO> search(@PathVariable String query) {
+    public List<UserDTO> search(@PathVariable("query") String query) {
         return StreamSupport.stream(userSearchRepository.search(query).spliterator(), false).map(UserDTO::new).toList();
     }
 }

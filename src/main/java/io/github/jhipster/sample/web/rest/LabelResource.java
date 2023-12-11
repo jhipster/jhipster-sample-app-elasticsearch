@@ -167,7 +167,7 @@ public class LabelResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the label, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Label> getLabel(@PathVariable Long id) {
+    public ResponseEntity<Label> getLabel(@PathVariable("id") Long id) {
         log.debug("REST request to get Label : {}", id);
         Optional<Label> label = labelRepository.findById(id);
         return ResponseUtil.wrapOrNotFound(label);
@@ -180,7 +180,7 @@ public class LabelResource {
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteLabel(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteLabel(@PathVariable("id") Long id) {
         log.debug("REST request to delete Label : {}", id);
         labelRepository.deleteById(id);
         labelSearchRepository.deleteFromIndexById(id);
@@ -198,7 +198,7 @@ public class LabelResource {
      * @return the result of the search.
      */
     @GetMapping("/_search")
-    public List<Label> searchLabels(@RequestParam String query) {
+    public List<Label> searchLabels(@RequestParam("query") String query) {
         log.debug("REST request to search Labels for query {}", query);
         try {
             return StreamSupport.stream(labelSearchRepository.search(query).spliterator(), false).toList();

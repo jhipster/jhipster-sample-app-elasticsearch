@@ -59,15 +59,6 @@ public class PublicUserResource {
     }
 
     /**
-     * Gets a list of all roles.
-     * @return a string list of all roles.
-     */
-    @GetMapping("/authorities")
-    public List<String> getAuthorities() {
-        return userService.getAuthorities();
-    }
-
-    /**
      * {@code SEARCH /users/_search/:query} : search for the User corresponding to the query.
      *
      * @param query the query to search.

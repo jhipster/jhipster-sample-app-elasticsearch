@@ -1,5 +1,7 @@
 package io.github.jhipster.sample.web.rest;
 
+import static io.github.jhipster.sample.domain.OperationAsserts.*;
+import static io.github.jhipster.sample.web.rest.TestUtil.createUpdateProxyForBean;
 import static io.github.jhipster.sample.web.rest.TestUtil.sameNumber;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
@@ -8,6 +10,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.jhipster.sample.IntegrationTest;
 import io.github.jhipster.sample.domain.Operation;
 import io.github.jhipster.sample.repository.OperationRepository;
@@ -64,6 +67,9 @@ class OperationResourceIT {
     private static AtomicLong longCount = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
 
     @Autowired
+    private ObjectMapper om;
+
+    @Autowired
     private OperationRepository operationRepository;
 
     @Mock
@@ -116,26 +122,29 @@ class OperationResourceIT {
     @Test
     @Transactional
     void createOperation() throws Exception {
-        int databaseSizeBeforeCreate = operationRepository.findAll().size();
+        long databaseSizeBeforeCreate = getRepositoryCount();
         int searchDatabaseSizeBefore = IterableUtil.sizeOf(operationSearchRepository.findAll());
         // Create the Operation
-        restOperationMockMvc
-            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(operation)))
-            .andExpect(status().isCreated());
+        var returnedOperation = om.readValue(
+            restOperationMockMvc
+                .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(operation)))
+                .andExpect(status().isCreated())
+                .andReturn()
+                .getResponse()
+                .getContentAsString(),
+            Operation.class
+        );
 
         // Validate the Operation in the database
-        List<Operation> operationList = operationRepository.findAll();
-        assertThat(operationList).hasSize(databaseSizeBeforeCreate + 1);
+        assertIncrementedRepositoryCount(databaseSizeBeforeCreate);
+        assertOperationUpdatableFieldsEquals(returnedOperation, getPersistedOperation(returnedOperation));
+
         await()
             .atMost(5, TimeUnit.SECONDS)
             .untilAsserted(() -> {
                 int searchDatabaseSizeAfter = IterableUtil.sizeOf(operationSearchRepository.findAll());
                 assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore + 1);
             });
-        Operation testOperation = operationList.get(operationList.size() - 1);
-        assertThat(testOperation.getDate()).isEqualTo(DEFAULT_DATE);
-        assertThat(testOperation.getDescription()).isEqualTo(DEFAULT_DESCRIPTION);
-        assertThat(testOperation.getAmount()).isEqualByComparingTo(DEFAULT_AMOUNT);
     }
 
     @Test
@@ -144,17 +153,16 @@ class OperationResourceIT {
         // Create the Operation with an existing ID
         operation.setId(1L);
 
-        int databaseSizeBeforeCreate = operationRepository.findAll().size();
+        long databaseSizeBeforeCreate = getRepositoryCount();
         int searchDatabaseSizeBefore = IterableUtil.sizeOf(operationSearchRepository.findAll());
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restOperationMockMvc
-            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(operation)))
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(operation)))
             .andExpect(status().isBadRequest());
 
         // Validate the Operation in the database
-        List<Operation> operationList = operationRepository.findAll();
-        assertThat(operationList).hasSize(databaseSizeBeforeCreate);
+        assertSameRepositoryCount(databaseSizeBeforeCreate);
         int searchDatabaseSizeAfter = IterableUtil.sizeOf(operationSearchRepository.findAll());
         assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
@@ -162,7 +170,7 @@ class OperationResourceIT {
     @Test
     @Transactional
     void checkDateIsRequired() throws Exception {
-        int databaseSizeBeforeTest = operationRepository.findAll().size();
+        long databaseSizeBeforeTest = getRepositoryCount();
         int searchDatabaseSizeBefore = IterableUtil.sizeOf(operationSearchRepository.findAll());
         // set the field null
         operation.setDate(null);
@@ -170,11 +178,11 @@ class OperationResourceIT {
         // Create the Operation, which fails.
 
         restOperationMockMvc
-            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(operation)))
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(operation)))
             .andExpect(status().isBadRequest());
 
-        List<Operation> operationList = operationRepository.findAll();
-        assertThat(operationList).hasSize(databaseSizeBeforeTest);
+        assertSameRepositoryCount(databaseSizeBeforeTest);
+
         int searchDatabaseSizeAfter = IterableUtil.sizeOf(operationSearchRepository.findAll());
         assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
@@ -182,7 +190,7 @@ class OperationResourceIT {
     @Test
     @Transactional
     void checkAmountIsRequired() throws Exception {
-        int databaseSizeBeforeTest = operationRepository.findAll().size();
+        long databaseSizeBeforeTest = getRepositoryCount();
         int searchDatabaseSizeBefore = IterableUtil.sizeOf(operationSearchRepository.findAll());
         // set the field null
         operation.setAmount(null);
@@ -190,11 +198,11 @@ class OperationResourceIT {
         // Create the Operation, which fails.
 
         restOperationMockMvc
-            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(operation)))
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(operation)))
             .andExpect(status().isBadRequest());
 
-        List<Operation> operationList = operationRepository.findAll();
-        assertThat(operationList).hasSize(databaseSizeBeforeTest);
+        assertSameRepositoryCount(databaseSizeBeforeTest);
+
         int searchDatabaseSizeAfter = IterableUtil.sizeOf(operationSearchRepository.findAll());
         assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
@@ -263,7 +271,7 @@ class OperationResourceIT {
         // Initialize the database
         operationRepository.saveAndFlush(operation);
 
-        int databaseSizeBeforeUpdate = operationRepository.findAll().size();
+        long databaseSizeBeforeUpdate = getRepositoryCount();
         operationSearchRepository.save(operation);
         int searchDatabaseSizeBefore = IterableUtil.sizeOf(operationSearchRepository.findAll());
 
@@ -277,17 +285,14 @@ class OperationResourceIT {
             .perform(
                 put(ENTITY_API_URL_ID, updatedOperation.getId())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(TestUtil.convertObjectToJsonBytes(updatedOperation))
+                    .content(om.writeValueAsBytes(updatedOperation))
             )
             .andExpect(status().isOk());
 
         // Validate the Operation in the database
-        List<Operation> operationList = operationRepository.findAll();
-        assertThat(operationList).hasSize(databaseSizeBeforeUpdate);
-        Operation testOperation = operationList.get(operationList.size() - 1);
-        assertThat(testOperation.getDate()).isEqualTo(UPDATED_DATE);
-        assertThat(testOperation.getDescription()).isEqualTo(UPDATED_DESCRIPTION);
-        assertThat(testOperation.getAmount()).isEqualByComparingTo(UPDATED_AMOUNT);
+        assertSameRepositoryCount(databaseSizeBeforeUpdate);
+        assertPersistedOperationToMatchAllProperties(updatedOperation);
+
         await()
             .atMost(5, TimeUnit.SECONDS)
             .untilAsserted(() -> {
@@ -295,31 +300,27 @@ class OperationResourceIT {
                 assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
                 List<Operation> operationSearchList = IterableUtils.toList(operationSearchRepository.findAll());
                 Operation testOperationSearch = operationSearchList.get(searchDatabaseSizeAfter - 1);
-                assertThat(testOperationSearch.getDate()).isEqualTo(UPDATED_DATE);
-                assertThat(testOperationSearch.getDescription()).isEqualTo(UPDATED_DESCRIPTION);
-                assertThat(testOperationSearch.getAmount()).isEqualByComparingTo(UPDATED_AMOUNT);
+
+                assertOperationAllPropertiesEquals(testOperationSearch, updatedOperation);
             });
     }
 
     @Test
     @Transactional
     void putNonExistingOperation() throws Exception {
-        int databaseSizeBeforeUpdate = operationRepository.findAll().size();
+        long databaseSizeBeforeUpdate = getRepositoryCount();
         int searchDatabaseSizeBefore = IterableUtil.sizeOf(operationSearchRepository.findAll());
         operation.setId(longCount.incrementAndGet());
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
         restOperationMockMvc
             .perform(
-                put(ENTITY_API_URL_ID, operation.getId())
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(TestUtil.convertObjectToJsonBytes(operation))
+                put(ENTITY_API_URL_ID, operation.getId()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(operation))
             )
             .andExpect(status().isBadRequest());
 
         // Validate the Operation in the database
-        List<Operation> operationList = operationRepository.findAll();
-        assertThat(operationList).hasSize(databaseSizeBeforeUpdate);
+        assertSameRepositoryCount(databaseSizeBeforeUpdate);
         int searchDatabaseSizeAfter = IterableUtil.sizeOf(operationSearchRepository.findAll());
         assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
@@ -327,7 +328,7 @@ class OperationResourceIT {
     @Test
     @Transactional
     void putWithIdMismatchOperation() throws Exception {
-        int databaseSizeBeforeUpdate = operationRepository.findAll().size();
+        long databaseSizeBeforeUpdate = getRepositoryCount();
         int searchDatabaseSizeBefore = IterableUtil.sizeOf(operationSearchRepository.findAll());
         operation.setId(longCount.incrementAndGet());
 
@@ -336,13 +337,12 @@ class OperationResourceIT {
             .perform(
                 put(ENTITY_API_URL_ID, longCount.incrementAndGet())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(TestUtil.convertObjectToJsonBytes(operation))
+                    .content(om.writeValueAsBytes(operation))
             )
             .andExpect(status().isBadRequest());
 
         // Validate the Operation in the database
-        List<Operation> operationList = operationRepository.findAll();
-        assertThat(operationList).hasSize(databaseSizeBeforeUpdate);
+        assertSameRepositoryCount(databaseSizeBeforeUpdate);
         int searchDatabaseSizeAfter = IterableUtil.sizeOf(operationSearchRepository.findAll());
         assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
@@ -350,18 +350,17 @@ class OperationResourceIT {
     @Test
     @Transactional
     void putWithMissingIdPathParamOperation() throws Exception {
-        int databaseSizeBeforeUpdate = operationRepository.findAll().size();
+        long databaseSizeBeforeUpdate = getRepositoryCount();
         int searchDatabaseSizeBefore = IterableUtil.sizeOf(operationSearchRepository.findAll());
         operation.setId(longCount.incrementAndGet());
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restOperationMockMvc
-            .perform(put(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(operation)))
+            .perform(put(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(operation)))
             .andExpect(status().isMethodNotAllowed());
 
         // Validate the Operation in the database
-        List<Operation> operationList = operationRepository.findAll();
-        assertThat(operationList).hasSize(databaseSizeBeforeUpdate);
+        assertSameRepositoryCount(databaseSizeBeforeUpdate);
         int searchDatabaseSizeAfter = IterableUtil.sizeOf(operationSearchRepository.findAll());
         assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
@@ -372,29 +371,29 @@ class OperationResourceIT {
         // Initialize the database
         operationRepository.saveAndFlush(operation);
 
-        int databaseSizeBeforeUpdate = operationRepository.findAll().size();
+        long databaseSizeBeforeUpdate = getRepositoryCount();
 
         // Update the operation using partial update
         Operation partialUpdatedOperation = new Operation();
         partialUpdatedOperation.setId(operation.getId());
 
-        partialUpdatedOperation.date(UPDATED_DATE);
+        partialUpdatedOperation.date(UPDATED_DATE).description(UPDATED_DESCRIPTION);
 
         restOperationMockMvc
             .perform(
                 patch(ENTITY_API_URL_ID, partialUpdatedOperation.getId())
                     .contentType("application/merge-patch+json")
-                    .content(TestUtil.convertObjectToJsonBytes(partialUpdatedOperation))
+                    .content(om.writeValueAsBytes(partialUpdatedOperation))
             )
             .andExpect(status().isOk());
 
         // Validate the Operation in the database
-        List<Operation> operationList = operationRepository.findAll();
-        assertThat(operationList).hasSize(databaseSizeBeforeUpdate);
-        Operation testOperation = operationList.get(operationList.size() - 1);
-        assertThat(testOperation.getDate()).isEqualTo(UPDATED_DATE);
-        assertThat(testOperation.getDescription()).isEqualTo(DEFAULT_DESCRIPTION);
-        assertThat(testOperation.getAmount()).isEqualByComparingTo(DEFAULT_AMOUNT);
+
+        assertSameRepositoryCount(databaseSizeBeforeUpdate);
+        assertOperationUpdatableFieldsEquals(
+            createUpdateProxyForBean(partialUpdatedOperation, operation),
+            getPersistedOperation(operation)
+        );
     }
 
     @Test
@@ -403,7 +402,7 @@ class OperationResourceIT {
         // Initialize the database
         operationRepository.saveAndFlush(operation);
 
-        int databaseSizeBeforeUpdate = operationRepository.findAll().size();
+        long databaseSizeBeforeUpdate = getRepositoryCount();
 
         // Update the operation using partial update
         Operation partialUpdatedOperation = new Operation();
@@ -415,23 +414,20 @@ class OperationResourceIT {
             .perform(
                 patch(ENTITY_API_URL_ID, partialUpdatedOperation.getId())
                     .contentType("application/merge-patch+json")
-                    .content(TestUtil.convertObjectToJsonBytes(partialUpdatedOperation))
+                    .content(om.writeValueAsBytes(partialUpdatedOperation))
             )
             .andExpect(status().isOk());
 
         // Validate the Operation in the database
-        List<Operation> operationList = operationRepository.findAll();
-        assertThat(operationList).hasSize(databaseSizeBeforeUpdate);
-        Operation testOperation = operationList.get(operationList.size() - 1);
-        assertThat(testOperation.getDate()).isEqualTo(UPDATED_DATE);
-        assertThat(testOperation.getDescription()).isEqualTo(UPDATED_DESCRIPTION);
-        assertThat(testOperation.getAmount()).isEqualByComparingTo(UPDATED_AMOUNT);
+
+        assertSameRepositoryCount(databaseSizeBeforeUpdate);
+        assertOperationUpdatableFieldsEquals(partialUpdatedOperation, getPersistedOperation(partialUpdatedOperation));
     }
 
     @Test
     @Transactional
     void patchNonExistingOperation() throws Exception {
-        int databaseSizeBeforeUpdate = operationRepository.findAll().size();
+        long databaseSizeBeforeUpdate = getRepositoryCount();
         int searchDatabaseSizeBefore = IterableUtil.sizeOf(operationSearchRepository.findAll());
         operation.setId(longCount.incrementAndGet());
 
@@ -440,13 +436,12 @@ class OperationResourceIT {
             .perform(
                 patch(ENTITY_API_URL_ID, operation.getId())
                     .contentType("application/merge-patch+json")
-                    .content(TestUtil.convertObjectToJsonBytes(operation))
+                    .content(om.writeValueAsBytes(operation))
             )
             .andExpect(status().isBadRequest());
 
         // Validate the Operation in the database
-        List<Operation> operationList = operationRepository.findAll();
-        assertThat(operationList).hasSize(databaseSizeBeforeUpdate);
+        assertSameRepositoryCount(databaseSizeBeforeUpdate);
         int searchDatabaseSizeAfter = IterableUtil.sizeOf(operationSearchRepository.findAll());
         assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
@@ -454,7 +449,7 @@ class OperationResourceIT {
     @Test
     @Transactional
     void patchWithIdMismatchOperation() throws Exception {
-        int databaseSizeBeforeUpdate = operationRepository.findAll().size();
+        long databaseSizeBeforeUpdate = getRepositoryCount();
         int searchDatabaseSizeBefore = IterableUtil.sizeOf(operationSearchRepository.findAll());
         operation.setId(longCount.incrementAndGet());
 
@@ -463,13 +458,12 @@ class OperationResourceIT {
             .perform(
                 patch(ENTITY_API_URL_ID, longCount.incrementAndGet())
                     .contentType("application/merge-patch+json")
-                    .content(TestUtil.convertObjectToJsonBytes(operation))
+                    .content(om.writeValueAsBytes(operation))
             )
             .andExpect(status().isBadRequest());
 
         // Validate the Operation in the database
-        List<Operation> operationList = operationRepository.findAll();
-        assertThat(operationList).hasSize(databaseSizeBeforeUpdate);
+        assertSameRepositoryCount(databaseSizeBeforeUpdate);
         int searchDatabaseSizeAfter = IterableUtil.sizeOf(operationSearchRepository.findAll());
         assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
@@ -477,20 +471,17 @@ class OperationResourceIT {
     @Test
     @Transactional
     void patchWithMissingIdPathParamOperation() throws Exception {
-        int databaseSizeBeforeUpdate = operationRepository.findAll().size();
+        long databaseSizeBeforeUpdate = getRepositoryCount();
         int searchDatabaseSizeBefore = IterableUtil.sizeOf(operationSearchRepository.findAll());
         operation.setId(longCount.incrementAndGet());
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restOperationMockMvc
-            .perform(
-                patch(ENTITY_API_URL).contentType("application/merge-patch+json").content(TestUtil.convertObjectToJsonBytes(operation))
-            )
+            .perform(patch(ENTITY_API_URL).contentType("application/merge-patch+json").content(om.writeValueAsBytes(operation)))
             .andExpect(status().isMethodNotAllowed());
 
         // Validate the Operation in the database
-        List<Operation> operationList = operationRepository.findAll();
-        assertThat(operationList).hasSize(databaseSizeBeforeUpdate);
+        assertSameRepositoryCount(databaseSizeBeforeUpdate);
         int searchDatabaseSizeAfter = IterableUtil.sizeOf(operationSearchRepository.findAll());
         assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
@@ -503,7 +494,7 @@ class OperationResourceIT {
         operationRepository.save(operation);
         operationSearchRepository.save(operation);
 
-        int databaseSizeBeforeDelete = operationRepository.findAll().size();
+        long databaseSizeBeforeDelete = getRepositoryCount();
         int searchDatabaseSizeBefore = IterableUtil.sizeOf(operationSearchRepository.findAll());
         assertThat(searchDatabaseSizeBefore).isEqualTo(databaseSizeBeforeDelete);
 
@@ -513,8 +504,7 @@ class OperationResourceIT {
             .andExpect(status().isNoContent());
 
         // Validate the database contains one less item
-        List<Operation> operationList = operationRepository.findAll();
-        assertThat(operationList).hasSize(databaseSizeBeforeDelete - 1);
+        assertDecrementedRepositoryCount(databaseSizeBeforeDelete);
         int searchDatabaseSizeAfter = IterableUtil.sizeOf(operationSearchRepository.findAll());
         assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore - 1);
     }
@@ -535,5 +525,33 @@ class OperationResourceIT {
             .andExpect(jsonPath("$.[*].date").value(hasItem(DEFAULT_DATE.toString())))
             .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION)))
             .andExpect(jsonPath("$.[*].amount").value(hasItem(sameNumber(DEFAULT_AMOUNT))));
+    }
+
+    protected long getRepositoryCount() {
+        return operationRepository.count();
+    }
+
+    protected void assertIncrementedRepositoryCount(long countBefore) {
+        assertThat(countBefore + 1).isEqualTo(getRepositoryCount());
+    }
+
+    protected void assertDecrementedRepositoryCount(long countBefore) {
+        assertThat(countBefore - 1).isEqualTo(getRepositoryCount());
+    }
+
+    protected void assertSameRepositoryCount(long countBefore) {
+        assertThat(countBefore).isEqualTo(getRepositoryCount());
+    }
+
+    protected Operation getPersistedOperation(Operation operation) {
+        return operationRepository.findById(operation.getId()).orElseThrow();
+    }
+
+    protected void assertPersistedOperationToMatchAllProperties(Operation expectedOperation) {
+        assertOperationAllPropertiesEquals(expectedOperation, getPersistedOperation(expectedOperation));
+    }
+
+    protected void assertPersistedOperationToMatchUpdatableProperties(Operation expectedOperation) {
+        assertOperationAllUpdatablePropertiesEquals(expectedOperation, getPersistedOperation(expectedOperation));
     }
 }

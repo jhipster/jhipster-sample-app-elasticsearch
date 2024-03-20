@@ -63,12 +63,11 @@ public class OperationResource {
         if (operation.getId() != null) {
             throw new BadRequestAlertException("A new operation cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        Operation result = operationRepository.save(operation);
-        operationSearchRepository.index(result);
-        return ResponseEntity
-            .created(new URI("/api/operations/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
-            .body(result);
+        operation = operationRepository.save(operation);
+        operationSearchRepository.index(operation);
+        return ResponseEntity.created(new URI("/api/operations/" + operation.getId()))
+            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, operation.getId().toString()))
+            .body(operation);
     }
 
     /**
@@ -98,12 +97,11 @@ public class OperationResource {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
-        Operation result = operationRepository.save(operation);
-        operationSearchRepository.index(result);
-        return ResponseEntity
-            .ok()
+        operation = operationRepository.save(operation);
+        operationSearchRepository.index(operation);
+        return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, operation.getId().toString()))
-            .body(result);
+            .body(operation);
     }
 
     /**
@@ -208,8 +206,7 @@ public class OperationResource {
         log.debug("REST request to delete Operation : {}", id);
         operationRepository.deleteById(id);
         operationSearchRepository.deleteFromIndexById(id);
-        return ResponseEntity
-            .noContent()
+        return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
             .build();
     }

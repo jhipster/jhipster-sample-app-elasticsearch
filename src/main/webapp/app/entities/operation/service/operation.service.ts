@@ -1,8 +1,8 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
-import { Observable, asapScheduler, scheduled } from 'rxjs';
+import { map, Observable, asapScheduler, scheduled } from 'rxjs';
 
-import { catchError, map } from 'rxjs/operators';
+import { catchError } from 'rxjs/operators';
 
 import dayjs from 'dayjs/esm';
 
@@ -29,13 +29,11 @@ export type EntityArrayResponseType = HttpResponse<IOperation[]>;
 
 @Injectable({ providedIn: 'root' })
 export class OperationService {
+  protected http = inject(HttpClient);
+  protected applicationConfigService = inject(ApplicationConfigService);
+
   protected resourceUrl = this.applicationConfigService.getEndpointFor('api/operations');
   protected resourceSearchUrl = this.applicationConfigService.getEndpointFor('api/operations/_search');
-
-  constructor(
-    protected http: HttpClient,
-    protected applicationConfigService: ApplicationConfigService,
-  ) {}
 
   create(operation: NewOperation): Observable<EntityResponseType> {
     const copy = this.convertDateFromClient(operation);
@@ -79,6 +77,7 @@ export class OperationService {
     const options = createRequestOption(req);
     return this.http.get<RestOperation[]>(this.resourceSearchUrl, { params: options, observe: 'response' }).pipe(
       map(res => this.convertResponseArrayFromServer(res)),
+
       catchError(() => scheduled([new HttpResponse<IOperation[]>()], asapScheduler)),
     );
   }
@@ -97,7 +96,7 @@ export class OperationService {
   ): Type[] {
     const operations: Type[] = operationsToCheck.filter(isPresent);
     if (operations.length > 0) {
-      const operationCollectionIdentifiers = operationCollection.map(operationItem => this.getOperationIdentifier(operationItem)!);
+      const operationCollectionIdentifiers = operationCollection.map(operationItem => this.getOperationIdentifier(operationItem));
       const operationsToAdd = operations.filter(operationItem => {
         const operationIdentifier = this.getOperationIdentifier(operationItem);
         if (operationCollectionIdentifiers.includes(operationIdentifier)) {

@@ -33,10 +33,9 @@ public class TestContainersSpringContextCustomizerFactory implements ContextCust
                     beanFactory.registerSingleton(ElasticsearchTestContainer.class.getName(), elasticsearchBean);
                     // ((DefaultListableBeanFactory)beanFactory).registerDisposableBean(ElasticsearchTestContainer.class.getName(), elasticsearchBean);
                 }
-                testValues =
-                    testValues.and(
-                        "spring.elasticsearch.uris=http://" + elasticsearchBean.getElasticsearchContainer().getHttpHostAddress()
-                    );
+                testValues = testValues.and(
+                    "spring.elasticsearch.uris=http://" + elasticsearchBean.getElasticsearchContainer().getHttpHostAddress()
+                );
             }
             testValues.applyTo(context);
         };

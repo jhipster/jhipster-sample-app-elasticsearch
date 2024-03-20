@@ -2,6 +2,11 @@ import { Routes } from '@angular/router';
 
 const routes: Routes = [
   {
+    path: 'authority',
+    data: { pageTitle: 'jhipsterElasticsearchSampleApplicationApp.adminAuthority.home.title' },
+    loadChildren: () => import('./admin/authority/authority.routes'),
+  },
+  {
     path: 'bank-account',
     data: { pageTitle: 'jhipsterElasticsearchSampleApplicationApp.bankAccount.home.title' },
     loadChildren: () => import('./bank-account/bank-account.routes'),

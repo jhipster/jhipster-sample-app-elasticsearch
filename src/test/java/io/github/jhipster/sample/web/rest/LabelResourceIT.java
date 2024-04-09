@@ -19,13 +19,13 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
-import org.apache.commons.collections4.IterableUtils;
 import org.assertj.core.util.IterableUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.data.util.Streamable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -237,7 +237,7 @@ class LabelResourceIT {
             .untilAsserted(() -> {
                 int searchDatabaseSizeAfter = IterableUtil.sizeOf(labelSearchRepository.findAll());
                 assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
-                List<Label> labelSearchList = IterableUtils.toList(labelSearchRepository.findAll());
+                List<Label> labelSearchList = Streamable.of(labelSearchRepository.findAll()).toList();
                 Label testLabelSearch = labelSearchList.get(searchDatabaseSizeAfter - 1);
 
                 assertLabelAllPropertiesEquals(testLabelSearch, updatedLabel);

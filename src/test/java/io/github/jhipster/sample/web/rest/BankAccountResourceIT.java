@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
-import org.apache.commons.collections4.IterableUtils;
 import org.assertj.core.util.IterableUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.util.Streamable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -291,7 +291,7 @@ class BankAccountResourceIT {
             .untilAsserted(() -> {
                 int searchDatabaseSizeAfter = IterableUtil.sizeOf(bankAccountSearchRepository.findAll());
                 assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
-                List<BankAccount> bankAccountSearchList = IterableUtils.toList(bankAccountSearchRepository.findAll());
+                List<BankAccount> bankAccountSearchList = Streamable.of(bankAccountSearchRepository.findAll()).toList();
                 BankAccount testBankAccountSearch = bankAccountSearchList.get(searchDatabaseSizeAfter - 1);
 
                 assertBankAccountAllPropertiesEquals(testBankAccountSearch, updatedBankAccount);

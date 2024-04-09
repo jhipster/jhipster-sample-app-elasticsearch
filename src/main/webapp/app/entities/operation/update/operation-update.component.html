@@ -14,13 +14,13 @@
 
         @if (editForm.controls.id.value !== null) {
           <div class="mb-3">
-            <label class="form-label" jhiTranslate="global.field.id" for="field_id">ID</label>
+            <label class="form-label" for="field_id" jhiTranslate="jhipsterElasticsearchSampleApplicationApp.operation.id">ID</label>
             <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
           </div>
         }
 
         <div class="mb-3">
-          <label class="form-label" jhiTranslate="jhipsterElasticsearchSampleApplicationApp.operation.date" for="field_date">Date</label>
+          <label class="form-label" for="field_date" jhiTranslate="jhipsterElasticsearchSampleApplicationApp.operation.date">Date</label>
           <div class="d-flex">
             <input
               id="field_date"
@@ -48,7 +48,7 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label" jhiTranslate="jhipsterElasticsearchSampleApplicationApp.operation.description" for="field_description"
+          <label class="form-label" for="field_description" jhiTranslate="jhipsterElasticsearchSampleApplicationApp.operation.description"
             >Description</label
           >
           <input
@@ -62,7 +62,7 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label" jhiTranslate="jhipsterElasticsearchSampleApplicationApp.operation.amount" for="field_amount"
+          <label class="form-label" for="field_amount" jhiTranslate="jhipsterElasticsearchSampleApplicationApp.operation.amount"
             >Amount</label
           >
           <input type="number" class="form-control" name="amount" id="field_amount" data-cy="amount" formControlName="amount" />
@@ -82,7 +82,7 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label" jhiTranslate="jhipsterElasticsearchSampleApplicationApp.operation.bankAccount" for="field_bankAccount"
+          <label class="form-label" for="field_bankAccount" jhiTranslate="jhipsterElasticsearchSampleApplicationApp.operation.bankAccount"
             >Bank Account</label
           >
           <select
@@ -101,7 +101,7 @@
         </div>
 
         <div class="mb-3">
-          <label jhiTranslate="jhipsterElasticsearchSampleApplicationApp.operation.label" for="field_labels">Label</label>
+          <label for="field_labels" jhiTranslate="jhipsterElasticsearchSampleApplicationApp.operation.label">Label</label>
           <select
             class="form-control"
             id="field_labels"

@@ -1,15 +1,15 @@
 import { IAuthority, NewAuthority } from './authority.model';
 
 export const sampleWithRequiredData: IAuthority = {
-  name: 'fe4f26fd-7f51-4f74-9b46-c916e76b2178',
+  name: 'e864636c-9032-4ce1-8d94-87c4fb3c9c41',
 };
 
 export const sampleWithPartialData: IAuthority = {
-  name: 'bef088cd-263a-45d0-88cc-e3bd11550f37',
+  name: 'df60d676-badc-4511-8591-2a85485e9c73',
 };
 
 export const sampleWithFullData: IAuthority = {
-  name: 'cf8a251e-4825-4006-8af3-440143288b71',
+  name: '1e4fecaa-5728-4fa9-af33-324a3587618c',
 };
 
 export const sampleWithNewData: NewAuthority = {

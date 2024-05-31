@@ -14,7 +14,7 @@ describe('Authority e2e test', () => {
   const authorityPageUrlPattern = new RegExp('/authority(\\?.*)?$');
   const username = Cypress.env('E2E_USERNAME') ?? 'admin';
   const password = Cypress.env('E2E_PASSWORD') ?? 'admin';
-  const authoritySample = { name: '127cb2f8-7974-4c3c-a20d-be1dbf1b9cb1' };
+  const authoritySample = { name: '595a4b21-0c17-47a7-a157-74047146a5a9' };
 
   let authority;
 
@@ -43,7 +43,7 @@ describe('Authority e2e test', () => {
     cy.visit('/');
     cy.clickOnEntityMenuItem('authority');
     cy.wait('@entitiesRequest').then(({ response }) => {
-      if (response.body.length === 0) {
+      if (response?.body.length === 0) {
         cy.get(entityTableSelector).should('not.exist');
       } else {
         cy.get(entityTableSelector).should('exist');
@@ -67,7 +67,7 @@ describe('Authority e2e test', () => {
         cy.get(entityCreateSaveButtonSelector).should('exist');
         cy.get(entityCreateCancelButtonSelector).click();
         cy.wait('@entitiesRequest').then(({ response }) => {
-          expect(response.statusCode).to.equal(200);
+          expect(response?.statusCode).to.equal(200);
         });
         cy.url().should('match', authorityPageUrlPattern);
       });
@@ -105,7 +105,7 @@ describe('Authority e2e test', () => {
         cy.getEntityDetailsHeading('authority');
         cy.get(entityDetailsBackButtonSelector).click();
         cy.wait('@entitiesRequest').then(({ response }) => {
-          expect(response.statusCode).to.equal(200);
+          expect(response?.statusCode).to.equal(200);
         });
         cy.url().should('match', authorityPageUrlPattern);
       });
@@ -115,10 +115,10 @@ describe('Authority e2e test', () => {
         cy.getEntityDeleteDialogHeading('authority').should('exist');
         cy.get(entityConfirmDeleteButtonSelector).click();
         cy.wait('@deleteEntityRequest').then(({ response }) => {
-          expect(response.statusCode).to.equal(204);
+          expect(response?.statusCode).to.equal(204);
         });
         cy.wait('@entitiesRequest').then(({ response }) => {
-          expect(response.statusCode).to.equal(200);
+          expect(response?.statusCode).to.equal(200);
         });
         cy.url().should('match', authorityPageUrlPattern);
 
@@ -135,17 +135,17 @@ describe('Authority e2e test', () => {
     });
 
     it('should create an instance of Authority', () => {
-      cy.get(`[data-cy="name"]`).type('23d36896-51da-4fd2-a395-f09e018d1f94');
-      cy.get(`[data-cy="name"]`).should('have.value', '23d36896-51da-4fd2-a395-f09e018d1f94');
+      cy.get(`[data-cy="name"]`).type('478bdec3-d659-488e-a1b8-2c5084ad8ec1');
+      cy.get(`[data-cy="name"]`).should('have.value', '478bdec3-d659-488e-a1b8-2c5084ad8ec1');
 
       cy.get(entityCreateSaveButtonSelector).click();
 
       cy.wait('@postEntityRequest').then(({ response }) => {
-        expect(response.statusCode).to.equal(201);
+        expect(response?.statusCode).to.equal(201);
         authority = response.body;
       });
       cy.wait('@entitiesRequest').then(({ response }) => {
-        expect(response.statusCode).to.equal(200);
+        expect(response?.statusCode).to.equal(200);
       });
       cy.url().should('match', authorityPageUrlPattern);
     });

@@ -66,6 +66,8 @@ class LabelResourceIT {
 
     private Label label;
 
+    private Label insertedLabel;
+
     /**
      * Create an entity for this test.
      *
@@ -88,15 +90,18 @@ class LabelResourceIT {
         return label;
     }
 
-    @AfterEach
-    public void cleanupElasticSearchRepository() {
-        labelSearchRepository.deleteAll();
-        assertThat(labelSearchRepository.count()).isEqualTo(0);
-    }
-
     @BeforeEach
     public void initTest() {
         label = createEntity(em);
+    }
+
+    @AfterEach
+    public void cleanup() {
+        if (insertedLabel != null) {
+            labelRepository.delete(insertedLabel);
+            labelSearchRepository.delete(insertedLabel);
+            insertedLabel = null;
+        }
     }
 
     @Test
@@ -125,6 +130,8 @@ class LabelResourceIT {
                 int searchDatabaseSizeAfter = IterableUtil.sizeOf(labelSearchRepository.findAll());
                 assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore + 1);
             });
+
+        insertedLabel = returnedLabel;
     }
 
     @Test
@@ -171,7 +178,7 @@ class LabelResourceIT {
     @Transactional
     void getAllLabels() throws Exception {
         // Initialize the database
-        labelRepository.saveAndFlush(label);
+        insertedLabel = labelRepository.saveAndFlush(label);
 
         // Get all the labelList
         restLabelMockMvc
@@ -186,7 +193,7 @@ class LabelResourceIT {
     @Transactional
     void getLabel() throws Exception {
         // Initialize the database
-        labelRepository.saveAndFlush(label);
+        insertedLabel = labelRepository.saveAndFlush(label);
 
         // Get the label
         restLabelMockMvc
@@ -208,7 +215,7 @@ class LabelResourceIT {
     @Transactional
     void putExistingLabel() throws Exception {
         // Initialize the database
-        labelRepository.saveAndFlush(label);
+        insertedLabel = labelRepository.saveAndFlush(label);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
         labelSearchRepository.save(label);
@@ -306,15 +313,13 @@ class LabelResourceIT {
     @Transactional
     void partialUpdateLabelWithPatch() throws Exception {
         // Initialize the database
-        labelRepository.saveAndFlush(label);
+        insertedLabel = labelRepository.saveAndFlush(label);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
 
         // Update the label using partial update
         Label partialUpdatedLabel = new Label();
         partialUpdatedLabel.setId(label.getId());
-
-        partialUpdatedLabel.label(UPDATED_LABEL);
 
         restLabelMockMvc
             .perform(
@@ -334,7 +339,7 @@ class LabelResourceIT {
     @Transactional
     void fullUpdateLabelWithPatch() throws Exception {
         // Initialize the database
-        labelRepository.saveAndFlush(label);
+        insertedLabel = labelRepository.saveAndFlush(label);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
 
@@ -422,7 +427,7 @@ class LabelResourceIT {
     @Transactional
     void deleteLabel() throws Exception {
         // Initialize the database
-        labelRepository.saveAndFlush(label);
+        insertedLabel = labelRepository.saveAndFlush(label);
         labelRepository.save(label);
         labelSearchRepository.save(label);
 
@@ -445,7 +450,7 @@ class LabelResourceIT {
     @Transactional
     void searchLabel() throws Exception {
         // Initialize the database
-        label = labelRepository.saveAndFlush(label);
+        insertedLabel = labelRepository.saveAndFlush(label);
         labelSearchRepository.save(label);
 
         // Search the label

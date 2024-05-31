@@ -86,6 +86,8 @@ class OperationResourceIT {
 
     private Operation operation;
 
+    private Operation insertedOperation;
+
     /**
      * Create an entity for this test.
      *
@@ -108,15 +110,18 @@ class OperationResourceIT {
         return operation;
     }
 
-    @AfterEach
-    public void cleanupElasticSearchRepository() {
-        operationSearchRepository.deleteAll();
-        assertThat(operationSearchRepository.count()).isEqualTo(0);
-    }
-
     @BeforeEach
     public void initTest() {
         operation = createEntity(em);
+    }
+
+    @AfterEach
+    public void cleanup() {
+        if (insertedOperation != null) {
+            operationRepository.delete(insertedOperation);
+            operationSearchRepository.delete(insertedOperation);
+            insertedOperation = null;
+        }
     }
 
     @Test
@@ -145,6 +150,8 @@ class OperationResourceIT {
                 int searchDatabaseSizeAfter = IterableUtil.sizeOf(operationSearchRepository.findAll());
                 assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore + 1);
             });
+
+        insertedOperation = returnedOperation;
     }
 
     @Test
@@ -211,7 +218,7 @@ class OperationResourceIT {
     @Transactional
     void getAllOperations() throws Exception {
         // Initialize the database
-        operationRepository.saveAndFlush(operation);
+        insertedOperation = operationRepository.saveAndFlush(operation);
 
         // Get all the operationList
         restOperationMockMvc
@@ -245,7 +252,7 @@ class OperationResourceIT {
     @Transactional
     void getOperation() throws Exception {
         // Initialize the database
-        operationRepository.saveAndFlush(operation);
+        insertedOperation = operationRepository.saveAndFlush(operation);
 
         // Get the operation
         restOperationMockMvc
@@ -269,7 +276,7 @@ class OperationResourceIT {
     @Transactional
     void putExistingOperation() throws Exception {
         // Initialize the database
-        operationRepository.saveAndFlush(operation);
+        insertedOperation = operationRepository.saveAndFlush(operation);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
         operationSearchRepository.save(operation);
@@ -369,7 +376,7 @@ class OperationResourceIT {
     @Transactional
     void partialUpdateOperationWithPatch() throws Exception {
         // Initialize the database
-        operationRepository.saveAndFlush(operation);
+        insertedOperation = operationRepository.saveAndFlush(operation);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
 
@@ -377,7 +384,7 @@ class OperationResourceIT {
         Operation partialUpdatedOperation = new Operation();
         partialUpdatedOperation.setId(operation.getId());
 
-        partialUpdatedOperation.date(UPDATED_DATE).description(UPDATED_DESCRIPTION);
+        partialUpdatedOperation.date(UPDATED_DATE);
 
         restOperationMockMvc
             .perform(
@@ -400,7 +407,7 @@ class OperationResourceIT {
     @Transactional
     void fullUpdateOperationWithPatch() throws Exception {
         // Initialize the database
-        operationRepository.saveAndFlush(operation);
+        insertedOperation = operationRepository.saveAndFlush(operation);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
 
@@ -490,7 +497,7 @@ class OperationResourceIT {
     @Transactional
     void deleteOperation() throws Exception {
         // Initialize the database
-        operationRepository.saveAndFlush(operation);
+        insertedOperation = operationRepository.saveAndFlush(operation);
         operationRepository.save(operation);
         operationSearchRepository.save(operation);
 
@@ -513,7 +520,7 @@ class OperationResourceIT {
     @Transactional
     void searchOperation() throws Exception {
         // Initialize the database
-        operation = operationRepository.saveAndFlush(operation);
+        insertedOperation = operationRepository.saveAndFlush(operation);
         operationSearchRepository.save(operation);
 
         // Search the operation

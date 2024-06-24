@@ -21,7 +21,7 @@ import tech.jhipster.config.h2.H2ConfigurationHelper;
 @EnableElasticsearchRepositories("io.github.jhipster.sample.repository.search")
 public class DatabaseConfiguration {
 
-    private final Logger log = LoggerFactory.getLogger(DatabaseConfiguration.class);
+    private static final Logger log = LoggerFactory.getLogger(DatabaseConfiguration.class);
 
     private final Environment env;
 

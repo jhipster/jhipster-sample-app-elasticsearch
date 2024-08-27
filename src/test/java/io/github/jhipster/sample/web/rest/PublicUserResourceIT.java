@@ -10,7 +10,6 @@ import io.github.jhipster.sample.repository.UserRepository;
 import io.github.jhipster.sample.repository.search.UserSearchRepository;
 import io.github.jhipster.sample.security.AuthoritiesConstants;
 import io.github.jhipster.sample.service.UserService;
-import jakarta.persistence.EntityManager;
 import java.util.Objects;
 import java.util.Set;
 import org.junit.jupiter.api.AfterEach;
@@ -33,8 +32,6 @@ import org.springframework.transaction.annotation.Transactional;
 @IntegrationTest
 class PublicUserResourceIT {
 
-    private static final String DEFAULT_LOGIN = "johndoe";
-
     @Autowired
     private UserRepository userRepository;
 
@@ -48,9 +45,6 @@ class PublicUserResourceIT {
      */
     @Autowired
     private UserSearchRepository mockUserSearchRepository;
-
-    @Autowired
-    private EntityManager em;
 
     @Autowired
     private CacheManager cacheManager;
@@ -68,7 +62,7 @@ class PublicUserResourceIT {
 
     @BeforeEach
     public void initTest() {
-        user = UserResourceIT.initTestUser(em);
+        user = UserResourceIT.initTestUser();
     }
 
     @AfterEach

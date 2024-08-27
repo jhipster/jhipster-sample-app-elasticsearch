@@ -15,7 +15,7 @@ import org.testcontainers.utility.DockerImageName;
  */
 public class ElasticsearchTestContainer implements InitializingBean, DisposableBean {
 
-    private static final Logger log = LoggerFactory.getLogger(ElasticsearchTestContainer.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ElasticsearchTestContainer.class);
     private static final Integer CONTAINER_STARTUP_TIMEOUT_MINUTES = 10;
     private ElasticsearchContainer elasticsearchContainer;
 
@@ -36,7 +36,7 @@ public class ElasticsearchTestContainer implements InitializingBean, DisposableB
                 .withSharedMemorySize(256000000L)
                 .withEnv("ES_JAVA_OPTS", "-Xms256m -Xmx256m")
                 .withEnv("xpack.security.enabled", "false")
-                .withLogConsumer(new Slf4jLogConsumer(log))
+                .withLogConsumer(new Slf4jLogConsumer(LOG))
                 .withReuse(true);
         }
         if (!elasticsearchContainer.isRunning()) {

@@ -1,6 +1,6 @@
-import { inject, Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
-import { map, Observable, asapScheduler, scheduled } from 'rxjs';
+import { Observable, asapScheduler, map, scheduled } from 'rxjs';
 
 import { catchError } from 'rxjs/operators';
 

@@ -37,10 +37,10 @@ export class LabelComponent implements OnInit {
   sortState = sortStateSignal({});
   currentSearch = '';
 
-  public router = inject(Router);
-  protected labelService = inject(LabelService);
-  protected activatedRoute = inject(ActivatedRoute);
-  protected sortService = inject(SortService);
+  public readonly router = inject(Router);
+  protected readonly labelService = inject(LabelService);
+  protected readonly activatedRoute = inject(ActivatedRoute);
+  protected readonly sortService = inject(SortService);
   protected modalService = inject(NgbModal);
   protected ngZone = inject(NgZone);
 

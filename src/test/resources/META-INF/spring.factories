@@ -1,3 +1,4 @@
-org.springframework.test.context.ContextCustomizerFactory = io.github.jhipster.\
-    sample.config.SqlTestContainersSpringContextCustomizerFactory,io.github.\
-    jhipster.sample.config.TestContainersSpringContextCustomizerFactory
+org.springframework.test.context.ContextCustomizerFactory = \
+    io.github.jhipster.sample.config.\
+    SqlTestContainersSpringContextCustomizerFactory,io.github.jhipster.sample.\
+    config.TestContainersSpringContextCustomizerFactory

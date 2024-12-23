@@ -6,7 +6,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import SharedModule from 'app/shared/shared.module';
 import { SortByDirective, SortDirective, SortService, type SortState, sortStateSignal } from 'app/shared/sort';
-import { DurationPipe, FormatMediumDatePipe, FormatMediumDatetimePipe } from 'app/shared/date';
+import { FormatMediumDatetimePipe } from 'app/shared/date';
 import { FormsModule } from '@angular/forms';
 
 import { ITEMS_PER_PAGE } from 'app/config/pagination.constants';
@@ -18,26 +18,15 @@ import { OperationDeleteDialogComponent } from '../delete/operation-delete-dialo
 import { IOperation } from '../operation.model';
 
 @Component({
-  standalone: true,
   selector: 'jhi-operation',
   templateUrl: './operation.component.html',
-  imports: [
-    RouterModule,
-    FormsModule,
-    SharedModule,
-    SortDirective,
-    SortByDirective,
-    DurationPipe,
-    FormatMediumDatetimePipe,
-    FormatMediumDatePipe,
-    InfiniteScrollDirective,
-  ],
+  imports: [RouterModule, FormsModule, SharedModule, SortDirective, SortByDirective, FormatMediumDatetimePipe, InfiniteScrollDirective],
 })
 export class OperationComponent implements OnInit {
   private static readonly NOT_SORTABLE_FIELDS_AFTER_SEARCH = ['description'];
 
   subscription: Subscription | null = null;
-  operations?: IOperation[];
+  operations = signal<IOperation[]>([]);
   isLoading = false;
 
   sortState = sortStateSignal({});
@@ -69,7 +58,7 @@ export class OperationComponent implements OnInit {
   }
 
   reset(): void {
-    this.operations = [];
+    this.operations.set([]);
   }
 
   loadNextPage(): void {
@@ -77,16 +66,17 @@ export class OperationComponent implements OnInit {
   }
 
   search(query: string): void {
+    this.currentSearch = query;
     const { predicate } = this.sortState();
     if (query && predicate && OperationComponent.NOT_SORTABLE_FIELDS_AFTER_SEARCH.includes(predicate)) {
-      this.loadDefaultSortState();
+      this.navigateToWithComponentValues(this.getDefaultSortState());
+      return;
     }
-    this.currentSearch = query;
     this.navigateToWithComponentValues(this.sortState());
   }
 
-  loadDefaultSortState(): void {
-    this.sortState.set(this.sortService.parseSortParam(this.activatedRoute.snapshot.data[DEFAULT_SORT_DATA]));
+  getDefaultSortState(): SortState {
+    return this.sortService.parseSortParam(this.activatedRoute.snapshot.data[DEFAULT_SORT_DATA]);
   }
 
   delete(operation: IOperation): void {
@@ -127,13 +117,13 @@ export class OperationComponent implements OnInit {
   protected onResponseSuccess(response: EntityArrayResponseType): void {
     this.fillComponentAttributesFromResponseHeader(response.headers);
     const dataFromBody = this.fillComponentAttributesFromResponseBody(response.body);
-    this.operations = dataFromBody;
+    this.operations.set(dataFromBody);
   }
 
   protected fillComponentAttributesFromResponseBody(data: IOperation[] | null): IOperation[] {
     // If there is previous link, data is a infinite scroll pagination content.
     if (this.links().prev) {
-      const operationsNew = this.operations ?? [];
+      const operationsNew = this.operations();
       if (data) {
         for (const d of data) {
           if (operationsNew.some(op => op.id === d.id)) {

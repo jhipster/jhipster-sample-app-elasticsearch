@@ -4,7 +4,6 @@ import io.github.jhipster.sample.repository.search.UserSearchRepository;
 import io.github.jhipster.sample.service.UserService;
 import io.github.jhipster.sample.service.dto.UserDTO;
 import java.util.*;
-import java.util.Collections;
 import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

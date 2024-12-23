@@ -179,7 +179,7 @@ describe('BankAccount Service', () => {
       });
 
       it('Should return false if one entity is null', () => {
-        const entity1 = { id: 123 };
+        const entity1 = { id: 22720 };
         const entity2 = null;
 
         const compareResult1 = service.compareBankAccount(entity1, entity2);
@@ -190,8 +190,8 @@ describe('BankAccount Service', () => {
       });
 
       it('Should return false if primaryKey differs', () => {
-        const entity1 = { id: 123 };
-        const entity2 = { id: 456 };
+        const entity1 = { id: 22720 };
+        const entity2 = { id: 22583 };
 
         const compareResult1 = service.compareBankAccount(entity1, entity2);
         const compareResult2 = service.compareBankAccount(entity2, entity1);
@@ -201,8 +201,8 @@ describe('BankAccount Service', () => {
       });
 
       it('Should return false if primaryKey matches', () => {
-        const entity1 = { id: 123 };
-        const entity2 = { id: 123 };
+        const entity1 = { id: 22720 };
+        const entity2 = { id: 22720 };
 
         const compareResult1 = service.compareBankAccount(entity1, entity2);
         const compareResult2 = service.compareBankAccount(entity2, entity1);

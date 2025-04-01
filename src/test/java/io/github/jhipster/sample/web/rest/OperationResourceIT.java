@@ -109,12 +109,12 @@ class OperationResourceIT {
     }
 
     @BeforeEach
-    public void initTest() {
+    void initTest() {
         operation = createEntity();
     }
 
     @AfterEach
-    public void cleanup() {
+    void cleanup() {
         if (insertedOperation != null) {
             operationRepository.delete(insertedOperation);
             operationSearchRepository.delete(insertedOperation);

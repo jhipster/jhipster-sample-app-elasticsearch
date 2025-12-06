@@ -18,5 +18,4 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest(classes = { JhipsterElasticsearchSampleApplicationApp.class, JacksonConfiguration.class, AsyncSyncConfiguration.class })
 @EmbeddedElasticsearch
 @EmbeddedSQL
-public @interface IntegrationTest {
-}
+public @interface IntegrationTest {}

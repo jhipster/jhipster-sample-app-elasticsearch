@@ -64,7 +64,7 @@ class OperationResourceIT {
     private static final String ENTITY_SEARCH_API_URL = "/api/operations/_search";
 
     private static Random random = new Random();
-    private static AtomicLong longCount = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
+    private static AtomicLong longCount = new AtomicLong(random.nextInt() + (2L * Integer.MAX_VALUE));
 
     @Autowired
     private ObjectMapper om;

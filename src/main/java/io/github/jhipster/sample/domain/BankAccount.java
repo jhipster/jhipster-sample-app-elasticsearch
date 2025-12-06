@@ -3,6 +3,7 @@ package io.github.jhipster.sample.domain;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
+import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.HashSet;
@@ -20,6 +21,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class BankAccount implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -29,7 +31,18 @@ public class BankAccount implements Serializable {
 
     @NotNull
     @Column(name = "name", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
+    @org.springframework.data.elasticsearch.annotations.MultiField(
+        mainField = @org.springframework.data.elasticsearch.annotations.Field(
+            type = org.springframework.data.elasticsearch.annotations.FieldType.Text
+        ),
+        otherFields = {
+            @org.springframework.data.elasticsearch.annotations.InnerField(
+                suffix = "keyword",
+                type = org.springframework.data.elasticsearch.annotations.FieldType.Keyword,
+                ignoreAbove = 256
+            ),
+        }
+    )
     private String name;
 
     @NotNull

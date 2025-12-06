@@ -3,6 +3,7 @@ package io.github.jhipster.sample.domain;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -19,6 +20,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class Label implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -29,7 +31,18 @@ public class Label implements Serializable {
     @NotNull
     @Size(min = 3)
     @Column(name = "label", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
+    @org.springframework.data.elasticsearch.annotations.MultiField(
+        mainField = @org.springframework.data.elasticsearch.annotations.Field(
+            type = org.springframework.data.elasticsearch.annotations.FieldType.Text
+        ),
+        otherFields = {
+            @org.springframework.data.elasticsearch.annotations.InnerField(
+                suffix = "keyword",
+                type = org.springframework.data.elasticsearch.annotations.FieldType.Keyword,
+                ignoreAbove = 256
+            ),
+        }
+    )
     private String label;
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "labels")

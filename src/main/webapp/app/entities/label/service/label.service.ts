@@ -1,13 +1,13 @@
-import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
-import { Observable, asapScheduler, scheduled } from 'rxjs';
+import { Injectable, inject } from '@angular/core';
 
+import { Observable, asapScheduler, scheduled } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
-import { isPresent } from 'app/core/util/operators';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
 import { Search } from 'app/core/request/request.model';
+import { isPresent } from 'app/core/util/operators';
 import { ILabel, NewLabel } from '../label.model';
 
 export type PartialUpdateLabel = Partial<ILabel> & Pick<ILabel, 'id'>;
@@ -28,15 +28,19 @@ export class LabelService {
   }
 
   update(label: ILabel): Observable<EntityResponseType> {
-    return this.http.put<ILabel>(`${this.resourceUrl}/${this.getLabelIdentifier(label)}`, label, { observe: 'response' });
+    return this.http.put<ILabel>(`${this.resourceUrl}/${encodeURIComponent(this.getLabelIdentifier(label))}`, label, {
+      observe: 'response',
+    });
   }
 
   partialUpdate(label: PartialUpdateLabel): Observable<EntityResponseType> {
-    return this.http.patch<ILabel>(`${this.resourceUrl}/${this.getLabelIdentifier(label)}`, label, { observe: 'response' });
+    return this.http.patch<ILabel>(`${this.resourceUrl}/${encodeURIComponent(this.getLabelIdentifier(label))}`, label, {
+      observe: 'response',
+    });
   }
 
   find(id: number): Observable<EntityResponseType> {
-    return this.http.get<ILabel>(`${this.resourceUrl}/${id}`, { observe: 'response' });
+    return this.http.get<ILabel>(`${this.resourceUrl}/${encodeURIComponent(id)}`, { observe: 'response' });
   }
 
   query(req?: any): Observable<EntityArrayResponseType> {
@@ -45,7 +49,7 @@ export class LabelService {
   }
 
   delete(id: number): Observable<HttpResponse<{}>> {
-    return this.http.delete(`${this.resourceUrl}/${id}`, { observe: 'response' });
+    return this.http.delete(`${this.resourceUrl}/${encodeURIComponent(id)}`, { observe: 'response' });
   }
 
   search(req: Search): Observable<EntityArrayResponseType> {

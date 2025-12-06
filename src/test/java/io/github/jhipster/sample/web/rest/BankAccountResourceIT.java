@@ -60,7 +60,7 @@ class BankAccountResourceIT {
     private static final String ENTITY_SEARCH_API_URL = "/api/bank-accounts/_search";
 
     private static Random random = new Random();
-    private static AtomicLong longCount = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
+    private static AtomicLong longCount = new AtomicLong(random.nextInt() + (2L * Integer.MAX_VALUE));
 
     @Autowired
     private ObjectMapper om;
@@ -380,6 +380,8 @@ class BankAccountResourceIT {
         // Update the bankAccount using partial update
         BankAccount partialUpdatedBankAccount = new BankAccount();
         partialUpdatedBankAccount.setId(bankAccount.getId());
+
+        partialUpdatedBankAccount.balance(UPDATED_BALANCE);
 
         restBankAccountMockMvc
             .perform(

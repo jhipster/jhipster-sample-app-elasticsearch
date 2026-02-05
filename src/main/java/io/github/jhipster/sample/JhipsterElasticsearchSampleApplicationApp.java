@@ -13,15 +13,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.h2.H2ConsoleAutoConfiguration;
-import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.h2console.autoconfigure.H2ConsoleAutoConfiguration;
+import org.springframework.boot.liquibase.autoconfigure.LiquibaseProperties;
 import org.springframework.core.env.Environment;
+import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 import tech.jhipster.config.DefaultProfileUtil;
 import tech.jhipster.config.JHipsterConstants;
 
 @SpringBootApplication(exclude = { H2ConsoleAutoConfiguration.class })
 @EnableConfigurationProperties({ LiquibaseProperties.class, ApplicationProperties.class })
+@EnableElasticsearchRepositories("io.github.jhipster.sample.repository.search")
 public class JhipsterElasticsearchSampleApplicationApp {
 
     private static final Logger LOG = LoggerFactory.getLogger(JhipsterElasticsearchSampleApplicationApp.class);

@@ -28,10 +28,15 @@ public class Operation implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
+    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Long)
     private Long id;
 
     @NotNull
     @Column(name = "date", nullable = false)
+    @org.springframework.data.elasticsearch.annotations.Field(
+        type = org.springframework.data.elasticsearch.annotations.FieldType.Date,
+        format = org.springframework.data.elasticsearch.annotations.DateFormat.date_time
+    )
     private Instant date;
 
     @Column(name = "description")

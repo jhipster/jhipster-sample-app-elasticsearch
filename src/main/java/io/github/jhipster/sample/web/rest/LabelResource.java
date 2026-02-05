@@ -12,6 +12,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -129,9 +130,7 @@ public class LabelResource {
         Optional<Label> result = labelRepository
             .findById(label.getId())
             .map(existingLabel -> {
-                if (label.getLabel() != null) {
-                    existingLabel.setLabel(label.getLabel());
-                }
+                updateIfPresent(existingLabel::setLabel, label.getLabel());
 
                 return existingLabel;
             })
@@ -201,6 +200,12 @@ public class LabelResource {
             return StreamSupport.stream(labelSearchRepository.search(query).spliterator(), false).toList();
         } catch (RuntimeException e) {
             throw ElasticsearchExceptionMapper.mapException(e);
+        }
+    }
+
+    private <T> void updateIfPresent(Consumer<T> setter, T value) {
+        if (value != null) {
+            setter.accept(value);
         }
     }
 }

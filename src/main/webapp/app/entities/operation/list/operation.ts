@@ -3,15 +3,19 @@ import { Component, OnInit, WritableSignal, computed, inject, signal } from '@an
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Data, ParamMap, Router, RouterLink } from '@angular/router';
 
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { TranslateModule } from '@ngx-translate/core';
 import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
-import { Observable, Subscription, combineLatest, filter, tap } from 'rxjs';
+import { Observable, Subscription, combineLatest, filter, finalize, tap } from 'rxjs';
 
 import { DEFAULT_SORT_DATA, ITEM_DELETED_EVENT, SORT } from 'app/config/navigation.constants';
 import { ITEMS_PER_PAGE } from 'app/config/pagination.constants';
 import { ParseLinks } from 'app/core/util/parse-links.service';
+import { Alert } from 'app/shared/alert/alert';
+import { AlertError } from 'app/shared/alert/alert-error';
 import { FormatMediumDatetimePipe } from 'app/shared/date';
-import SharedModule from 'app/shared/shared.module';
+import { TranslateDirective } from 'app/shared/language';
 import { SortByDirective, SortDirective, SortService, type SortState, sortStateSignal } from 'app/shared/sort';
 import { OperationDeleteDialog } from '../delete/operation-delete-dialog';
 import { IOperation } from '../operation.model';
@@ -20,19 +24,32 @@ import { EntityArrayResponseType, OperationService } from '../service/operation.
 @Component({
   selector: 'jhi-operation',
   templateUrl: './operation.html',
-  imports: [RouterLink, FormsModule, SharedModule, SortDirective, SortByDirective, FormatMediumDatetimePipe, InfiniteScrollDirective],
+  imports: [
+    RouterLink,
+    FormsModule,
+    FontAwesomeModule,
+    NgbModule,
+    AlertError,
+    Alert,
+    SortDirective,
+    SortByDirective,
+    TranslateDirective,
+    TranslateModule,
+    FormatMediumDatetimePipe,
+    InfiniteScrollDirective,
+  ],
 })
 export class Operation implements OnInit {
   private static readonly NOT_SORTABLE_FIELDS_AFTER_SEARCH = ['description'];
 
   subscription: Subscription | null = null;
   operations = signal<IOperation[]>([]);
-  isLoading = false;
+  isLoading = signal(false);
 
   sortState = sortStateSignal({});
-  currentSearch = '';
+  currentSearch = signal('');
 
-  itemsPerPage = ITEMS_PER_PAGE;
+  itemsPerPage = signal(ITEMS_PER_PAGE);
   links: WritableSignal<Record<string, undefined | Record<string, string | undefined>>> = signal({});
   hasMorePage = computed(() => !!this.links().next);
   isFirstFetch = computed(() => Object.keys(this.links()).length === 0);
@@ -65,7 +82,7 @@ export class Operation implements OnInit {
   }
 
   search(query: string): void {
-    this.currentSearch = query;
+    this.currentSearch.set(query);
     const { predicate } = this.sortState();
     if (query && predicate && Operation.NOT_SORTABLE_FIELDS_AFTER_SEARCH.includes(predicate)) {
       this.navigateToWithComponentValues(this.getDefaultSortState());
@@ -95,13 +112,13 @@ export class Operation implements OnInit {
   }
 
   navigateToWithComponentValues(event: SortState): void {
-    this.handleNavigation(event, this.currentSearch);
+    this.handleNavigation(event, this.currentSearch());
   }
 
   protected fillComponentAttributeFromRoute(params: ParamMap, data: Data): void {
     this.sortState.set(this.sortService.parseSortParam(params.get(SORT) ?? data[DEFAULT_SORT_DATA]));
     if (params.has('search') && params.get('search') !== '') {
-      this.currentSearch = params.get('search') as string;
+      this.currentSearch.set(params.get('search') as string);
       const { predicate } = this.sortState();
       if (predicate && Operation.NOT_SORTABLE_FIELDS_AFTER_SEARCH.includes(predicate)) {
         this.sortState.set({});
@@ -141,13 +158,11 @@ export class Operation implements OnInit {
   }
 
   protected queryBackend(): Observable<EntityArrayResponseType> {
-    const { currentSearch } = this;
-
-    this.isLoading = true;
+    this.isLoading.set(true);
     const queryObject: any = {
-      size: this.itemsPerPage,
+      size: this.itemsPerPage(),
       eagerload: true,
-      query: currentSearch,
+      query: this.currentSearch(),
     };
     if (this.hasMorePage()) {
       Object.assign(queryObject, this.links().next);
@@ -155,10 +170,10 @@ export class Operation implements OnInit {
       Object.assign(queryObject, { sort: this.sortService.buildSortParam(this.sortState()) });
     }
 
-    if (this.currentSearch && this.currentSearch !== '') {
-      return this.operationService.search(queryObject).pipe(tap(() => (this.isLoading = false)));
+    if (this.currentSearch() && this.currentSearch() !== '') {
+      return this.operationService.search(queryObject).pipe(finalize(() => this.isLoading.set(false)));
     }
-    return this.operationService.query(queryObject).pipe(tap(() => (this.isLoading = false)));
+    return this.operationService.query(queryObject).pipe(finalize(() => this.isLoading.set(false)));
   }
 
   protected handleNavigation(sortState: SortState, currentSearch?: string): void {

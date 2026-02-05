@@ -2,11 +2,11 @@ package io.github.jhipster.sample.config;
 
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.RefreshPolicy;
 
-@Configuration
+@TestConfiguration(proxyBeanMethods = false)
 public class ElasticsearchTestConfiguration {
 
     @Autowired

@@ -2,11 +2,15 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Data, ParamMap, Router, RouterLink } from '@angular/router';
 
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { Observable, Subscription, combineLatest, filter, tap } from 'rxjs';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { TranslateModule } from '@ngx-translate/core';
+import { Observable, Subscription, combineLatest, filter, finalize, tap } from 'rxjs';
 
 import { DEFAULT_SORT_DATA, ITEM_DELETED_EVENT, SORT } from 'app/config/navigation.constants';
-import SharedModule from 'app/shared/shared.module';
+import { Alert } from 'app/shared/alert/alert';
+import { AlertError } from 'app/shared/alert/alert-error';
+import { TranslateDirective } from 'app/shared/language';
 import { SortByDirective, SortDirective, SortService, type SortState, sortStateSignal } from 'app/shared/sort';
 import { IBankAccount } from '../bank-account.model';
 import { BankAccountDeleteDialog } from '../delete/bank-account-delete-dialog';
@@ -15,17 +19,28 @@ import { BankAccountService, EntityArrayResponseType } from '../service/bank-acc
 @Component({
   selector: 'jhi-bank-account',
   templateUrl: './bank-account.html',
-  imports: [RouterLink, FormsModule, SharedModule, SortDirective, SortByDirective],
+  imports: [
+    RouterLink,
+    FormsModule,
+    FontAwesomeModule,
+    NgbModule,
+    AlertError,
+    Alert,
+    SortDirective,
+    SortByDirective,
+    TranslateDirective,
+    TranslateModule,
+  ],
 })
 export class BankAccount implements OnInit {
   private static readonly NOT_SORTABLE_FIELDS_AFTER_SEARCH = ['name'];
 
   subscription: Subscription | null = null;
   bankAccounts = signal<IBankAccount[]>([]);
-  isLoading = false;
+  isLoading = signal(false);
 
   sortState = sortStateSignal({});
-  currentSearch = '';
+  currentSearch = signal('');
 
   readonly router = inject(Router);
   protected readonly bankAccountService = inject(BankAccountService);
@@ -45,7 +60,7 @@ export class BankAccount implements OnInit {
   }
 
   search(query: string): void {
-    this.currentSearch = query;
+    this.currentSearch.set(query);
     const { predicate } = this.sortState();
     if (query && predicate && BankAccount.NOT_SORTABLE_FIELDS_AFTER_SEARCH.includes(predicate)) {
       this.navigateToWithComponentValues(this.getDefaultSortState());
@@ -75,13 +90,13 @@ export class BankAccount implements OnInit {
   }
 
   navigateToWithComponentValues(event: SortState): void {
-    this.handleNavigation(event, this.currentSearch);
+    this.handleNavigation(event, this.currentSearch());
   }
 
   protected fillComponentAttributeFromRoute(params: ParamMap, data: Data): void {
     this.sortState.set(this.sortService.parseSortParam(params.get(SORT) ?? data[DEFAULT_SORT_DATA]));
     if (params.has('search') && params.get('search') !== '') {
-      this.currentSearch = params.get('search') as string;
+      this.currentSearch.set(params.get('search') as string);
       const { predicate } = this.sortState();
       if (predicate && BankAccount.NOT_SORTABLE_FIELDS_AFTER_SEARCH.includes(predicate)) {
         this.sortState.set({});
@@ -104,18 +119,16 @@ export class BankAccount implements OnInit {
   }
 
   protected queryBackend(): Observable<EntityArrayResponseType> {
-    const { currentSearch } = this;
-
-    this.isLoading = true;
+    this.isLoading.set(true);
     const queryObject: any = {
       eagerload: true,
-      query: currentSearch,
+      query: this.currentSearch(),
       sort: this.sortService.buildSortParam(this.sortState()),
     };
-    if (this.currentSearch && this.currentSearch !== '') {
-      return this.bankAccountService.search(queryObject).pipe(tap(() => (this.isLoading = false)));
+    if (this.currentSearch() && this.currentSearch() !== '') {
+      return this.bankAccountService.search(queryObject).pipe(finalize(() => this.isLoading.set(false)));
     }
-    return this.bankAccountService.query(queryObject).pipe(tap(() => (this.isLoading = false)));
+    return this.bankAccountService.query(queryObject).pipe(finalize(() => this.isLoading.set(false)));
   }
 
   protected handleNavigation(sortState: SortState, currentSearch?: string): void {

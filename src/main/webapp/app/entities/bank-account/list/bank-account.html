@@ -3,8 +3,8 @@
     <span jhiTranslate="jhipsterElasticsearchSampleApplicationApp.bankAccount.home.title">Bank Accounts</span>
 
     <div class="d-flex justify-content-end">
-      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
-        <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined" />
+      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading()">
+        <fa-icon icon="sync" [animation]="isLoading() ? 'spin' : undefined" />
         <span jhiTranslate="jhipsterElasticsearchSampleApplicationApp.bankAccount.home.refreshListLabel">Refresh list</span>
       </button>
 
@@ -41,11 +41,11 @@
           placeholder="{{ 'jhipsterElasticsearchSampleApplicationApp.bankAccount.home.search' | translate }}"
         />
 
-        <button class="btn btn-info" (click)="search(currentSearch)">
+        <button class="btn btn-info" (click)="search(currentSearch())">
           <fa-icon icon="search" />
         </button>
 
-        @if (currentSearch) {
+        @if (currentSearch()) {
           <button class="btn btn-danger" (click)="search('')">
             <fa-icon icon="trash-alt" />
           </button>

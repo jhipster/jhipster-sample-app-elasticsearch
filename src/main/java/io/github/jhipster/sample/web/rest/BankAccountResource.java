@@ -12,6 +12,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -131,12 +132,8 @@ public class BankAccountResource {
         Optional<BankAccount> result = bankAccountRepository
             .findById(bankAccount.getId())
             .map(existingBankAccount -> {
-                if (bankAccount.getName() != null) {
-                    existingBankAccount.setName(bankAccount.getName());
-                }
-                if (bankAccount.getBalance() != null) {
-                    existingBankAccount.setBalance(bankAccount.getBalance());
-                }
+                updateIfPresent(existingBankAccount::setName, bankAccount.getName());
+                updateIfPresent(existingBankAccount::setBalance, bankAccount.getBalance());
 
                 return existingBankAccount;
             })
@@ -213,6 +210,12 @@ public class BankAccountResource {
             return StreamSupport.stream(bankAccountSearchRepository.search(query).spliterator(), false).toList();
         } catch (RuntimeException e) {
             throw ElasticsearchExceptionMapper.mapException(e);
+        }
+    }
+
+    private <T> void updateIfPresent(Consumer<T> setter, T value) {
+        if (value != null) {
+            setter.accept(value);
         }
     }
 }

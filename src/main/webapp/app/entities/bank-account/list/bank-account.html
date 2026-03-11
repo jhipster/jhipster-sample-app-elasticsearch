@@ -73,7 +73,7 @@
             <th scope="col" jhiSortBy="name">
               <div class="d-flex">
                 <span jhiTranslate="jhipsterElasticsearchSampleApplicationApp.bankAccount.name">Name</span>
-                @if (!currentSearch) {
+                @if (!currentSearch()) {
                   <fa-icon class="p-1" icon="sort" />
                 }
               </div>

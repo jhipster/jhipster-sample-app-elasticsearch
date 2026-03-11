@@ -1,5 +1,5 @@
-import { HttpClient, HttpResponse } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
+import { HttpClient, HttpResponse, httpResource } from '@angular/common/http';
+import { Injectable, computed, inject, signal } from '@angular/core';
 
 import { Observable, asapScheduler, scheduled } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -10,31 +10,42 @@ import { SearchWithPagination } from 'app/core/request/request.model';
 import { isPresent } from 'app/core/util/operators';
 import { IUser } from '../user.model';
 
-export type EntityResponseType = HttpResponse<IUser>;
-export type EntityArrayResponseType = HttpResponse<IUser[]>;
+@Injectable()
+export class UsersService {
+  readonly usersParams = signal<Record<string, string | number | boolean | readonly (string | number | boolean)[]> | undefined>(undefined);
+  readonly usersResource = httpResource<IUser[]>(() => {
+    const params = this.usersParams();
+    if (!params) {
+      return undefined;
+    }
+    return { url: params.query ? this.resourceSearchUrl : this.resourceUrl, params };
+  });
+  /**
+   * This signal holds the list of user that have been fetched. It is updated when the usersResource emits a new value.
+   * In case of error while fetching the users, the signal is set to an empty array.
+   */
+  readonly users = computed(() => (this.usersResource.hasValue() ? this.usersResource.value() : []));
+  protected readonly applicationConfigService = inject(ApplicationConfigService);
+  protected readonly resourceUrl = this.applicationConfigService.getEndpointFor('api/users');
+  protected readonly resourceSearchUrl = this.applicationConfigService.getEndpointFor('api/users/_search');
+}
 
 @Injectable({ providedIn: 'root' })
-export class UserService {
+export class UserService extends UsersService {
   protected readonly http = inject(HttpClient);
-  protected readonly applicationConfigService = inject(ApplicationConfigService);
 
-  protected resourceUrl = this.applicationConfigService.getEndpointFor('api/users');
-  protected resourceSearchUrl = this.applicationConfigService.getEndpointFor('api/users/_search');
-
-  find(id: number): Observable<EntityResponseType> {
-    return this.http.get<IUser>(`${this.resourceUrl}/${encodeURIComponent(id)}`, { observe: 'response' });
+  find(id: number): Observable<IUser> {
+    return this.http.get<IUser>(`${this.resourceUrl}/${encodeURIComponent(id)}`);
   }
 
-  query(req?: any): Observable<EntityArrayResponseType> {
+  query(req?: any): Observable<HttpResponse<IUser[]>> {
     const options = createRequestOption(req);
     return this.http.get<IUser[]>(this.resourceUrl, { params: options, observe: 'response' });
   }
 
-  search(req: SearchWithPagination): Observable<EntityArrayResponseType> {
+  search(req: SearchWithPagination): Observable<IUser[]> {
     const options = createRequestOption(req);
-    return this.http
-      .get<IUser[]>(this.resourceSearchUrl, { params: options, observe: 'response' })
-      .pipe(catchError(() => scheduled([new HttpResponse<IUser[]>()], asapScheduler)));
+    return this.http.get<IUser[]>(this.resourceSearchUrl, { params: options }).pipe(catchError(() => scheduled([], asapScheduler)));
   }
 
   getUserIdentifier(user: Pick<IUser, 'id'>): number {

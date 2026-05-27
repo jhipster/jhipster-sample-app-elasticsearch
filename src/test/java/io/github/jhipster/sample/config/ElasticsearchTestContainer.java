@@ -11,7 +11,7 @@ import org.testcontainers.utility.DockerImageName;
 public interface ElasticsearchTestContainer {
     @Container
     ElasticsearchContainer elasticsearchContainer = new ElasticsearchContainer(
-        DockerImageName.parse("docker.elastic.co/elasticsearch/elasticsearch").withTag("9.2.5")
+        DockerImageName.parse("docker.elastic.co/elasticsearch/elasticsearch").withTag("9.2.8")
     )
         .withLogConsumer(new Slf4jLogConsumer(LoggerFactory.getLogger(ElasticsearchTestContainer.class)))
         .withEnv("xpack.security.enabled", "false")

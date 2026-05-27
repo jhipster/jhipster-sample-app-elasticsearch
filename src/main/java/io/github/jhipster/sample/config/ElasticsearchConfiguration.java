@@ -4,7 +4,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Arrays;
+import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
@@ -20,7 +20,7 @@ public class ElasticsearchConfiguration extends ElasticsearchConfigurationSuppor
     @Override
     public ElasticsearchCustomConversions elasticsearchCustomConversions() {
         return new ElasticsearchCustomConversions(
-            Arrays.asList(
+            List.of(
                 new ZonedDateTimeWritingConverter(),
                 new ZonedDateTimeReadingConverter(),
                 new InstantWritingConverter(),

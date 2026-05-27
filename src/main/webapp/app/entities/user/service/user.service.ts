@@ -1,8 +1,7 @@
 import { HttpClient, HttpResponse, httpResource } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
 
-import { Observable, asapScheduler, scheduled } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { Observable, asapScheduler, catchError, scheduled } from 'rxjs';
 
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';

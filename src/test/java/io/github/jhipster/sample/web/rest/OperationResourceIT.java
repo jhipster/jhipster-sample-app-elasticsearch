@@ -18,7 +18,6 @@ import io.github.jhipster.sample.repository.search.OperationSearchRepository;
 import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -51,7 +50,7 @@ import org.springframework.transaction.annotation.Transactional;
 class OperationResourceIT {
 
     private static final Instant DEFAULT_DATE = Instant.ofEpochMilli(0L);
-    private static final Instant UPDATED_DATE = Instant.now().truncatedTo(ChronoUnit.MILLIS);
+    private static final Instant UPDATED_DATE = Instant.ofEpochMilli(1577001312643L);
 
     private static final String DEFAULT_DESCRIPTION = "AAAAAAAAAA";
     private static final String UPDATED_DESCRIPTION = "BBBBBBBBBB";
@@ -64,7 +63,7 @@ class OperationResourceIT {
     private static final String ENTITY_SEARCH_API_URL = "/api/operations/_search";
 
     private static final Random random = new Random();
-    private static final AtomicLong longCount = new AtomicLong(random.nextInt() + (2L * Integer.MAX_VALUE));
+    private static final AtomicLong longCount = new AtomicLong(random.nextInt() + 2L * Integer.MAX_VALUE);
 
     @Autowired
     private ObjectMapper om;

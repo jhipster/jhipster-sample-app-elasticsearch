@@ -90,7 +90,7 @@ describe('Label Service', () => {
       service.delete(123).subscribe();
 
       const requests = httpMock.match({ method: 'DELETE' });
-      expect(requests.length).toBe(1);
+      expect(requests).toHaveLength(1);
     });
 
     it('should handle exceptions for searching a Label', () => {

@@ -47,7 +47,7 @@ class LabelResourceIT {
     private static final String ENTITY_SEARCH_API_URL = "/api/labels/_search";
 
     private static final Random random = new Random();
-    private static final AtomicLong longCount = new AtomicLong(random.nextInt() + (2L * Integer.MAX_VALUE));
+    private static final AtomicLong longCount = new AtomicLong(random.nextInt() + 2L * Integer.MAX_VALUE);
 
     @Autowired
     private ObjectMapper om;

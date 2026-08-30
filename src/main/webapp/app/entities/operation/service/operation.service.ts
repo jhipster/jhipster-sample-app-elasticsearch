@@ -1,13 +1,11 @@
 import { HttpClient, HttpResponse, httpResource } from '@angular/common/http';
-import { Injectable, computed, inject, signal } from '@angular/core';
+import { Service, computed, inject, signal } from '@angular/core';
 
 import dayjs from 'dayjs/esm';
 import { Observable, asapScheduler, catchError, map, scheduled } from 'rxjs';
 
-import { ApplicationConfigService } from 'app/core/config/application-config.service';
-import { createRequestOption } from 'app/core/request/request-util';
-import { SearchWithPagination } from 'app/core/request/request.model';
-import { isPresent } from 'app/core/util/operators';
+import { serverApiUrl } from 'app/config';
+import { SearchWithPagination, createRequestOption } from 'app/core/request';
 import { IOperation, NewOperation } from '../operation.model';
 
 export type PartialUpdateOperation = Partial<IOperation> & Pick<IOperation, 'id'>;
@@ -22,7 +20,7 @@ export type NewRestOperation = RestOf<NewOperation>;
 
 export type PartialUpdateRestOperation = RestOf<PartialUpdateOperation>;
 
-@Injectable()
+@Service()
 export class OperationsService {
   readonly operationsParams = signal<Record<string, string | number | boolean | readonly (string | number | boolean)[]> | undefined>(
     undefined,
@@ -41,9 +39,8 @@ export class OperationsService {
   readonly operations = computed(() =>
     (this.operationsResource.hasValue() ? this.operationsResource.value() : []).map(item => this.convertValueFromServer(item)),
   );
-  protected readonly applicationConfigService = inject(ApplicationConfigService);
-  protected readonly resourceUrl = this.applicationConfigService.getEndpointFor('api/operations');
-  protected readonly resourceSearchUrl = this.applicationConfigService.getEndpointFor('api/operations/_search');
+  protected readonly resourceUrl = `${serverApiUrl}api/operations`;
+  protected readonly resourceSearchUrl = `${serverApiUrl}api/operations/_search`;
 
   protected convertValueFromServer(restOperation: RestOperation): IOperation {
     return {
@@ -53,7 +50,7 @@ export class OperationsService {
   }
 }
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class OperationService extends OperationsService {
   protected readonly http = inject(HttpClient);
 
@@ -113,7 +110,7 @@ export class OperationService extends OperationsService {
     operationCollection: Type[],
     ...operationsToCheck: (Type | null | undefined)[]
   ): Type[] {
-    const operations: Type[] = operationsToCheck.filter(isPresent);
+    const operations: Type[] = operationsToCheck.filter(operationItem => operationItem !== null && operationItem !== undefined);
     if (operations.length > 0) {
       const operationCollectionIdentifiers = operationCollection.map(operationItem => this.getOperationIdentifier(operationItem));
       const operationsToAdd = operations.filter(operationItem => {

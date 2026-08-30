@@ -82,7 +82,6 @@ describe('Label Service', () => {
 
       const req = httpMock.expectOne({ method: 'GET' });
       req.flush([returnedFromService]);
-      httpMock.verify();
       expect(expectedResult).toMatchObject([expected]);
     });
 
@@ -104,7 +103,7 @@ describe('Label Service', () => {
 
       const req = httpMock.expectOne({ method: 'GET' });
       req.flush(null, { status: 500, statusText: 'Internal Server Error' });
-      expect(expectedResult).toBe(null);
+      expect(expectedResult).toBeNull();
     });
 
     describe('addLabelToCollectionIfMissing', () => {
@@ -193,7 +192,7 @@ describe('Label Service', () => {
         expect(compareResult2).toEqual(false);
       });
 
-      it('should return false if primaryKey matches', () => {
+      it('should return true if primaryKey matches', () => {
         const entity1 = { id: 4199 };
         const entity2 = { id: 4199 };
 

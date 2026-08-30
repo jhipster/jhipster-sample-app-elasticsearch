@@ -1,5 +1,6 @@
 import { HttpHeaders } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, OnInit, WritableSignal, computed, effect, inject, signal } from '@angular/core';
+import { Component, WritableSignal, computed, effect, inject, signal, untracked } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Data, ParamMap, Router, RouterLink } from '@angular/router';
 
@@ -7,13 +8,11 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal';
 import { TranslatePipe } from '@ngx-translate/core';
 import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
-import { Subscription, combineLatest, filter, tap } from 'rxjs';
+import { combineLatest, filter, map, tap } from 'rxjs';
 
-import { DEFAULT_SORT_DATA, ITEM_DELETED_EVENT, SORT } from 'app/config/navigation.constants';
-import { ITEMS_PER_PAGE } from 'app/config/pagination.constants';
-import { ParseLinks } from 'app/core/util/parse-links.service';
-import { Alert } from 'app/shared/alert/alert';
-import { AlertError } from 'app/shared/alert/alert-error';
+import { DEFAULT_SORT_DATA, ITEMS_PER_PAGE, ITEM_DELETED_EVENT, SORT } from 'app/config';
+import { ParseLinks } from 'app/core/util';
+import { Alert, AlertError } from 'app/shared/alert';
 import { FormatMediumDatetimePipe } from 'app/shared/date';
 import { TranslateDirective } from 'app/shared/language';
 import { SortByDirective, SortDirective, SortService, type SortState, sortStateSignal } from 'app/shared/sort';
@@ -22,7 +21,6 @@ import { IOperation } from '../operation.model';
 import { OperationService } from '../service/operation.service';
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'jhi-operation',
   templateUrl: './operation.html',
   imports: [
@@ -39,10 +37,9 @@ import { OperationService } from '../service/operation.service';
     InfiniteScrollDirective,
   ],
 })
-export class Operation implements OnInit {
+export class Operation {
   private static readonly NOT_SORTABLE_FIELDS_AFTER_SEARCH = ['description'];
 
-  subscription: Subscription | null = null;
   readonly operations = signal<IOperation[]>([]);
 
   sortState = sortStateSignal({});
@@ -58,6 +55,12 @@ export class Operation implements OnInit {
   // eslint-disable-next-line @typescript-eslint/member-ordering
   readonly isLoading = this.operationService.operationsResource.isLoading;
   protected readonly activatedRoute = inject(ActivatedRoute);
+  protected readonly activatedRouteState = toSignal(
+    combineLatest([this.activatedRoute.queryParamMap, this.activatedRoute.data]).pipe(
+      map(([queryParamMap, data]) => ({ queryParamMap, data })),
+    ),
+    { initialValue: { queryParamMap: this.activatedRoute.snapshot.queryParamMap, data: this.activatedRoute.snapshot.data } },
+  );
   protected readonly sortService = inject(SortService);
   protected parseLinks = inject(ParseLinks);
   protected modalService = inject(NgbModal);
@@ -74,22 +77,22 @@ export class Operation implements OnInit {
         this.fillComponentAttributesFromResponseBody([...this.operationService.operations()], operations),
       );
     });
+    effect(() => {
+      const activatedRouteState = this.activatedRouteState();
+      untracked(() => {
+        // Only watch for route changes. Other signals should be ignored.
+        this.fillComponentAttributeFromRoute(activatedRouteState.queryParamMap, activatedRouteState.data);
+        this.reset();
+        this.load();
+      });
+    });
   }
 
   trackId = (item: IOperation): number => this.operationService.getOperationIdentifier(item);
 
-  ngOnInit(): void {
-    this.subscription = combineLatest([this.activatedRoute.queryParamMap, this.activatedRoute.data])
-      .pipe(
-        tap(([params, data]) => this.fillComponentAttributeFromRoute(params, data)),
-        tap(() => this.reset()),
-        tap(() => this.load()),
-      )
-      .subscribe();
-  }
-
   reset(): void {
     this.operations.set([]);
+    this.links.set({});
   }
 
   loadNextPage(): void {

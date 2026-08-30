@@ -1,15 +1,15 @@
-import { ChangeDetectionStrategy, Component, OnInit, effect, inject, signal } from '@angular/core';
+import { Component, effect, inject, signal, untracked } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Data, ParamMap, Router, RouterLink } from '@angular/router';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal';
 import { TranslatePipe } from '@ngx-translate/core';
-import { Subscription, combineLatest, filter, tap } from 'rxjs';
+import { combineLatest, filter, map, tap } from 'rxjs';
 
-import { DEFAULT_SORT_DATA, ITEM_DELETED_EVENT, SORT } from 'app/config/navigation.constants';
-import { Alert } from 'app/shared/alert/alert';
-import { AlertError } from 'app/shared/alert/alert-error';
+import { DEFAULT_SORT_DATA, ITEM_DELETED_EVENT, SORT } from 'app/config';
+import { Alert, AlertError } from 'app/shared/alert';
 import { TranslateDirective } from 'app/shared/language';
 import { SortByDirective, SortDirective, SortService, type SortState, sortStateSignal } from 'app/shared/sort';
 import { IBankAccount } from '../bank-account.model';
@@ -17,7 +17,6 @@ import { BankAccountDeleteDialog } from '../delete/bank-account-delete-dialog';
 import { BankAccountService } from '../service/bank-account.service';
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'jhi-bank-account',
   templateUrl: './bank-account.html',
   imports: [
@@ -32,10 +31,9 @@ import { BankAccountService } from '../service/bank-account.service';
     TranslatePipe,
   ],
 })
-export class BankAccount implements OnInit {
+export class BankAccount {
   private static readonly NOT_SORTABLE_FIELDS_AFTER_SEARCH = ['name'];
 
-  subscription: Subscription | null = null;
   readonly bankAccounts = signal<IBankAccount[]>([]);
 
   sortState = sortStateSignal({});
@@ -46,6 +44,12 @@ export class BankAccount implements OnInit {
   // eslint-disable-next-line @typescript-eslint/member-ordering
   readonly isLoading = this.bankAccountService.bankAccountsResource.isLoading;
   protected readonly activatedRoute = inject(ActivatedRoute);
+  protected readonly activatedRouteState = toSignal(
+    combineLatest([this.activatedRoute.queryParamMap, this.activatedRoute.data]).pipe(
+      map(([queryParamMap, data]) => ({ queryParamMap, data })),
+    ),
+    { initialValue: { queryParamMap: this.activatedRoute.snapshot.queryParamMap, data: this.activatedRoute.snapshot.data } },
+  );
   protected readonly sortService = inject(SortService);
   protected modalService = inject(NgbModal);
 
@@ -53,18 +57,17 @@ export class BankAccount implements OnInit {
     effect(() => {
       this.bankAccounts.set(this.fillComponentAttributesFromResponseBody([...this.bankAccountService.bankAccounts()]));
     });
+    effect(() => {
+      const activatedRouteState = this.activatedRouteState();
+      untracked(() => {
+        // Only watch for route changes. Other signals should be ignored.
+        this.fillComponentAttributeFromRoute(activatedRouteState.queryParamMap, activatedRouteState.data);
+        this.load();
+      });
+    });
   }
 
   trackId = (item: IBankAccount): number => this.bankAccountService.getBankAccountIdentifier(item);
-
-  ngOnInit(): void {
-    this.subscription = combineLatest([this.activatedRoute.queryParamMap, this.activatedRoute.data])
-      .pipe(
-        tap(([params, data]) => this.fillComponentAttributeFromRoute(params, data)),
-        tap(() => this.load()),
-      )
-      .subscribe();
-  }
 
   search(query: string): void {
     this.currentSearch.set(query);

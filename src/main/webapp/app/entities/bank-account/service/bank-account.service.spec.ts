@@ -82,7 +82,6 @@ describe('BankAccount Service', () => {
 
       const req = httpMock.expectOne({ method: 'GET' });
       req.flush([returnedFromService]);
-      httpMock.verify();
       expect(expectedResult).toMatchObject([expected]);
     });
 
@@ -104,7 +103,7 @@ describe('BankAccount Service', () => {
 
       const req = httpMock.expectOne({ method: 'GET' });
       req.flush(null, { status: 500, statusText: 'Internal Server Error' });
-      expect(expectedResult).toBe(null);
+      expect(expectedResult).toBeNull();
     });
 
     describe('addBankAccountToCollectionIfMissing', () => {
@@ -193,7 +192,7 @@ describe('BankAccount Service', () => {
         expect(compareResult2).toEqual(false);
       });
 
-      it('should return false if primaryKey matches', () => {
+      it('should return true if primaryKey matches', () => {
         const entity1 = { id: 22720 };
         const entity2 = { id: 22720 };
 

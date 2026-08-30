@@ -37,7 +37,7 @@ spring:
       enabled: false
       profiles:
         active: dev
-  jackson2:
+  jackson:
     serialization:
       indent-output: true
   datasource:

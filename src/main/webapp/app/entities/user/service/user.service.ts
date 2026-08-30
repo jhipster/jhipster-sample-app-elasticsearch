@@ -1,15 +1,13 @@
 import { HttpClient, HttpResponse, httpResource } from '@angular/common/http';
-import { Injectable, computed, inject, signal } from '@angular/core';
+import { Service, computed, inject, signal } from '@angular/core';
 
 import { Observable, asapScheduler, catchError, scheduled } from 'rxjs';
 
-import { ApplicationConfigService } from 'app/core/config/application-config.service';
-import { createRequestOption } from 'app/core/request/request-util';
-import { SearchWithPagination } from 'app/core/request/request.model';
-import { isPresent } from 'app/core/util/operators';
+import { serverApiUrl } from 'app/config';
+import { SearchWithPagination, createRequestOption } from 'app/core/request';
 import { IUser } from '../user.model';
 
-@Injectable()
+@Service()
 export class UsersService {
   readonly usersParams = signal<Record<string, string | number | boolean | readonly (string | number | boolean)[]> | undefined>(undefined);
   readonly usersResource = httpResource<IUser[]>(() => {
@@ -24,12 +22,11 @@ export class UsersService {
    * In case of error while fetching the users, the signal is set to an empty array.
    */
   readonly users = computed(() => (this.usersResource.hasValue() ? this.usersResource.value() : []));
-  protected readonly applicationConfigService = inject(ApplicationConfigService);
-  protected readonly resourceUrl = this.applicationConfigService.getEndpointFor('api/users');
-  protected readonly resourceSearchUrl = this.applicationConfigService.getEndpointFor('api/users/_search');
+  protected readonly resourceUrl = `${serverApiUrl}api/users`;
+  protected readonly resourceSearchUrl = `${serverApiUrl}api/users/_search`;
 }
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class UserService extends UsersService {
   protected readonly http = inject(HttpClient);
 
@@ -59,7 +56,7 @@ export class UserService extends UsersService {
     userCollection: Type[],
     ...usersToCheck: (Type | null | undefined)[]
   ): Type[] {
-    const users: Type[] = usersToCheck.filter(isPresent);
+    const users: Type[] = usersToCheck.filter(userItem => userItem !== null && userItem !== undefined);
     if (users.length > 0) {
       const userCollectionIdentifiers = userCollection.map(userItem => this.getUserIdentifier(userItem));
       const usersToAdd = users.filter(userItem => {

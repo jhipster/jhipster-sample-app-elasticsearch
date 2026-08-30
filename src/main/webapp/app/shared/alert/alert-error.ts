@@ -1,19 +1,17 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, OnDestroy, inject, signal } from '@angular/core';
+import { Component, OnDestroy, inject, signal } from '@angular/core';
 
 import { NgbAlert } from '@ng-bootstrap/ng-bootstrap/alert';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 
-import { AlertModel, AlertService } from 'app/core/util/alert.service';
-import { EventManager, EventWithContent } from 'app/core/util/event-manager.service';
+import { AlertModel, AlertService, EventManager, EventWithContent } from 'app/core/util';
 import { getMessageFromHeaders } from 'app/shared/jhipster/headers';
 
 import { AlertErrorModel } from './alert-error.model';
 
 @Component({
   selector: 'jhi-alert-error',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './alert-error.html',
   imports: [NgbAlert],
 })
@@ -30,7 +28,7 @@ export class AlertError implements OnDestroy {
   constructor() {
     this.errorListener = this.eventManager.subscribe(
       'jhipsterElasticsearchSampleApplicationApp.error',
-      (response: EventWithContent<unknown> | string) => {
+      (response: EventWithContent<unknown>) => {
         const errorResponse = (response as EventWithContent<AlertErrorModel>).content;
         this.addErrorAlert(errorResponse.message, errorResponse.key, errorResponse.params);
       },
@@ -38,7 +36,7 @@ export class AlertError implements OnDestroy {
 
     this.httpErrorListener = this.eventManager.subscribe(
       'jhipsterElasticsearchSampleApplicationApp.httpError',
-      (response: EventWithContent<unknown> | string) => {
+      (response: EventWithContent<unknown>) => {
         this.handleHttpError(response);
       },
     );
@@ -58,14 +56,14 @@ export class AlertError implements OnDestroy {
   }
 
   close(alert: AlertModel): void {
-    alert.close?.(this.alerts());
+    alert.close?.();
   }
 
   private addErrorAlert(message?: string, translationKey?: string, translationParams?: Record<string, unknown>): void {
-    this.alertService.addAlert({ type: 'danger', message, translationKey, translationParams }, this.alerts());
+    this.alertService.addAlert({ type: 'danger', message, translationKey, translationParams }, this.alerts);
   }
 
-  private handleHttpError(response: EventWithContent<unknown> | string): void {
+  private handleHttpError(response: EventWithContent<unknown>): void {
     const httpErrorResponse = (response as EventWithContent<HttpErrorResponse>).content;
     switch (httpErrorResponse.status) {
       // connection refused, server not reachable
